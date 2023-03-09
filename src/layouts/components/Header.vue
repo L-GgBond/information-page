@@ -44,10 +44,14 @@
 <script setup>
 import { ref } from 'vue'
 import { useFullscreen } from '@vueuse/core'
+import { useLogout } from '~/utils/UseManager'
 
 const { isFullscreen, toggle } = useFullscreen()
 const logo = ref("https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png")
 
+const {
+    handleLogout
+} = useLogout()
 const handleCommand = (e)=>{
     console.log(e)
     switch (e) {
@@ -57,6 +61,7 @@ const handleCommand = (e)=>{
     
         case "logout":
             console.log("退出登陆")
+            handleLogout()
             break;
     }
 }

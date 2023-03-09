@@ -51,13 +51,11 @@ const isCollapse = computed(()=> !(store.state.asideWidth == '250px'))
 // const asideMenus = computed(()=>store.state.menus)
 const asideMenus = [
     {
-        "name":"后台面板",
+        "name":"主控台",
         "icon":"help",
-        "child":[{
-            "name":"主控台",
-            "icon":"home-filled",
-            "frontpath":"/"
-        }]
+        "icon":"home-filled",
+        "frontpath":"/"
+      
     },
     {
         "name":"学生管理",
@@ -89,4 +87,5 @@ const handleSelect = (e) => {
 .f-menu::-webkit-scrollbar{
     width: 0px;
 }
+
 </style>

@@ -1,8 +1,6 @@
 import { createStore } from 'vuex'
-import {
-    setToken,
-    removeToken
-} from '~/utils/auth'
+import { login } from '~/api/manager'
+import { setToken,removeToken } from '~/utils/auth'
 const store = createStore({
     state() {
         return {
@@ -33,6 +31,16 @@ const store = createStore({
         }
     },
     actions:{
+        // 登录
+        login({ commit }, { username,password,type}){
+            return new Promise((resolve,reject)=>{
+                login(username,password,type).then(res=>{
+                    setToken(res.token)
+
+                    resolve(res)
+                }).catch(err=>reject(err))
+            })
+        },
         // 退出登录
         logout({ commit }){
             // 移除cookie里的token
