@@ -1,6 +1,6 @@
-import request from "../utils/request";
+import axios from "../utils/request";
 
 
 export function ceshi(){
-    
+    return axios.get("/login")  
 } 
