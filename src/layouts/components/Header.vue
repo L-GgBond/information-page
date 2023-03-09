@@ -1,16 +1,17 @@
 
-import { Eleme } from '@element-plus/icons-vue/dist/types';
-
 <template>
     <div class="header">
         <span class="logo">
             <el-icon class="mr-1"><Compass /></el-icon>
             考评管理系统
         </span>
-        <el-tooltip effect="dark" content="折叠" placement="top-start">
-            <el-icon class="icon-btn"><Fold /></el-icon>
-        </el-tooltip>
-       
+
+        <el-icon class="icon-btn" content="折叠" @click="$store.commit('handleAsideWidth')">
+            <fold v-if="$store.state.asideWidth == '250px'"/>
+            <Expand v-else/>
+        </el-icon>
+
+
         <el-tooltip effect="dark" content="刷新" placement="top-start">
             <el-icon class="icon-btn" @click="handleRefresh"><Refresh /></el-icon>
         </el-tooltip>

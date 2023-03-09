@@ -1,7 +1,8 @@
 import axios from 'axios'
-import { toast } from '~/util/common'
-import { getToken } from '~/util/auth'
- 
+import { toast } from '~/utils/common'
+import { getToken } from '~/utils/auth'
+import store from "~/store"
+
 const http = axios.create({
     baseURL:'/api',
     timeout:8000

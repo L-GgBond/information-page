@@ -14,7 +14,7 @@
                 </el-form-item> 
     
                 <el-form-item class="btns">
-                      <el-button type="primary" @click="doLogin">提交</el-button>
+                      <el-button type="primary" @click="doLogin" :loading="loading">提交</el-button>
                        <el-button type="info" @click="resetting">重置</el-button>
                 </el-form-item> 
             </el-form>
@@ -24,19 +24,25 @@
 
 <script setup>
 import { ref,reactive } from 'vue'
+import { toast } from '~/utils/common'
 import { User,Lock } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { setToken } from '~/utils/auth'
+
 const router = useRouter()
 const form = reactive({
     username: '',
     password: '',
 })
-
+const loading = ref(false)
 const doLogin = function () {
     console.log("登陆")
+    setToken('123')
+    loading.value = true
     console.log(form.username)
     console.log(form.password)
     router.push('/')
+    loading.value = false
 }
 
 const resetting = function () {
