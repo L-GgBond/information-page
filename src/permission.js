@@ -16,10 +16,10 @@ router.beforeEach(async (to,from,next)=>{
     const token = getToken()
 
     // 没有登录，强制跳转回登录页
-    // if(!token && to.path != "/login"){
-    //     toast("请先登录","error")
-    //     return next({ path:"/login" })
-    // }
+    if(!token && to.path != "/login"){
+        toast("请先登录","error")
+        return next({ path:"/login" })
+    }
 
     // 防止重复登录
     if(token && to.path == "/login"){
@@ -58,7 +58,7 @@ router.beforeEach(async (to,from,next)=>{
     }
 
     // 设置页面标题
-    let title = (to.meta.title ? to.meta.title : "") + "-学生信息管理系统"
+    let title = (to.meta.title ? to.meta.title : "") + " - 学生信息管理系统"
     document.title = title
 
     hasNewRoutes ? next(to.fullPath) : next()

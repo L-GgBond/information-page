@@ -1,5 +1,5 @@
 import { useCookies } from '@vueuse/integrations/useCookies'
-const TokenKey = "admin-token"
+const TokenKey = "token"
 const cookie = useCookies()
 
 // 获取token

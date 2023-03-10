@@ -28,7 +28,10 @@ const asyncRoutes = [
   {
     path:"/",
     name:"/",
-    component:import('../views/index.vue')
+    component:import('../views/index.vue'),
+    meta: {
+        title: "主控台"
+    }
   },
   {
     path: '/student/list',

@@ -7,10 +7,5 @@
 </template>
 
 <script setup>
-import { ceshi } from '@/api/Index'
-ceshi().then(res => {
-  console.log(res)
-}).catch(err => {
-  console.log(err)
-})
+
 </script>
