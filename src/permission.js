@@ -10,6 +10,7 @@ import store from "~/store"
 // 全局前置守卫
 let hasGetInfo = false
 router.beforeEach(async (to,from,next)=>{
+    console.log(1)
     // 显示loading
     showFullLoading()
     

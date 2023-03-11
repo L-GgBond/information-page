@@ -6,7 +6,7 @@ const store = createStore({
         return {
             // 用户信息
             user: {},
-
+            token_authorization:null,
             // 侧边宽度
             asideWidth:"250px",
 
@@ -15,6 +15,10 @@ const store = createStore({
         }
     },
     mutations: {
+        //authorization
+        SET_Authorization(state,authorization){
+            state.token_authorization = authorization
+        },
         // 记录用户信息
         SET_USERINFO(state,user){
             state.user = user
@@ -35,8 +39,8 @@ const store = createStore({
         login({ commit }, { username,password,type}){
             return new Promise((resolve,reject)=>{
                 login(username,password,type).then(res=>{
-                    setToken(res.token)
-
+                    console.log('res',res)
+                    setToken(this.state.token_authorization)
                     resolve(res)
                 }).catch(err=>reject(err))
             })
