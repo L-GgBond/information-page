@@ -25,8 +25,8 @@
             </el-tooltip>
             <el-dropdown class="dropdown" @command="handleCommand">
                 <div class="flex items-center text-light-50">
-                    <el-avatar class="mr-2" :size="25" :src="logo" />
-                     admin
+                    <el-avatar class="mr-2" :size="25" :src="$store.state.user.avatar" />
+                     {{ $store.state.user.username }}
                     <el-icon class="el-icon--right">
                         <arrow-down />
                     </el-icon>

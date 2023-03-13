@@ -4,10 +4,10 @@
             <Header></Header>
         </el-header>
         <el-container>
-            <el-aside :width="$store.state.asideWidth">
+            <el-aside :width="$store.state.asideWidth" style="height: 100%;">
                 <Menu></Menu>
             </el-aside>
-            <div>
+            <div style="width:100%">
                 <el-main>
                     <tag-list></tag-list>
                     <router-view></router-view>

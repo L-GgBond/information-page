@@ -9,7 +9,7 @@ import store from "~/store"
 import axios from '~/utils/request'
 
 
-let hasRoute = store.state.menus.hasRoute
+let hasRoutes = store.state.hasRoutes
 // 全局前置守卫
 let hasGetInfo = false
 router.beforeEach(async (to,from,next)=>{
@@ -34,18 +34,32 @@ router.beforeEach(async (to,from,next)=>{
     // 如果用户登录了，自动获取用户信息，并存储在vuex当中
     let hasNewRoutes = false
     if(token && !hasGetInfo){
-        let {nav}  = await store.dispatch("getinfo")
-        console.log('menus',nav)
-        hasGetInfo = true
-        // 动态添加路由
-        hasNewRoutes = addRoutes(nav)
+        console.log('hasRoute',hasRoutes.length)
+        if(hasRoutes.length != 0){
+            console.log(0)
+            next()
+        }else{
+            let { nav }  = await store.dispatch("getinfo")
+            await store.dispatch("getUserInfo")
+            console.log('menus',nav)
+            console.log('menus-length',nav.length)
+            hasGetInfo = true
+            store.state.hasRoutes = 2
+            console.log(store.state.hasRoutes)
+            // 动态添加路由
+            hasNewRoutes = addRoutes(nav)
+            next(to.fullPath)
+        }
+   
+    }else{
+        console.log("已经有路由了------------")
+        next()
     }
     // console.log(to.fullPath)
     // 设置页面标题
-    let title = (to.meta.title ? to.meta.title : "") + "- 信息管理系统"
-    document.title = title
-    console.log('hasNewRoutes',hasNewRoutes)
-    hasNewRoutes ? next(to.fullPath) : next()
+    let title = (to.meta.title ? to.meta.title : "") + "信息管理系统"
+    // document.title = title
+   
 })
 
 

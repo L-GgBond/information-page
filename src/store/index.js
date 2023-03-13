@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { login,getinfo } from '~/api/manager'
+import { login,getinfo,getUserInfo } from '~/api/manager'
 import { setToken,removeToken } from '~/utils/auth'
 const store = createStore({
     state() {
@@ -16,7 +16,7 @@ const store = createStore({
             menuList: [],
             permList: [],
 
-            hasRoutes: false,
+            hasRoutes: [],
 
             editableTabsValue: 'Index',
             editableTabs: [{
@@ -38,7 +38,9 @@ const store = createStore({
         handleAsideWidth(state){
             state.asideWidth = state.asideWidth == "250px" ? "64px" : "250px"
         },
-       
+        SET_ROUTER(state, nav) {
+            state.hasRoutes = nav
+		},
         SET_MENUS(state, menus) {
             state.menus = menus
 		},
@@ -73,6 +75,15 @@ const store = createStore({
                 getinfo().then(res=>{
                     commit("SET_MENUS",res.nav)
                     commit("SET_RULENAMES",res.authoritys)
+                    resolve(res)
+                }).catch(err=>reject(err))
+            })
+        },
+        getUserInfo({ commit }){
+            return new Promise((resolve,reject)=>{
+                getUserInfo().then(res=>{
+                    console.log('getUserInfo',res)
+                    commit("SET_USERINFO",res)
                     resolve(res)
                 }).catch(err=>reject(err))
             })

@@ -1,15 +1,15 @@
 <template>
     <div class="menu"  :style="{width:$store.state.asideWidth}">
-        <el-menu default-active="3" class="border-0">
+        <el-menu default-active="1" class="border-0">
             <router-link to="/index">
-                <el-menu-item index="3">
+                <el-menu-item index="1">
                     <el-icon><location /></el-icon>
                     <span>首页</span>
                 </el-menu-item>
             </router-link>
         
 
-        <el-sub-menu   :index="menu.name" v-for="menu in asideMenus">
+        <el-sub-menu  :default-active="menu.id" :index="menu.name" v-for="menu in asideMenus">
           <template #title>
             <el-icon>
                 <component :is="menu.icon"></component>
@@ -19,7 +19,7 @@
           <router-link :to="item.path" v-for="item in menu.children">
             <el-menu-item :index="item.name">
                 <template #title>
-                    <el-icon><location /></el-icon>
+                    <el-icon> <component :is="menu.icon"></component></el-icon>
                     <span>{{item.title}}</span>
                 </template>
             </el-menu-item>
@@ -64,7 +64,7 @@ const handleSelect = (e) => {
     bottom: 0;
     left:0;
     overflow: auto;
-    background-color:rgba(253, 253, 253, var(--tw-bg-opacity));
+    background-color:#fff;
     @apply shadow-md fixed;
 }
 .f-menu::-webkit-scrollbar{

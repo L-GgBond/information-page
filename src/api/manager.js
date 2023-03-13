@@ -14,7 +14,12 @@ export function logout(){
     return axios.post("/logout")
 }
 
-//登陆
+//菜单
 export function getinfo(){
     return axios.get("/in/menu/nav")
+}
+
+//用户信息
+export function getUserInfo(){
+    return axios.get("/in/userInfo")
 }
