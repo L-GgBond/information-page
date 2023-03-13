@@ -1,5 +1,5 @@
 import { createStore } from 'vuex'
-import { login } from '~/api/manager'
+import { login,getinfo } from '~/api/manager'
 import { setToken,removeToken } from '~/utils/auth'
 const store = createStore({
     state() {
@@ -11,7 +11,18 @@ const store = createStore({
             asideWidth:"250px",
 
             menus:[],
-            ruleNames:[]
+            ruleNames:[],
+
+            menuList: [],
+            permList: [],
+
+            hasRoutes: false,
+
+            editableTabsValue: 'Index',
+            editableTabs: [{
+                title: '首页',
+                name: 'Index',
+            }]
         }
     },
     mutations: {
@@ -27,12 +38,17 @@ const store = createStore({
         handleAsideWidth(state){
             state.asideWidth = state.asideWidth == "250px" ? "64px" : "250px"
         },
-        SET_MENUS(state,menus){
+       
+        SET_MENUS(state, menus) {
             state.menus = menus
-        },
+		},
         SET_RULENAMES(state,ruleNames){
             state.ruleNames = ruleNames
-        }
+        },
+
+		changeRouteStatus(state, hasRoutes) {
+			state.hasRoutes = hasRoutes
+		}
     },
     actions:{
         // 登录
@@ -51,7 +67,16 @@ const store = createStore({
             removeToken()
             // 清除当前用户状态 vuex
             commit("SET_USERINFO",{})
-        }
+        },
+        getinfo({ commit }){
+            return new Promise((resolve,reject)=>{
+                getinfo().then(res=>{
+                    commit("SET_MENUS",res.nav)
+                    commit("SET_RULENAMES",res.authoritys)
+                    resolve(res)
+                }).catch(err=>reject(err))
+            })
+        },
     }
 })
 

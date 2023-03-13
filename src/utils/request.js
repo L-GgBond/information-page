@@ -16,7 +16,7 @@ http.interceptors.request.use(function (config) {
     // 往header头自动添加token
     const token = getToken()
     if(token){
-        config.headers["token"] = token
+        config.headers["authorization"] = token
     }
     return config;
   }, function (error) {

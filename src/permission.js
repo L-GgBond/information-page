@@ -6,7 +6,10 @@ import {
     hideFullLoading
 } from "~/utils/common"
 import store from "~/store"
+import axios from '~/utils/request'
 
+
+let hasRoute = store.state.menus.hasRoute
 // 全局前置守卫
 let hasGetInfo = false
 router.beforeEach(async (to,from,next)=>{
@@ -31,39 +34,21 @@ router.beforeEach(async (to,from,next)=>{
     // 如果用户登录了，自动获取用户信息，并存储在vuex当中
     let hasNewRoutes = false
     if(token && !hasGetInfo){
-        // let { menus } = await store.dispatch("getinfo")
+        let {nav}  = await store.dispatch("getinfo")
+        console.log('menus',nav)
         hasGetInfo = true
-
-        let menus = [
-            {
-                "name":"后台面板",
-                "icon":"help",
-                "child":[{
-                    "name":"主控台",
-                    "icon":"home-filled",
-                    "frontpath":"/"
-                }]
-            },
-            {
-                "name":"学生管理",
-                "icon":"shopping-bag",
-                "child":[{
-                    "name":"学生列表",
-                    "icon":"shopping-cart-full",
-                    "frontpath":"/student/list"
-                }]
-            }
-        ]
         // 动态添加路由
-        hasNewRoutes = addRoutes(menus)
+        hasNewRoutes = addRoutes(nav)
     }
-
+    // console.log(to.fullPath)
     // 设置页面标题
-    let title = (to.meta.title ? to.meta.title : "") + " - 学生信息管理系统"
+    let title = (to.meta.title ? to.meta.title : "") + "- 信息管理系统"
     document.title = title
-
+    console.log('hasNewRoutes',hasNewRoutes)
     hasNewRoutes ? next(to.fullPath) : next()
 })
+
+
 
 // 全局后置守卫
 router.afterEach((to, from) => hideFullLoading())

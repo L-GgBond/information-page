@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  1
+  112323
   <router-view></router-view>
 </template>
 

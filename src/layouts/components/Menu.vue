@@ -1,30 +1,31 @@
 <template>
     <div class="menu"  :style="{width:$store.state.asideWidth}">
-        <el-menu :default-active="defaultActive" unique-opened :collapse="isCollapse" default-active="2" class="border-0" @select="handleSelect" :collapse-transition="false">
-            <template v-for="(item,index) in asideMenus" :key="index">
-                <el-sub-menu v-if="item.child && item.child.length > 0" :index="item.name">
-                    <template #title>
-                        <el-icon>
-                            <component :is="item.icon"></component>
-                        </el-icon>
-                        <span>{{ item.name }}</span>
-                    </template>
-                    <el-menu-item v-for="(item2,index2) in item.child" :key="index2" :index="item2.frontpath">
-                        <el-icon>
-                            <component :is="item2.icon"></component>
-                        </el-icon>
-                        <span>{{ item2.name }}</span>
-                    </el-menu-item>
-                </el-sub-menu>
-
-                <el-menu-item v-else :index="item.frontpath">
-                    <el-icon>
-                         <component :is="item.icon"></component>
-                    </el-icon>
-                    <span>{{ item.name }}</span>
+        <el-menu default-active="3" class="border-0">
+            <router-link to="/index">
+                <el-menu-item index="3">
+                    <el-icon><location /></el-icon>
+                    <span>首页</span>
                 </el-menu-item>
-            </template>
-        </el-menu>
+            </router-link>
+        
+
+        <el-sub-menu   :index="menu.name" v-for="menu in asideMenus">
+          <template #title>
+            <el-icon>
+                <component :is="menu.icon"></component>
+            </el-icon>
+            <span>{{menu.title}}</span>
+          </template>
+          <router-link :to="item.path" v-for="item in menu.children">
+            <el-menu-item :index="item.name">
+                <template #title>
+                    <el-icon><location /></el-icon>
+                    <span>{{item.title}}</span>
+                </template>
+            </el-menu-item>
+        </router-link>
+        </el-sub-menu>
+      </el-menu>
     </div>
 </template>
 <script setup>
@@ -48,25 +49,7 @@ onBeforeRouteUpdate((to,from)=>{
 // 是否折叠
 const isCollapse = computed(()=> !(store.state.asideWidth == '250px'))
 
-// const asideMenus = computed(()=>store.state.menus)
-const asideMenus = [
-    {
-        "name":"主控台",
-        "icon":"help",
-        "icon":"home-filled",
-        "frontpath":"/"
-      
-    },
-    {
-        "name":"学生管理",
-        "icon":"shopping-bag",
-        "child":[{
-            "name":"学生列表",
-            "icon":"shopping-cart-full",
-            "frontpath":"/student/list"
-        }]
-    }
-]
+const asideMenus = computed(()=> store.state.menus)
 
 
 const handleSelect = (e) => {
