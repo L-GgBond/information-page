@@ -1,39 +1,230 @@
 <template>
     <el-card shadow="never" class="border-0">
         <!-- 新增|刷新 -->
-        <ListHeader @create="handleCreate" @refresh="getData"/>
+        <ListHeader @create="handleRoleCreate" @refresh="getData"/>
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-            <el-table-column type="selection" width="55" />
-            <el-table-column prop="title" label="头像" />
-            <el-table-column prop="title" label="角色名称" />
-            <el-table-column prop="title" label="邮箱" />
-            <el-table-column prop="title" label="手机号" />
-            <el-table-column prop="title" label="状态" />
-            <el-table-column prop="create_time" label="创建时间" width="380" />
-            <el-table-column label="操作" width="180" align="center">
+            <el-table-column prop="id" label="#" />
+            <el-table-column prop="username" label="用户名" />
+            <el-table-column label="头像">
                 <template #default="scope">
-                <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
-                <el-popconfirm title="是否要删除该公告？" confirmButtonText="确认" cancelButtonText="取消"
+                    <el-avatar :size="50" :src="scope.row.avatar" />
+                </template>
+            </el-table-column>
+            <el-table-column label="角色名称">
+                <template #default="scope">
+                    <el-tag class="mt-1" size="small" type="default" v-for="item in scope.row.inRoles">{{ item.name }}</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="email" label="邮箱" />
+            <el-table-column label="身份">
+                <template #default="scope">
+                    <el-tag class="mt-1" size="small" v-if="scope.row.types == 'teacher'" type="default">{{ scope.row.types }}</el-tag>
+                    <el-tag class="mt-1" size="small" v-else type="success">{{ scope.row.types }}</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column prop="statu" label="状态">
+                <template #default="scope">
+                    <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">正常</el-tag>
+                    <el-tag class="ml-2" v-else type="danger">禁用</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="220" align="center">
+                <template #default="scope">
+                <el-button type="primary" size="small" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
+                <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
+
+                <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
-                    <el-button text type="primary" size="small">删除</el-button>
+                        <el-button text type="primary" size="small">删除</el-button>
                     </template>
                 </el-popconfirm>
                 </template>
             </el-table-column>
         </el-table>
+       
+        <div class="pages">
+            <el-pagination
+            v-model:current-page="current"
+            v-model:page-size="size"
+            :page-sizes="[10, 20, 30, 40]"
+            :small="small"
+            :disabled="disabled"
+            :background="background"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"/>
+        </div>
     </el-card>
+
+    <form-drawer ref="formRoleDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleRoleDrawerSubmit" >
+        <el-form ref="ruleRoleFormRef" :model="ruleRoleForm" :rules="roleRules" label-width="120px" 
+        class="demo-ruleForm"   :size="formSize" status-icon>
+            <el-form-item label="角色名称" prop="name">
+                <el-input v-model="ruleRoleForm.name" />
+            </el-form-item>
+            <el-form-item label="唯一编码" prop="code">
+                <el-input v-model="ruleRoleForm.code" />
+            </el-form-item>
+            <el-form-item label="描述" prop="remark">
+               <el-input v-model="ruleRoleForm.remark" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="状态" prop="statu">
+               <el-radio-group v-model="ruleRoleForm.statu">
+                  <el-radio :label=0>禁用</el-radio>
+                  <el-radio :label=1>正常</el-radio>
+               </el-radio-group>
+            </el-form-item>
+        </el-form>
+    </form-drawer>
+
+
+    <form-drawer ref="formRoleAccactDrawerRef" title="分配权限" size="45%" destroyOnClose @submit="handleRoleAccactDrawerSubmit" >
+        <el-form ref="ruleRoleAccactFormRef">
+            <el-tree
+                :data="ThreeData"
+                show-checkbox
+                node-key="id"
+                :props="{ label: 'name', children: 'children' }" :default-expanded-keys="defaultExpandedKeys"/>
+        </el-form>
+    </form-drawer>
+
 </template>
 <script setup>
+import { ref,reactive } from 'vue'
+import { computed } from "@vue/reactivity";
+import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
-
-const handleCreate =() =>{}
-
-const getData =() =>{}
-
-//获取列表
-const getUserList =()=> {
-
+import FormDrawer from '~/components/FormDrawer.vue'
+import { getUserListData,getUserSaveData,getUserUpdateData,getUserDeleteData,getUserUpdateDataInfo } from '~/api/user.js'
+import { getMenuListData } from "~/api/menu.js"
+//getRoleListData
+const current = ref(1)
+const size = ref(10)
+const total = ref(0)
+const handleSizeChange = (val) => {
+  console.log(`${val} items per page`)
 }
-getUserList()
+const handleCurrentChange = (val) => {
+  console.log(`current page: ${val}`)
+}
+const tableData = ref([])
+const getUserListTableData = ()=>{
+    getUserListData().then(res =>{
+        console.log(res)
+        if(res.code == 200){
+            tableData.value = res.data.records
+            size.value = res.data.size
+            current.value = res.data.current
+            total.value = res.data.total
+        }
+    })
+}
+getUserListTableData()
+
+const ID = ref(0)
+const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
+const formRoleDrawerRef = ref(null)
+const ruleRoleFormRef = ref(null)
+const handleRoleCreate = ()=> { ID.value = 0;formRoleDrawerRef.value.open() }
+const ruleRoleForm = reactive({
+    "name":'',
+    "code":'',
+    "remark":'',
+    "statu":'',
+})
+const roleRules = {
+    name: [
+        {required: true, message: '请输入角色名称', trigger: 'blur'}
+    ],
+    code: [
+        {required: true, message: '请输入唯一编码', trigger: 'blur'}
+    ],
+    remark: [
+        {required: true, message: '请输入备注', trigger: 'blur'}
+    ],
+    statu: [
+        {required: true, message: '请选择状态', trigger: 'blur'}
+    ]
+}
+
+const handleRoleEdit = (row) => {
+    console.log(row.id)
+    ID.value = row.id
+    getRoleUpdateDataInfo(row.id).then(res=>{
+        if(res.code == 200){
+            formRoleDrawerRef.value.open()
+            ruleRoleForm.name = row.name
+            ruleRoleForm.code = row.code
+            ruleRoleForm.remark = row.remark
+            ruleRoleForm.statu = row.statu
+        }
+    })
+    
+}
+const handleRoleDrawerSubmit = () => {
+    ruleRoleFormRef.value.validate((valid) => {
+        console.log(valid)
+        if(valid){
+            formRoleDrawerRef.value.showLoading()
+            const fun = ID.value ? getRoleUpdateData(ruleRoleForm) : getRoleSaveData(ruleRoleForm)
+            fun.then(res=>{
+                console.log(res)
+                if(res.code == 200){
+                    formRoleDrawerRef.value.close()
+                    getRoleListTableData()
+                    formRoleDrawerRef.value.hideLoading()
+                }
+            })
+        }
+    })
+}
+
+//删除
+const handleDelete =(id) =>{
+    console.log(id)
+    var ids = []
+    ids.push(id)
+    getUserDeleteData(ids).then(res=>{
+        if(res.code == 200){
+            toast("删除成功")
+            getUserListTableData()
+        }
+    })
+}
+
+//分配权限
+const ThreeData = ref([])
+const defaultExpandedKeys = ref([])
+const ruleRoleAccactFormRef = ref(null)
+const formRoleAccactDrawerRef = ref(null)
+const handleRoleAccact =(id) => {
+    console.log(id.id)
+    getRoleUpdateDataInfo(id.id).then(r => {
+        console.log(r)
+    })
+    getMenuListData().then(res =>{
+        if(res.code == 200){
+            ThreeData.value = res.data
+            AdddefaultExpandedKeysId(res.data)
+        }
+    })
+
+    formRoleAccactDrawerRef.value.open()
+}
+function AdddefaultExpandedKeysId(data){
+    for(let i = 0; i < data.length; i++){
+        defaultExpandedKeys.value.push(data[i].id)
+        if(data[i].children){
+            AdddefaultExpandedKeysId(data[i].children)
+        }
+    }
+}
 </script>
+<style>
+    .pages{
+        float: right;
+        @apply mt-6 mb-6;
+    }
+</style>

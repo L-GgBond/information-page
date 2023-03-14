@@ -3,16 +3,22 @@
         <!-- 新增|刷新 -->
         <ListHeader @create="handleRoleCreate" @refresh="getData"/>
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
-            <el-table-column type="selection" width="55" />
+            <el-table-column prop="id" label="#" />
             <el-table-column prop="name" label="名称" />
             <el-table-column prop="code" label="唯一编码" />
             <el-table-column prop="remark" label="描述" />
-            <el-table-column prop="statu" label="状态" />
-            <el-table-column label="操作" width="180" align="center">
+            <el-table-column prop="statu" label="状态">
                 <template #default="scope">
-                <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
+                    <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">正常</el-tag>
+                    <el-tag class="ml-2" v-else type="danger">禁用</el-tag>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作" width="220" align="center">
+                <template #default="scope">
+                <el-button type="primary" size="small" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
+                <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
 
-                <el-popconfirm title="是否要删除该公告？" confirmButtonText="确认" cancelButtonText="取消"
+                <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
                         <el-button text type="primary" size="small">删除</el-button>
@@ -57,40 +63,28 @@
             </el-form-item>
         </el-form>
     </form-drawer>
+
+
+    <form-drawer ref="formRoleAccactDrawerRef" title="分配权限" size="45%" destroyOnClose @submit="handleRoleAccactDrawerSubmit" >
+        <el-form ref="ruleRoleAccactFormRef">
+            <el-tree
+                :data="ThreeData"
+                show-checkbox
+                node-key="id"
+                :props="{ label: 'name', children: 'children' }" :default-expanded-keys="defaultExpandedKeys"/>
+        </el-form>
+    </form-drawer>
+
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
 import { computed } from "@vue/reactivity";
+import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
-import { getRoleListData,getRoleSaveData,getRoleUpdateData } from '~/api/role.js'
-
-
+import { getRoleListData,getRoleSaveData,getRoleUpdateData,getRoleDeleteData,getRoleUpdateDataInfo } from '~/api/role.js'
+import { getMenuListData } from "~/api/menu.js"
 //getRoleListData
-// const tableData = [
-//     {
-//         name:'学生',
-//         code:'in:role:save',
-//         remark:'ssssss',
-//         statu:1,
-//     },
-//     {
-//         name:'老师',
-//         code:'in:role:save',
-//         remark:'ssssss',
-//         statu:0,
-//     }
-// ]
-const tableData = reactive([])
-const getRoleListTableData = ()=>{
-    getRoleListData().then(res =>{
-        console.log(res)
-    })
-}
-getRoleListTableData()
-
-
-//page
 const current = ref(1)
 const size = ref(10)
 const total = ref(0)
@@ -100,6 +94,19 @@ const handleSizeChange = (val) => {
 const handleCurrentChange = (val) => {
   console.log(`current page: ${val}`)
 }
+const tableData = ref([])
+const getRoleListTableData = ()=>{
+    getRoleListData().then(res =>{
+        console.log(res)
+        if(res.code == 200){
+            tableData.value = res.data.records
+            size.value = res.data.size
+            current.value = res.data.current
+            total.value = res.data.total
+        }
+    })
+}
+getRoleListTableData()
 
 const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
@@ -126,6 +133,21 @@ const roleRules = {
         {required: true, message: '请选择状态', trigger: 'blur'}
     ]
 }
+
+const handleRoleEdit = (row) => {
+    console.log(row.id)
+    ID.value = row.id
+    getRoleUpdateDataInfo(row.id).then(res=>{
+        if(res.code == 200){
+            formRoleDrawerRef.value.open()
+            ruleRoleForm.name = row.name
+            ruleRoleForm.code = row.code
+            ruleRoleForm.remark = row.remark
+            ruleRoleForm.statu = row.statu
+        }
+    })
+    
+}
 const handleRoleDrawerSubmit = () => {
     ruleRoleFormRef.value.validate((valid) => {
         console.log(valid)
@@ -134,9 +156,55 @@ const handleRoleDrawerSubmit = () => {
             const fun = ID.value ? getRoleUpdateData(ruleRoleForm) : getRoleSaveData(ruleRoleForm)
             fun.then(res=>{
                 console.log(res)
+                if(res.code == 200){
+                    formRoleDrawerRef.value.close()
+                    getRoleListTableData()
+                    formRoleDrawerRef.value.hideLoading()
+                }
             })
         }
     })
+}
+
+//删除
+const handleDelete =(id) =>{
+    console.log(id)
+    var ids = []
+    ids.push(id)
+    getRoleDeleteData(ids).then(res=>{
+        if(res.code == 200){
+            toast("删除成功")
+            getRoleListTableData()
+        }
+    })
+}
+
+//分配权限
+const ThreeData = ref([])
+const defaultExpandedKeys = ref([])
+const ruleRoleAccactFormRef = ref(null)
+const formRoleAccactDrawerRef = ref(null)
+const handleRoleAccact =(id) => {
+    console.log(id.id)
+    getRoleUpdateDataInfo(id.id).then(r => {
+        console.log(r)
+    })
+    getMenuListData().then(res =>{
+        if(res.code == 200){
+            ThreeData.value = res.data
+            AdddefaultExpandedKeysId(res.data)
+        }
+    })
+
+    formRoleAccactDrawerRef.value.open()
+}
+function AdddefaultExpandedKeysId(data){
+    for(let i = 0; i < data.length; i++){
+        defaultExpandedKeys.value.push(data[i].id)
+        if(data[i].children){
+            AdddefaultExpandedKeysId(data[i].children)
+        }
+    }
 }
 </script>
 <style>
