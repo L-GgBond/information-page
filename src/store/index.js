@@ -57,7 +57,6 @@ const store = createStore({
         login({ commit }, { username,password,type}){
             return new Promise((resolve,reject)=>{
                 login(username,password,type).then(res=>{
-                    console.log('res',res)
                     setToken(this.state.token_authorization)
                     resolve(res)
                 }).catch(err=>reject(err))
@@ -73,18 +72,17 @@ const store = createStore({
         getinfo({ commit }){
             return new Promise((resolve,reject)=>{
                 getinfo().then(res=>{
-                    commit("SET_MENUS",res.nav)
-                    commit("SET_RULENAMES",res.authoritys)
-                    resolve(res)
+                    commit("SET_MENUS",res.data.nav)
+                    commit("SET_RULENAMES",res.data.authoritys)
+                    resolve(res.data)
                 }).catch(err=>reject(err))
             })
         },
         getUserInfo({ commit }){
             return new Promise((resolve,reject)=>{
                 getUserInfo().then(res=>{
-                    console.log('getUserInfo',res)
-                    commit("SET_USERINFO",res)
-                    resolve(res)
+                    commit("SET_USERINFO",res.data)
+                    resolve(res.data)
                 }).catch(err=>reject(err))
             })
         },

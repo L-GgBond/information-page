@@ -27,14 +27,12 @@ http.interceptors.request.use(function (config) {
 
 // 添加响应拦截器
 http.interceptors.response.use(function (response) {
-  console.log('response',response.data)
-  console.log('response',response.headers.authorization)
   if(response.data.code == 400){
     toast(response.data.msg,"error")
   }
 
   store.commit('SET_Authorization',response.headers.authorization)
-  return response.request.responseType == "blob" ? response.data : response.data.data;
+  return response.request.responseType == "blob" ? response.data : response.data;
 
 }, function (error) {
   const msg = error.response.data.msg || "请求失败"

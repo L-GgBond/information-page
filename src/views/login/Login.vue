@@ -45,7 +45,7 @@ const router = useRouter()
 
 const form = reactive({
   username:"admin",
-  password:"111111"
+  password:"12345678"
 })
 const rules = {
     username:[
@@ -58,7 +58,7 @@ const rules = {
     password:[
         { 
             required: true, 
-            message: '用户名不能为空', 
+            message: '密码不能为空', 
             trigger: 'blur' 
         },
     ],
@@ -83,8 +83,11 @@ const doLogin = function () {
         loading.value = true
 
         store.dispatch("login",form).then(res=>{
-            toast("登录成功")
-            router.push("/")
+            console.log('r',res)
+            if(res.code == 200){
+                toast("登录成功")
+                router.push("/")
+            }
         }).finally(()=>{
             loading.value = false
         })

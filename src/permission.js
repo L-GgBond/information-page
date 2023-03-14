@@ -33,19 +33,16 @@ router.beforeEach(async (to,from,next)=>{
 
     // 如果用户登录了，自动获取用户信息，并存储在vuex当中
     let hasNewRoutes = false
+    if(token){
+        await store.dispatch("getUserInfo")
+    }
     if(token && !hasGetInfo){
-        console.log('hasRoute',hasRoutes.length)
         if(hasRoutes.length != 0){
-            console.log(0)
             next()
         }else{
             let { nav }  = await store.dispatch("getinfo")
-            await store.dispatch("getUserInfo")
-            console.log('menus',nav)
-            console.log('menus-length',nav.length)
             hasGetInfo = true
             store.state.hasRoutes = 2
-            console.log(store.state.hasRoutes)
             // 动态添加路由
             hasNewRoutes = addRoutes(nav)
             next(to.fullPath)

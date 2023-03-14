@@ -23,3 +23,14 @@ export function getinfo(){
 export function getUserInfo(){
     return axios.get("/in/userInfo")
 }
+
+
+//修改密码
+export function updatePassword(data){
+    const config = {
+        headers:{
+            'Content-Type': 'application/json'
+        }
+    };
+    return axios.post("/in/user/updatePass",data,config)
+}

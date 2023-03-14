@@ -40,22 +40,109 @@
             </el-dropdown>
         </div>
     </div>
+    
+    <form-drawer ref="formDrawerRef" title="修改密码" destroyOnClose @submit="onSubmit">
+        <el-form ref="formRef" :rules="rules" :model="form" label-width="80px"  class="formDrawer">
+            <el-form-item prop="currentPass" label="旧密码">
+                <el-input v-model="form.currentPass" placeholder="请输入旧密码"></el-input>
+            </el-form-item>
+            <el-form-item prop="password" label="新密码">
+                <el-input type="password" v-model="form.password" placeholder="请输入密码" show-password></el-input>
+            </el-form-item>
+            <el-form-item prop="checkPass" label="确认密码">
+                <el-input type="password" v-model="form.checkPass" placeholder="请输入确认密码" show-password></el-input>
+            </el-form-item>
+        </el-form>
+    </form-drawer>
+
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref,reactive } from 'vue'
+import FormDrawer from '~/components/FormDrawer.vue'
 import { useFullscreen } from '@vueuse/core'
 import { useLogout } from '~/utils/UseManager'
+import { updatePassword } from '~/api/manager'
+import { toast } from '~/utils/common'
+import store  from '~/store/index.js'
+import { useRouter } from 'vue-router' 
 
+const router = useRouter()
 const { isFullscreen, toggle } = useFullscreen()
 const logo = ref("https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png")
+
+const formDrawerRef = ref(null)
+const form = reactive({
+    currentPass:"",
+    password:"",
+    checkPass:"",
+})
+const validatePass = (rule, value, callback) => {
+    if (value === '') {
+        callback(new Error('请再次输入密码'));
+    } else if (value !== form.password) {
+        callback(new Error('两次输入密码不一致!'));
+    } else {
+        callback();
+    }
+};
+const rules = {
+    currentPass :[
+        { 
+            required: true, 
+            message: '旧密码不能为空', 
+            trigger: 'blur' 
+        },
+    ],
+    password:[
+        { 
+            required: true, 
+            message: '新密码不能为空', 
+            trigger: 'blur' 
+        },
+    ],
+    checkPass:[
+        { 
+            required: true, 
+            validator: validatePass,
+            trigger: 'blur' 
+        },
+    ]
+}
+const formRef = ref(null)
+const loading = ref(false)
+const onSubmit = function () {
+console.log("修改密码")
+formRef.value.validate((valid)=>{
+        console.log(valid)
+        if(!valid){
+            return false
+        }
+        loading.value = true
+        updatePassword(form).then(res =>{
+            console.log(res)
+            if(res.code == 200){
+                toast("修改密码成功")
+                store.dispatch("logout")
+                router.push('/login')
+            }
+           
+        }).finally(()=>{
+            loading.value = false
+        })
+       
+
+    })
+}
 
 const {
     handleLogout
 } = useLogout()
+const showDrawer = ref(false)
 const handleCommand = (e)=>{
     console.log(e)
     switch (e) {
         case "Repassword":
+            formDrawerRef.value.open()
             console.log("修改密码")
             break;
     

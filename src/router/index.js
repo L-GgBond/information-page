@@ -42,12 +42,13 @@ export  const router = createRouter({
 
 // 动态添加路由的方法
 export function addRoutes(nav) {
-  console.log("menuList",nav)
+//   console.log("menuList",nav)
   nav.forEach(item => {
       if (item.component) {
           router.addRoute('admin',{
               path: item.path,
               name: item.name,
+              icon: item.icon,
               component: modules[`../views/${item.component}.vue`],
           });
       }
