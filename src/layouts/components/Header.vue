@@ -33,6 +33,7 @@
                 </div>
                 <template #dropdown>
                 <el-dropdown-menu>
+                    <el-dropdown-item command="individual">个人信息</el-dropdown-item>
                     <el-dropdown-item command="Repassword">修改密码</el-dropdown-item>
                     <el-dropdown-item command="logout">退出登陆</el-dropdown-item>
                 </el-dropdown-menu>
@@ -149,6 +150,10 @@ const handleCommand = (e)=>{
         case "logout":
             console.log("退出登陆")
             handleLogout()
+            break;
+            
+        case "individual":
+            console.log("个人信息")
             break;
     }
 }

@@ -21,7 +21,7 @@ router.beforeEach(async (to,from,next)=>{
 
     // 没有登录，强制跳转回登录页
     if(!token && to.path != "/login"){
-        toast("请先登录","error")
+        store.dispatch("logout")
         return next({ path:"/login" })
     }
 

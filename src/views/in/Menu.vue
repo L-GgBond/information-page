@@ -115,9 +115,9 @@ getMenuListDatas()
 function AdddefaultExpandedKeysId(data){
     for(let i = 0; i < data.length; i++){
         defaultExpandedKeys.value.push(data[i].id)
-        if(data[i].children){
-            AdddefaultExpandedKeysId(data[i].children)
-        }
+        // if(data[i].children){
+        //     AdddefaultExpandedKeysId(data[i].children)
+        // }
     }
 }
 
@@ -145,9 +145,9 @@ const handleCreate = () => {
 }
 
 const menuRules = {
-    parentId: [
-        {required: true, message: '请选择上级菜单', trigger: 'blur'}
-    ],
+    // parentId: [
+    //     {required: true, message: '请选择上级菜单', trigger: 'blur'}
+    // ],
     name: [
         {required: true, message: '请输入名称', trigger: 'blur'}
     ],
@@ -190,6 +190,9 @@ const handleUpdateMenu =(id) =>{
 
 const handleFormMenu =() => {
     ruleMenuFormRef.value.validate((valid) => {
+        if(ruleMenuForm.parentId == ''){
+            ruleMenuForm.parentId = 0
+        }
         if(valid){
             formDrawerRef.value.showLoading()
             const fun = editId.value ? getMenuUpdateData(ruleMenuForm) : getMenuSaveData(ruleMenuForm)

@@ -86,6 +86,7 @@ const doLogin = function () {
             console.log('r',res)
             if(res.code == 200){
                 toast("登录成功")
+                store.dispatch('getinfo')
                 router.push("/")
             }
         }).finally(()=>{

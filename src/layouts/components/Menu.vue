@@ -3,28 +3,33 @@
         <el-menu default-active="1" class="border-0">
             <router-link to="/index">
                 <el-menu-item index="1">
-                    <el-icon><location /></el-icon>
+                    <el-icon><House /></el-icon>
                     <span>首页</span>
                 </el-menu-item>
             </router-link>
         
-
-        <el-sub-menu  :default-active="menu.id" :index="menu.name" v-for="menu in asideMenus">
-          <template #title>
-            <el-icon>
-                <component :is="menu.icon"></component>
-            </el-icon>
-            <span>{{menu.title}}</span>
-          </template>
-          <router-link :to="item.path" v-for="item in menu.children">
-            <el-menu-item :index="item.name">
+        <template v-for="menu in asideMenus">
+            <el-sub-menu  :default-active="menu.id" :index="menu.name" >
+                  <el-icon class="ml-2" v-if="menu.icon" :size="16">
+                        <component :is="menu.icon" />
+                    </el-icon>
                 <template #title>
-                    <el-icon> <component :is="menu.icon"></component></el-icon>
-                    <span>{{item.title}}</span>
+                    <el-icon>
+                        {{ menu.icon }}
+                        <component :is="menu.icon"></component>
+                    </el-icon>
+                    <span>{{menu.title}}</span>
                 </template>
-            </el-menu-item>
-        </router-link>
-        </el-sub-menu>
+                <router-link :to="item.path" v-for="item in menu.children">
+                    <el-menu-item :index="item.name">
+                        <template #title>
+                            <el-icon> <component :is="menu.icon"></component></el-icon>
+                            <span>{{item.title}}</span>
+                        </template>
+                    </el-menu-item>
+                </router-link>
+            </el-sub-menu>
+        </template>    
       </el-menu>
     </div>
 </template>
