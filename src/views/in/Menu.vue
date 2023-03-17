@@ -217,6 +217,8 @@ const handleFormMenu =() => {
 
                     getMenuListDatas()
                 }
+            }).finally(()=>{
+                formRoleDrawerRef.value.hideLoading()
             })
         }
     })

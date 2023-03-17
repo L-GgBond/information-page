@@ -24,19 +24,17 @@
             </el-table-column>
         </el-table>
        
-        <!-- <div class="pages">
+        <div class="pages">
             <el-pagination
-            v-model:current-page="current"
-            v-model:page-size="size"
-            :page-sizes="[10, 20, 30, 40]"
-            :small="small"
-            :disabled="disabled"
-            :background="background"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"/>
-        </div> -->
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :page-sizes="[5, 10, 20, 30]"
+                    :current-page="current"
+                    :page-size="size"
+                    :total="total">
+            </el-pagination>
+        </div>
     </el-card>
 
     <form-drawer ref="formRoleDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleRoleDrawerSubmit" >
@@ -67,21 +65,34 @@ import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { getNoticeListData,getNoticeSaveData,getNoticeUpdateData,getNoticeDeleteData,getNoticeUpdateDataInfo } from '~/api/notice.js'
 import { getMenuListData } from "~/api/menu.js"
+//分页
+const current = ref(1)
+const size = ref(2)
+const total = ref(1)
+
+const handleSizeChange = (val) =>{
+    console.log(`每页 ${val} 条`)
+    size.value = val
+    getNoticeListTableData()
+}
+const handleCurrentChange = (val) =>{
+    current.value = val
+    getNoticeListTableData()
+    console.log(`当前页: ${val}`)
+}
 
 //获取列表
 const tableData = ref([])
 const getNoticeListTableData = ()=>{
-    getNoticeListData().then(res =>{
+    getNoticeListData(size.value,current.value).then(res =>{
         console.log(res)
-        if(res.code == 200){
-            tableData.value = res.data
-        }
+        // if(res.code == 200){
+            tableData.value = res.records
+            total.value = res.total
+        // }
     })
 }
 getNoticeListTableData()
-
-
-
 
 const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")

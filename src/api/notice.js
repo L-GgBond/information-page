@@ -6,10 +6,12 @@ const config = {
     }
 };
 
+// export function getNoticeListData(data){
+//     return axios.get('/notice/list')
+// }
 
-
-export function getNoticeListData(){
-    return axios.get('/notice/list')
+export function getNoticeListData(size,current){
+    return axios.get('/notice/list1?size='+size+"&current="+current)
 }
 
 

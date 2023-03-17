@@ -43,19 +43,18 @@
             </el-table-column>
         </el-table>
        
-        <div class="pages">
+        <!-- <div class="pages">
             <el-pagination
-            v-model:current-page="current"
-            v-model:page-size="size"
-            :page-sizes="[10, 20, 30, 40]"
-            :small="small"
-            :disabled="disabled"
-            :background="background"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"/>
-        </div>
+				@size-change="handleSizeChange"
+				@current-change="handleCurrentChange"
+				layout="total, sizes, prev, pager, next, jumper"
+				:page-sizes="[10, 20, 50, 100]"
+				:current-page="current"
+				:page-size="size"
+				:total="total">
+		</el-pagination>
+
+        </div> -->
     </el-card>
 
     <form-drawer ref="formRoleDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleRoleDrawerSubmit" >
@@ -101,7 +100,7 @@ import { getUserListData,getUserSaveData,getUserUpdateData,getUserDeleteData,get
 import { getMenuListData } from "~/api/menu.js"
 //getRoleListData
 const current = ref(1)
-const size = ref(10)
+const size = ref(5)
 const total = ref(0)
 const handleSizeChange = (val) => {
   console.log(`${val} items per page`)

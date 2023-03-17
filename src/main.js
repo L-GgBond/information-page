@@ -16,6 +16,9 @@ const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
+
+import locale from 'element-plus/dist/locale/zh-cn.mjs'
+app.use(ElementPlus, {locale})
 app.use(store)
 app.use(createPinia())
 app.use(router)
