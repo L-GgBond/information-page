@@ -28,7 +28,7 @@
                             icon-color="#626AEF"
                             title="确定要删除吗" @confirm="handleDelete(data.id)">
                             <template #reference>
-                                <el-button class="ml-8" text type="primary"  size="small">删除</el-button>
+                                <el-button class="ml-8" text type="danger"  size="small">删除</el-button>
                             </template>
                         </el-popconfirm>
                         
@@ -112,6 +112,8 @@ function getMenuListDatas(){
 }
 getMenuListDatas()
 
+//刷新
+const getData =() => { getMenuListDatas() }
 function AdddefaultExpandedKeysId(data){
     for(let i = 0; i < data.length; i++){
         defaultExpandedKeys.value.push(data[i].id)
@@ -121,7 +123,7 @@ function AdddefaultExpandedKeysId(data){
     }
 }
 
-const ruleMenuFormRef = ref(null)
+const ruleMenuFormRef = ref()
 const formDrawerRef = ref(null)
 const ruleMenuForm = reactive({
     'parentId':'',
@@ -139,8 +141,18 @@ const drawerTitle = computed(()=> editId.value ? "修改" : "新增")
 const handleCreate = () => {
     console.log("新增")
     editId.value  = 0
-    ruleMenuForm.value  = ''
+    ruleMenuForm.parentId = ""
+    ruleMenuForm.name = ""
+    ruleMenuForm.perms = ""
+    ruleMenuForm.icon = ""
+    ruleMenuForm.path = ""
+    ruleMenuForm.component = ""
+    ruleMenuForm.type = ""
+    ruleMenuForm.orderNum = ""
+    ruleMenuForm.statu = ""
+ 
     formDrawerRef.value.open()
+    ruleMenuFormRef.value.resetFields();
    
 }
 

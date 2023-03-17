@@ -16,12 +16,12 @@
                 </template>
             </el-table-column>
             <el-table-column prop="email" label="邮箱" />
-            <el-table-column label="身份">
+            <!-- <el-table-column label="身份">
                 <template #default="scope">
                     <el-tag class="mt-1" size="small" v-if="scope.row.types == 'teacher'" type="default">{{ scope.row.types }}</el-tag>
                     <el-tag class="mt-1" size="small" v-else type="success">{{ scope.row.types }}</el-tag>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column prop="statu" label="状态">
                 <template #default="scope">
                     <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">正常</el-tag>
@@ -30,13 +30,13 @@
             </el-table-column>
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
-                <el-button type="primary" size="small" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
+                <el-button type="warning" size="small" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
                 <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
 
                 <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
-                        <el-button text type="primary" size="small">删除</el-button>
+                        <el-button text type="danger" size="small">删除</el-button>
                     </template>
                 </el-popconfirm>
                 </template>
@@ -109,8 +109,10 @@ const handleSizeChange = (val) => {
 const handleCurrentChange = (val) => {
   console.log(`current page: ${val}`)
 }
+const loading = ref(false)
 const tableData = ref([])
 const getUserListTableData = ()=>{
+    loading.value = true
     getUserListData().then(res =>{
         console.log(res)
         if(res.code == 200){
@@ -119,10 +121,13 @@ const getUserListTableData = ()=>{
             current.value = res.data.current
             total.value = res.data.total
         }
+    }).finally(()=>{
+        loading.value = false
     })
 }
 getUserListTableData()
-
+//刷新
+const getData =() => { getUserListTableData() }
 const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
 const formRoleDrawerRef = ref(null)

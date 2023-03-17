@@ -1,6 +1,6 @@
 <template>
     <div class="menu"  :style="{width:$store.state.asideWidth}">
-        <el-menu default-active="1" class="border-0">
+        <el-menu default-active="1" class="border-0" unique-opened="true">
             <router-link to="/index">
                 <el-menu-item index="1">
                     <el-icon><House /></el-icon>
@@ -8,14 +8,10 @@
                 </el-menu-item>
             </router-link>
         
-        <template v-for="menu in asideMenus">
+        <template v-for="menu in asideMenus" :key="menu.id">
             <el-sub-menu  :default-active="menu.id" :index="menu.name" >
-                  <el-icon class="ml-2" v-if="menu.icon" :size="16">
-                        <component :is="menu.icon" />
-                    </el-icon>
                 <template #title>
                     <el-icon>
-                        {{ menu.icon }}
                         <component :is="menu.icon"></component>
                     </el-icon>
                     <span>{{menu.title}}</span>
@@ -23,7 +19,7 @@
                 <router-link :to="item.path" v-for="item in menu.children">
                     <el-menu-item :index="item.name">
                         <template #title>
-                            <el-icon> <component :is="menu.icon"></component></el-icon>
+                            <el-icon> <component :is="item.icon"></component></el-icon>
                             <span>{{item.title}}</span>
                         </template>
                     </el-menu-item>

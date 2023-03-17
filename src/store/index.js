@@ -36,7 +36,7 @@ const store = createStore({
         },
         // 展开/缩起侧边
         handleAsideWidth(state){
-            state.asideWidth = state.asideWidth == "250px" ? "64px" : "250px"
+            state.asideWidth = state.asideWidth == "250px" ? "50px" : "250px"
         },
         SET_ROUTER(state, nav) {
             state.hasRoutes = nav

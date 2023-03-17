@@ -6,21 +6,21 @@ const config = {
 };
 
 //登陆
-// export function login(username,password,types){
-//     return axios.post("/admin/login",{
-//         username,
-//         password,
-//         types
-//     },config)
-// }
-
 export function login(username,password,types){
-    return axios.post("/login",{
+    return axios.post("/dologin",{
         username,
         password,
         types
-    })
+    },config)
 }
+
+// export function login(username,password,types){
+//     return axios.post("/login",{
+//         username,
+//         password,
+//         types
+//     })
+// }
 
 
 //退出登陆
