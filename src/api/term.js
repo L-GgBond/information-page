@@ -8,24 +8,24 @@ const config = {
 
 
 export function RequestListData(current, size){
-    return axios.get('/class/list?current='+ current +"&size=" + size)
+    return axios.get('/term/list?current='+ current +"&size=" + size)
 }
 
 
 export function RequestSaveData(data){
-    return axios.post('/class/save', data)
+    return axios.post('/term/save', data)
 }
 
 export function RequestInfoData(id){
-    return axios.get('/class/info/' + id)
+    return axios.get('/term/info/' + id)
 }
 
 
 export function RequestUpdateData(data){
-    return axios.post('/class/update', data)
+    return axios.post('/term/update', data)
 }
 
 
 export function RequestDeleteData(id){
-    return axios.post('/class/delete/'+ id, {}, config)
+    return axios.post('/term/delete/'+ id, {}, config)
 }

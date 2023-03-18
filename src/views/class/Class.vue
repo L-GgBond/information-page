@@ -3,21 +3,9 @@
         <ListHeader @create="handleCreate" @refresh="getData"/>
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column prop="id" label="#" />
-            <el-table-column  prop="username" label="账号" />
-            <el-table-column label="头像">
-                <template #default="scope">
-                    <el-avatar :size="50" :src="scope.row.avatar" />
-                </template>
-            </el-table-column>
-            <el-table-column prop="nickname" label="姓名" />
-            <el-table-column  label="性别">
-                <template #default="scope">
-                    <el-text v-if="scope.row.sex == 1">男</el-text>
-                    <el-text v-else>女</el-text>
-                </template>
-            </el-table-column>
-            <el-table-column prop="class_name" label="班级" />
-            <el-table-column prop="age" label="年纪" />
+            <el-table-column  prop="classname" label="班级名称" />
+            <el-table-column  prop="classdesc" label="描述" />
+            <el-table-column prop="createtime" label="更新时间" />
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
                 <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
@@ -47,57 +35,17 @@
     <form-drawer ref="formDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleDrawerSubmit" >
         <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
-            <el-form-item label="学号" prop="username">
-                <el-input v-model="formModel.username" />
+            <el-form-item label="班级名称" prop="classname">
+                <el-input v-model="formModel.classname" />
             </el-form-item>
-            <el-form-item label="姓名" prop="nickname">
-                <el-input v-model="formModel.nickname" />
-            </el-form-item>
-            <el-form-item label="性别" prop="sex">
-                <el-select v-model="formModel.sex" placeholder="请选择性别">
-                        <el-option label="男" value="1" />
-                        <el-option label="女" value="0" />
-                </el-select>
-            </el-form-item>
-            <el-form-item label="年龄" prop="age">
-                <el-input type="number" v-model="formModel.age" />
-            </el-form-item>
-            <el-form-item label="民族" prop="nation">
-                <el-input v-model="formModel.nation" />
-            </el-form-item>
-            <el-form-item label="住址" prop="city">
-                <el-input v-model="formModel.city" />
-            </el-form-item>
-            <el-form-item label="联系方式" prop="email">
-                <el-input v-model="formModel.email" />
-            </el-form-item>
-            <el-form-item label="班级" prop="class_id">
-                <el-select v-model="formModel.class_id" placeholder="请选择班级">
-                    <template>
-                        <el-option :label="1" :value="1" />
-                        <template>
-                             <el-option :label="12" :value="12">
-                                    <span class="ml-4"> </span>
-                             </el-option>
-                        </template>
-                    </template>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="学年时间" prop="duration">
-                <el-input type="number" v-model="formModel.duration" />
-            </el-form-item>
-            <el-form-item label="政治面貌" prop="politics">
-                <el-input v-model="formModel.politics" />
-            </el-form-item>
-            <el-form-item label="邮箱" prop="email">
-                <el-input v-model="formModel.email" />
+            <el-form-item label="描述" prop="classdesc">
+                <el-input v-model="formModel.classdesc" type="textarea" />
             </el-form-item>
         </el-form>
     </form-drawer>
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
-// import   UploadFile  from 'element-plus'
 import store from '~/store'
 import { computed } from "@vue/reactivity";
 import { toast } from '~/utils/common'
@@ -118,16 +66,19 @@ const handleCurrentChange = (val) =>{
     getListTableData()
     console.log(`当前页: ${val}`)
 }
+const getData = () =>{
+    getListTableData()
+}
 
 //获取列表
 const tableData = ref([])
 const getListTableData = ()=>{
-    RequestListData().then(res =>{
+    RequestListData(current.value, size.value).then(res =>{
         console.log(res)
-        if(res.code == 200){
-            tableData.value = res.data.records
-            total.value = res.data.total
-        }
+        // if(res.code == 200){
+            tableData.value = res.records
+            total.value = res.total
+        // }
     })
 }
 getListTableData()
@@ -141,42 +92,16 @@ const formRef = ref(null)
 const handleCreate = ()=> { ResetFields(); ID.value = 0;formDrawerRef.value.open() }
 const formModel = reactive({
     "id":'',
-    "username":'',
-    "nickname":'',
-    "sex":'',
-    "nation":'',
-    "city":'',
-    "class_id":'',
-    "class_name":'',
-    "duration":'',
-    "politics":'',
-    "email":'',
-    "avatar":'',
-    "age":'',
-    "email":'',
+    "classname":'',
+    "classdesc":'',
 })
 const formRules = {
-    username: [ { required: true, message: '请输入账号', trigger: 'blur' } ],
-    nickname: [ { required: true, message: '请输入姓名', trigger: 'blur' } ],
-    sex: [ { required: true, message: '请输入性别', trigger: 'blur' } ],
-    class_id: [ { required: true, message: '请选择班级', trigger: 'blur' } ],
-    age: [ { required: true, message: '请输入年龄', trigger: 'blur' } ],
+    classname: [ { required: true, message: '请输入班级名称', trigger: 'blur' } ],
 }
 const ResetFields = () =>{
     formModel.id = ""
-    formModel.username = ""
-    formModel.nickname = ""
-    formModel.sex = ""
-    formModel.nation = ""
-    formModel.city = ""
-    formModel.class_id = ""
-    formModel.class_name = ""
-    formModel.duration = ""
-    formModel.politics = ""
-    formModel.email = ""
-    formModel.avatar = ""
-    formModel.age = ""
-    formModel.email = ""
+    formModel.classname = ""
+    formModel.classdesc = ""
 }
 
 //详情
@@ -186,20 +111,9 @@ const handleEdit = (row) => {
     RequestInfoData(row.id).then(res=>{
         if(res.code == 200){
             formDrawerRef.value.open()
-            formModel.id = ""
-            formModel.username = ""
-            formModel.nickname = ""
-            formModel.sex = ""
-            formModel.nation = ""
-            formModel.city = ""
-            formModel.class_id = ""
-            formModel.class_name = ""
-            formModel.duration = ""
-            formModel.politics = ""
-            formModel.email = ""
-            formModel.avatar = ""
-            formModel.age = ""
-            formModel.email = ""
+            formModel.id = res.data.id
+            formModel.classname = res.data.classname
+            formModel.classdesc = res.data.classdesc
         }
     })
     
@@ -213,6 +127,7 @@ const handleDrawerSubmit = () => {
             fun.then(res=>{
                 console.log(res)
                 if(res.code == 200){
+                    toast("操作成功")
                     ResetFields()
                     formDrawerRef.value.close()
                     getListTableData()

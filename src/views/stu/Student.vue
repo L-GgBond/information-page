@@ -83,13 +83,8 @@
             </el-form-item>
             <el-form-item label="班级" prop="class_id">
                 <el-select v-model="formModel.class_id" placeholder="请选择班级">
-                    <template>
-                        <el-option :label="1" :value="1" />
-                        <template>
-                             <el-option :label="12" :value="12">
-                                    <span class="ml-4"> </span>
-                             </el-option>
-                        </template>
+                    <template v-for="(item,index) in classData">
+                        <el-option :label="item.classname" :value="item.classname" />
                     </template>
                 </el-select>
             </el-form-item>
@@ -113,7 +108,7 @@ import { computed } from "@vue/reactivity";
 import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
-import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData } from '~/api/student.js'
+import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData, RequestClassListData } from '~/api/student.js'
 
 const current = ref(1)
 const size = ref(5)
@@ -140,7 +135,9 @@ const onSearchSubmit = ()=>{
     getListTableData()
     searchModel.searchNickname = ""
 }
-
+const getData = () =>{
+    getListTableData()
+}
 //获取列表
 const tableData = ref([])
 const getListTableData = ()=>{
@@ -154,13 +151,23 @@ const getListTableData = ()=>{
 }
 getListTableData()
 
-
+const classData = ref([])
 
 const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
 const formDrawerRef = ref(null)
 const formRef = ref(null)
-const handleCreate = ()=> { ResetFields(); ID.value = 0;formDrawerRef.value.open() }
+const handleCreate = ()=> {
+     ResetFields(); 
+     ID.value = 0;
+     formDrawerRef.value.open() 
+     RequestClassListData().then(res=>{
+        console.log(res)
+        if(res.code == 200){
+            classData.value = res.data
+        }
+     })
+}
 const formModel = reactive({
     "id":'',
     "username":'',
@@ -235,6 +242,7 @@ const handleDrawerSubmit = () => {
             fun.then(res=>{
                 console.log(res)
                 if(res.code == 200){
+                    toast("操作成功")
                     ResetFields()
                     formDrawerRef.value.close()
                     getListTableData()
