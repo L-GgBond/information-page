@@ -153,7 +153,7 @@ const handleCreate = () => {
  
     formDrawerRef.value.open()
     ruleMenuFormRef.value.resetFields();
-   
+    formRoleDrawerRef.value.hideLoading()
 }
 
 const menuRules = {
@@ -214,7 +214,6 @@ const handleFormMenu =() => {
                     toast("操作成功")
                     formDrawerRef.value.hideLoading()
                     formDrawerRef.value.close()
-
                     getMenuListDatas()
                 }
             }).finally(()=>{

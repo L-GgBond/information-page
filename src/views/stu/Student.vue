@@ -1,19 +1,36 @@
 <template>
     <el-card shadow="never" class="border-0">
-        <ListHeader @create="handleRoleCreate" @refresh="getData"/>
+        <ListHeader @create="handleCreate" @refresh="getData"/>
+        <el-form ref="searchRef" :model="searchModel" :rules="searchRules" :inline="true"  class="demo-form-inline">
+            <el-form-item label="姓名" prop="searchNickname">
+                <el-input v-model="searchModel.searchNickname" placeholder="请输入姓名"  />
+            </el-form-item>
+
+            <el-form-item>
+                <el-button type="success"  @click="onSearchSubmit">搜索</el-button>
+            </el-form-item>
+        </el-form>
+
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column prop="id" label="#" />
-            <el-table-column prop="title" label="标题" />
-            <el-table-column label="附件">
+            <el-table-column  prop="username" label="账号" />
+            <el-table-column label="头像">
                 <template #default="scope">
                     <el-avatar :size="50" :src="scope.row.avatar" />
                 </template>
             </el-table-column>
-            <el-table-column prop="content" label="内容" />
-            <el-table-column prop="create_time" label="发布时间" />
+            <el-table-column prop="nickname" label="姓名" />
+            <el-table-column  label="性别">
+                <template #default="scope">
+                    <el-text v-if="scope.row.sex == 1">男</el-text>
+                    <el-text v-else>女</el-text>
+                </template>
+            </el-table-column>
+            <el-table-column prop="class_name" label="班级" />
+            <el-table-column prop="age" label="年纪" />
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
-                <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
+                <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
                 <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
@@ -29,7 +46,7 @@
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
                     layout="total, sizes, prev, pager, next, jumper"
-                    :page-sizes="[5, 10, 20, 30]"
+                    :page-sizes="[5, 10, 15, 20, 25, 30]"
                     :current-page="current"
                     :page-size="size"
                     :total="total">
@@ -37,14 +54,53 @@
         </div>
     </el-card>
 
-    <form-drawer ref="formRoleDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleRoleDrawerSubmit" >
-        <el-form ref="ruleRoleFormRef" :model="ruleRoleForm" :rules="roleRules" label-width="120px" 
+    <form-drawer ref="formDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleDrawerSubmit" >
+        <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
             <el-form-item label="学号" prop="username">
-                <el-input v-model="ruleRoleForm.username" />
+                <el-input v-model="formModel.username" />
             </el-form-item>
             <el-form-item label="姓名" prop="nickname">
-                <el-input v-model="ruleRoleForm.content" />
+                <el-input v-model="formModel.nickname" />
+            </el-form-item>
+            <el-form-item label="性别" prop="sex">
+                <el-select v-model="formModel.sex" placeholder="请选择性别">
+                        <el-option label="男" value="1" />
+                        <el-option label="女" value="0" />
+                </el-select>
+            </el-form-item>
+            <el-form-item label="年龄" prop="age">
+                <el-input type="number" v-model="formModel.age" />
+            </el-form-item>
+            <el-form-item label="民族" prop="nation">
+                <el-input v-model="formModel.nation" />
+            </el-form-item>
+            <el-form-item label="住址" prop="city">
+                <el-input v-model="formModel.city" />
+            </el-form-item>
+            <el-form-item label="联系方式" prop="email">
+                <el-input v-model="formModel.email" />
+            </el-form-item>
+            <el-form-item label="班级" prop="class_id">
+                <el-select v-model="formModel.class_id" placeholder="请选择班级">
+                    <template>
+                        <el-option :label="1" :value="1" />
+                        <template>
+                             <el-option :label="12" :value="12">
+                                    <span class="ml-4"> </span>
+                             </el-option>
+                        </template>
+                    </template>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="学年时间" prop="duration">
+                <el-input type="number" v-model="formModel.duration" />
+            </el-form-item>
+            <el-form-item label="政治面貌" prop="politics">
+                <el-input v-model="formModel.politics" />
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+                <el-input v-model="formModel.email" />
             </el-form-item>
         </el-form>
     </form-drawer>
@@ -52,115 +108,150 @@
 <script setup>
 import { ref,reactive } from 'vue'
 // import   UploadFile  from 'element-plus'
-import {
-  Check,
-  Delete,
-  Edit,
-  Message,
-  Search,
-  Star,
-} from '@element-plus/icons-vue'
+import store from '~/store'
 import { computed } from "@vue/reactivity";
 import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
-import { getNoticeListData,getNoticeSaveData,getNoticeUpdateData,getNoticeDeleteData,getNoticeUpdateDataInfo } from '~/api/notice.js'
-import { getMenuListData } from "~/api/menu.js"
+import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData } from '~/api/student.js'
 
-//分页
 const current = ref(1)
-const size = ref(2)
+const size = ref(5)
 const total = ref(1)
-
 const handleSizeChange = (val) =>{
     console.log(`每页 ${val} 条`)
     size.value = val
-    getNoticeListTableData()
+    getListTableData()
 }
 const handleCurrentChange = (val) =>{
     current.value = val
-    getNoticeListTableData()
+    getListTableData()
     console.log(`当前页: ${val}`)
+}
+
+const searchRef = ref(null)
+const searchModel = reactive({
+    "searchNickname":""
+})
+const searchRules = {
+    searchNickname:[ { required: true, message: '请输入姓名', trigger: 'blur' } ]
+}
+const onSearchSubmit = ()=>{
+    getListTableData()
+    searchModel.searchNickname = ""
 }
 
 //获取列表
 const tableData = ref([])
-const getNoticeListTableData = ()=>{
-    getNoticeListData(size.value,current.value).then(res =>{
+const getListTableData = ()=>{
+    RequestListData(current.value, size.value, "student", searchModel.searchNickname).then(res =>{
         console.log(res)
-        // if(res.code == 200){
-            tableData.value = res.records
-            total.value = res.total
-        // }
+        if(res.code == 200){
+            tableData.value = res.data.records
+            total.value = res.data.total
+        }
     })
 }
-getNoticeListTableData()
+getListTableData()
+
+
 
 const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
-const formRoleDrawerRef = ref(null)
-const ruleRoleFormRef = ref(null)
-const handleRoleCreate = ()=> { ResetFields(); ID.value = 0;formRoleDrawerRef.value.open() }
-const ruleRoleForm = reactive({
+const formDrawerRef = ref(null)
+const formRef = ref(null)
+const handleCreate = ()=> { ResetFields(); ID.value = 0;formDrawerRef.value.open() }
+const formModel = reactive({
     "id":'',
-    "title":'',
-    "content":'',
+    "username":'',
+    "nickname":'',
+    "sex":'',
+    "nation":'',
+    "city":'',
+    "class_id":'',
+    "class_name":'',
+    "duration":'',
+    "politics":'',
+    "email":'',
+    "avatar":'',
+    "age":'',
+    "email":'',
 })
-const roleRules = {
-    title: [
-        {required: true, message: '请输入标题', trigger: 'blur'}
-    ],
-    content: [
-        {required: true, message: '请输入内容', trigger: 'blur'}
-    ]
+const formRules = {
+    username: [ { required: true, message: '请输入账号', trigger: 'blur' } ],
+    nickname: [ { required: true, message: '请输入姓名', trigger: 'blur' } ],
+    sex: [ { required: true, message: '请输入性别', trigger: 'blur' } ],
+    class_id: [ { required: true, message: '请选择班级', trigger: 'blur' } ],
+    age: [ { required: true, message: '请输入年龄', trigger: 'blur' } ],
 }
 const ResetFields = () =>{
-    ruleRoleForm.id = ""
-    ruleRoleForm.title = ""
-    ruleRoleForm.content = ""
+    formModel.id = ""
+    formModel.username = ""
+    formModel.nickname = ""
+    formModel.sex = ""
+    formModel.nation = ""
+    formModel.city = ""
+    formModel.class_id = ""
+    formModel.class_name = ""
+    formModel.duration = ""
+    formModel.politics = ""
+    formModel.email = ""
+    formModel.avatar = ""
+    formModel.age = ""
+    formModel.email = ""
 }
 
 //详情
-const handleRoleEdit = (row) => {
+const handleEdit = (row) => {
     console.log(row.id)
     ID.value = row.id
-    getNoticeUpdateDataInfo(row.id).then(res=>{
+    RequestInfoData(row.id).then(res=>{
         if(res.code == 200){
-            formRoleDrawerRef.value.open()
-            ruleRoleForm.id = row.id
-            ruleRoleForm.title = row.title
-            ruleRoleForm.content = row.content
+            formDrawerRef.value.open()
+            formModel.id = ""
+            formModel.username = ""
+            formModel.nickname = ""
+            formModel.sex = ""
+            formModel.nation = ""
+            formModel.city = ""
+            formModel.class_id = ""
+            formModel.class_name = ""
+            formModel.duration = ""
+            formModel.politics = ""
+            formModel.email = ""
+            formModel.avatar = ""
+            formModel.age = ""
+            formModel.email = ""
         }
     })
     
 }
-const handleRoleDrawerSubmit = () => {
-    ruleRoleFormRef.value.validate((valid) => {
+const handleDrawerSubmit = () => {
+    formRef.value.validate((valid) => {
         console.log(valid)
         if(valid){
-            formRoleDrawerRef.value.showLoading()
-            const fun = ID.value ? getNoticeUpdateData(ruleRoleForm) : getNoticeSaveData(ruleRoleForm)
+            formDrawerRef.value.showLoading()
+            const fun = ID.value ? RequestUpdateData(formModel) : RequestSaveData(formModel)
             fun.then(res=>{
                 console.log(res)
                 if(res.code == 200){
                     ResetFields()
-                    formRoleDrawerRef.value.close()
-                    getNoticeListTableData()
+                    formDrawerRef.value.close()
+                    getListTableData()
                 }
             }).finally(() => {
-                formRoleDrawerRef.value.hideLoading()
+                formDrawerRef.value.hideLoading()
             })
         }
     })
 }
 
-//删除
 const handleDelete =(id) =>{
     console.log(id)
-    getNoticeDeleteData(id).then(res=>{
+    RequestDeleteData(id).then(res=>{
         if(res.code == 200){
             toast("删除成功")
-            getNoticeListTableData()
+            getListTableData()
         }
     })
 }
