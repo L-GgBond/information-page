@@ -7,8 +7,8 @@ const config = {
 };
 
 
-export function getUserListData(){
-    return axios.get('/in/user/list')
+export function getUserListData(current,size,types){
+    return axios.get('/in/user/list?current='+current+"&size="+size+"&types="+types)
 }
 
 

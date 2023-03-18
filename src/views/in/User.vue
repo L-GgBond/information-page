@@ -16,12 +16,6 @@
                 </template>
             </el-table-column>
             <el-table-column prop="email" label="邮箱" />
-            <!-- <el-table-column label="身份">
-                <template #default="scope">
-                    <el-tag class="mt-1" size="small" v-if="scope.row.types == 'teacher'" type="default">{{ scope.row.types }}</el-tag>
-                    <el-tag class="mt-1" size="small" v-else type="success">{{ scope.row.types }}</el-tag>
-                </template>
-            </el-table-column> -->
             <el-table-column prop="statu" label="状态">
                 <template #default="scope">
                     <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">正常</el-tag>
@@ -32,7 +26,6 @@
                 <template #default="scope">
                 <el-button type="warning" size="small" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
                 <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
-
                 <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
@@ -43,18 +36,18 @@
             </el-table-column>
         </el-table>
        
-        <!-- <div class="pages">
-            <el-pagination
-				@size-change="handleSizeChange"
-				@current-change="handleCurrentChange"
-				layout="total, sizes, prev, pager, next, jumper"
-				:page-sizes="[10, 20, 50, 100]"
-				:current-page="current"
-				:page-size="size"
-				:total="total">
-		</el-pagination>
 
-        </div> -->
+        <div class="pages">
+            <el-pagination
+                    @size-change="handleSizeChange"
+                    @current-change="handleCurrentChange"
+                    layout="total, sizes, prev, pager, next, jumper"
+                    :page-sizes="[5, 10, 20, 30]"
+                    :current-page="current"
+                    :page-size="size"
+                    :total="total">
+            </el-pagination>
+        </div>
     </el-card>
 
     <form-drawer ref="formRoleDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleRoleDrawerSubmit" >
@@ -94,25 +87,32 @@
 import { ref,reactive } from 'vue'
 import { computed } from "@vue/reactivity";
 import { toast } from '~/utils/common'
+import store from '~/store'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { getUserListData,getUserSaveData,getUserUpdateData,getUserDeleteData,getUserUpdateDataInfo } from '~/api/user.js'
 import { getMenuListData } from "~/api/menu.js"
-//getRoleListData
+//分页
 const current = ref(1)
 const size = ref(5)
-const total = ref(0)
-const handleSizeChange = (val) => {
-  console.log(`${val} items per page`)
+const total = ref(1)
+console.log(store.state.user.types)
+const handleSizeChange = (val) =>{
+    console.log(`每页 ${val} 条`)
+    size.value = val
+    getUserListTableData()
 }
-const handleCurrentChange = (val) => {
-  console.log(`current page: ${val}`)
+const handleCurrentChange = (val) =>{
+    current.value = val
+    getUserListTableData()
+    console.log(`当前页: ${val}`)
 }
+
 const loading = ref(false)
 const tableData = ref([])
 const getUserListTableData = ()=>{
     loading.value = true
-    getUserListData().then(res =>{
+    getUserListData(current.value,size.value,store.state.user.types).then(res =>{
         console.log(res)
         if(res.code == 200){
             tableData.value = res.data.records
