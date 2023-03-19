@@ -1,5 +1,5 @@
 <template>
     <div>
-        dict
+        dict 
     </div>
 </template>

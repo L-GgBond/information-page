@@ -12,7 +12,6 @@ export function getMenuSaveData(data){
     return axios.post('/in/menu/save',data,config)
 }
 
-
 export function getMenuUpdateDataInfo(data){
     return axios.get('/in/menu/info/'+data)
 }

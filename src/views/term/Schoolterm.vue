@@ -5,7 +5,11 @@
             <el-table-column prop="id" label="#" />
             <el-table-column  prop="termname" label="学期" />
             <el-table-column  prop="termdesc" label="描述" />
-            <el-table-column prop="createtime" label="更新时间" />
+            <el-table-column prop="createtime" label="更新时间">
+                <template #default="scope">
+                {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
                 <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
@@ -18,7 +22,7 @@
                 </template>
             </el-table-column>
         </el-table>
-       
+        
         <div class="pages">
             <el-pagination
                     @size-change="handleSizeChange"

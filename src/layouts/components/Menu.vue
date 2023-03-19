@@ -8,24 +8,24 @@
                 </el-menu-item>
             </router-link>
         
-        <template v-for="menu in asideMenus" :key="menu.id">
-            <el-sub-menu  :default-active="menu.id" :index="menu.name" >
-                <template #title>
-                    <el-icon>
-                        <component :is="menu.icon"></component>
-                    </el-icon>
-                    <span>{{menu.title}}</span>
-                </template>
-                <router-link :to="item.path" v-for="item in menu.children">
-                    <el-menu-item :index="item.name">
-                        <template #title>
-                            <el-icon> <component :is="item.icon"></component></el-icon>
-                            <span>{{item.title}}</span>
-                        </template>
-                    </el-menu-item>
-                </router-link>
-            </el-sub-menu>
-        </template>    
+            <template v-for="menu in asideMenus" :key="menu.id">
+                <el-sub-menu  :default-active="menu.id" :index="menu.name" >
+                    <template #title>
+                        <el-icon>
+                            <component :is="menu.icon"></component>
+                        </el-icon>
+                        <span>{{menu.title}}</span>
+                    </template>
+                    <router-link :to="item.path" v-for="item in menu.children">
+                        <el-menu-item :index="item.name">
+                            <template #title>
+                                <el-icon> <component :is="item.icon"></component></el-icon>
+                                <span>{{item.title}}</span>
+                            </template>
+                        </el-menu-item>
+                    </router-link>
+                </el-sub-menu>
+            </template>    
       </el-menu>
     </div>
 </template>
@@ -38,21 +38,15 @@ const router = useRouter()
 const route = useRoute()
 const store = useStore()
 console.log(store.state.asideWidth)
-
-// 默认选中
 const defaultActive = ref(route.path)
 
-// 监听路由变化
 onBeforeRouteUpdate((to,from)=>{
     defaultActive.value = to.path
 })
 
 // 是否折叠
 const isCollapse = computed(()=> !(store.state.asideWidth == '250px'))
-
 const asideMenus = computed(()=> store.state.menus)
-
-
 const handleSelect = (e) => {
     console.log(e)
     router.push(e)

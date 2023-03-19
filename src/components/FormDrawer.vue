@@ -3,7 +3,6 @@
         <div class="formDrawer">
             <div class="body">
                 <slot></slot>
-
             </div>
             <div class="actions">
                 <el-button type="primary" :loading="loading" @click="submit">{{ confirmText }}</el-button>

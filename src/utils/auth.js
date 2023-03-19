@@ -1,7 +1,6 @@
 import { useCookies } from '@vueuse/integrations/useCookies'
 const TokenKey = "token"
 const cookie = useCookies()
-
 // 获取token
 export function getToken(){
     return cookie.get(TokenKey)

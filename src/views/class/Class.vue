@@ -5,7 +5,11 @@
             <el-table-column prop="id" label="#" />
             <el-table-column  prop="classname" label="班级名称" />
             <el-table-column  prop="classdesc" label="描述" />
-            <el-table-column prop="createtime" label="更新时间" />
+            <el-table-column prop="createtime" label="更新时间">
+                <template #default="scope">
+                {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
                 <el-button type="primary" size="small" text @click="handleEdit(scope.row)">修改</el-button>
@@ -70,7 +74,6 @@ const getData = () =>{
     getListTableData()
 }
 
-//获取列表
 const tableData = ref([])
 const getListTableData = ()=>{
     RequestListData(current.value, size.value).then(res =>{
@@ -82,8 +85,6 @@ const getListTableData = ()=>{
     })
 }
 getListTableData()
-
-
 
 const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")

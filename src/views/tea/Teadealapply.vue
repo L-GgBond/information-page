@@ -1,5 +1,5 @@
 <template>
     <div>
-        tea
+        tea 
     </div>
 </template>

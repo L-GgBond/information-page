@@ -2,10 +2,6 @@
 </script>
 
 <template>
-  112323
+    index
   <router-view></router-view>
 </template>
-
-<script setup>
-
-</script>

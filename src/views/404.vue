@@ -5,7 +5,9 @@
             title="404"
             sub-title="404 Not Found">
             <template #extra>
-                <el-button type="primary" @click="$router.push('/')">回到首页</el-button>
+                <el-button type="primary" @click="$router.push('/')">
+                    回到首页
+                </el-button>
             </template>
         </el-result>
     </div>

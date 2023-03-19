@@ -4,20 +4,14 @@ import { setToken,removeToken } from '~/utils/auth'
 const store = createStore({
     state() {
         return {
-            // 用户信息
             user: {},
             token_authorization:null,
-            // 侧边宽度
             asideWidth:"250px",
-
             menus:[],
             ruleNames:[],
-
             menuList: [],
             permList: [],
-
             hasRoutes: [],
-
             editableTabsValue: 'Index',
             editableTabs: [{
                 title: '首页',
@@ -26,7 +20,6 @@ const store = createStore({
         }
     },
     mutations: {
-        //authorization
         SET_Authorization(state,authorization){
             state.token_authorization = authorization
         },

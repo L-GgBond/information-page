@@ -21,7 +21,6 @@ import Header from './components/Header.vue'
 import Menu  from './components/Menu.vue'
 import tagList from './components/TagList.vue'
 </script>
-
 <style>
 .el-aside{
     transition: all 0.2s;

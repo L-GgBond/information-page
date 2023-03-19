@@ -1,6 +1,5 @@
 <template>
     <el-card shadow="never" class="border-0">
-        <!-- 新增|刷新 -->
         <ListHeader @create="handleRoleCreate" @refresh="getData"/>
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column prop="id" label="#" />
@@ -35,7 +34,6 @@
                 </template>
             </el-table-column>
         </el-table>
-       
 
         <div class="pages">
             <el-pagination
@@ -71,7 +69,6 @@
         </el-form>
     </form-drawer>
 
-
     <form-drawer ref="formRoleAccactDrawerRef" title="分配权限" size="45%" destroyOnClose @submit="handleRoleAccactDrawerSubmit" >
         <el-form ref="ruleRoleAccactFormRef">
             <el-tree
@@ -81,7 +78,6 @@
                 :props="{ label: 'name', children: 'children' }" :default-expanded-keys="defaultExpandedKeys"/>
         </el-form>
     </form-drawer>
-
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
@@ -92,7 +88,7 @@ import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { getUserListData,getUserSaveData,getUserUpdateData,getUserDeleteData,getUserUpdateDataInfo } from '~/api/user.js'
 import { getMenuListData } from "~/api/menu.js"
-//分页
+
 const current = ref(1)
 const size = ref(5)
 const total = ref(1)
@@ -125,7 +121,7 @@ const getUserListTableData = ()=>{
     })
 }
 getUserListTableData()
-//刷新
+
 const getData =() => { getUserListTableData() }
 const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
@@ -172,7 +168,7 @@ const handleRoleDrawerSubmit = () => {
         console.log(valid)
         if(valid){
             formRoleDrawerRef.value.showLoading()
-            const fun = ID.value ? getRoleUpdateData(ruleRoleForm) : getRoleSaveData(ruleRoleForm)
+            const fun = ID.value ? getUserUpdateData(ruleRoleForm) : getUserSaveData(ruleRoleForm)
             fun.then(res=>{
                 console.log(res)
                 if(res.code == 200){
@@ -185,7 +181,6 @@ const handleRoleDrawerSubmit = () => {
     })
 }
 
-//删除
 const handleDelete =(id) =>{
     console.log(id)
     var ids = []

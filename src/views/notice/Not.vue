@@ -10,7 +10,11 @@
                 </template>
             </el-table-column>
             <el-table-column prop="content" label="内容" />
-            <el-table-column prop="create_time" label="发布时间" />
+            <el-table-column prop="createtime" label="发布时间">
+                <template #default="scope">
+                {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
                 <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
@@ -46,46 +50,11 @@
             <el-form-item label="内容" prop="content">
                 <el-input v-model="ruleRoleForm.content" />
             </el-form-item>
-
-            <!-- <el-form-item label="附件" >
-                <el-upload action="#" list-type="picture-card" :auto-upload="false" multiple="false" limit="1">
-                    <el-icon><Plus /></el-icon>
-                    <template #file="{ file }">
-                    <div>
-                        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                        <span class="el-upload-list__item-actions">
-                        <span
-                            class="el-upload-list__item-preview"
-                            @click="handlePictureCardPreview(file)">
-                            <el-icon><zoom-in /></el-icon>
-                        </span>
-                        <span
-                            v-if="!disabled"
-                            class="el-upload-list__item-delete"
-                            @click="handleDownload(file)">
-                            <el-icon><Download /></el-icon>
-                        </span>
-                        <span
-                            v-if="!disabled"
-                            class="el-upload-list__item-delete"
-                            @click="handleRemove(file)">
-                            <el-icon><Delete /></el-icon>
-                        </span>
-                        </span>
-                    </div>
-                    </template>
-                </el-upload>
-            </el-form-item> -->
-            <!-- <el-dialog v-model="dialogVisible">
-                <img w-full :src="dialogImageUrl" alt="Preview Image" />
-            </el-dialog> -->
-
         </el-form>
     </form-drawer>
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
-// import   UploadFile  from 'element-plus'
 import {
   Check,
   Delete,
@@ -100,26 +69,9 @@ import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { getNoticeListData,getNoticeSaveData,getNoticeUpdateData,getNoticeDeleteData,getNoticeUpdateDataInfo } from '~/api/notice.js'
 import { getMenuListData } from "~/api/menu.js"
-//上传
-// const dialogImageUrl = ref('')
-// const dialogVisible = ref(false)
-// const disabled = ref(false)
-// const handleRemove = (file) => {
-//   console.log(file)
-// }
 
-// const handlePictureCardPreview = (file) => {
-//   dialogImageUrl.value = file.url
-//   dialogVisible.value = true
-// }
-
-// const handleDownload = (file) => {
-//   console.log(file)
-// }
-
-//分页
 const current = ref(1)
-const size = ref(2)
+const size = ref(5)
 const total = ref(1)
 
 const handleSizeChange = (val) =>{

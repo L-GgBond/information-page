@@ -143,9 +143,7 @@ export function useInitForm(opt = {}) {
     const handleSubmit = () => {
         formRef.value.validate((valid) => {
             if (!valid) return
-
             formDrawerRef.value.showLoading()
-
             let body = {}
             if(opt.beforeSubmit && typeof opt.beforeSubmit == "function"){
                 body = opt.beforeSubmit({ ...form })
@@ -163,7 +161,6 @@ export function useInitForm(opt = {}) {
             }).finally(() => {
                 formDrawerRef.value.hideLoading()
             })
-
         })
     }
 

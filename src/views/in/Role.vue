@@ -1,6 +1,5 @@
 <template>
     <el-card shadow="never" class="border-0">
-        <!-- 新增|刷新 -->
         <ListHeader @create="handleRoleCreate" @refresh="getData"/>
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column prop="id" label="#" />
@@ -17,7 +16,6 @@
                 <template #default="scope">
                 <el-button type="warning" size="small" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
                 <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
-
                 <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
@@ -64,7 +62,6 @@
         </el-form>
     </form-drawer>
 
-
     <form-drawer ref="formRoleAccactDrawerRef" title="分配权限" size="45%" destroyOnClose @submit="handleRoleAccactDrawerSubmit" >
         <el-form ref="ruleRoleAccactFormRef">
             <el-tree
@@ -74,7 +71,6 @@
                 :props="{ label: 'name', children: 'children' }" :default-expanded-keys="defaultExpandedKeys"/>
         </el-form>
     </form-drawer>
-
 </template>
 <script setup>
 import { ref,reactive } from 'vue'

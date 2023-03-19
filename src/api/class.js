@@ -1,11 +1,9 @@
 import axios from "~/utils/request"
-
 const config = {
     headers:{
         'Content-Type': 'application/json'
     }
 };
-
 
 export function RequestListData(current, size){
     return axios.get('/class/list?current='+ current +"&size=" + size)

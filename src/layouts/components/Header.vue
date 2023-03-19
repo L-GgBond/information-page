@@ -2,20 +2,16 @@
 <template>
     <div class="header">
         <span class="logo">
-            <el-icon class="mr-1"><Compass /></el-icon>
+            <!-- <el-icon class="mr-1"><Compass /></el-icon> -->
             考评管理系统
         </span>
-
-        <el-icon class="icon-btn" content="折叠" @click="$store.commit('handleAsideWidth')">
+        <el-icon class="icon-btn" content="折叠" @click="$store.commit('handleAsideWidth')" style="margin-left:60px">
             <fold v-if="$store.state.asideWidth == '250px'"/>
             <Expand v-else/>
         </el-icon>
-
-
         <el-tooltip effect="dark" content="刷新" placement="top-start">
             <el-icon class="icon-btn" @click="handleRefresh"><Refresh /></el-icon>
         </el-tooltip>
-        
         <div class="ml-auto flex items-center">
             <el-tooltip effect="dark" content="全屏" placement="top-start">
                 <el-icon class="icon-btn" @click="toggle">
@@ -25,7 +21,8 @@
             </el-tooltip>
             <el-dropdown class="dropdown" @command="handleCommand">
                 <div class="flex items-center text-light-50">
-                    <el-avatar class="mr-2" :size="25" :src="$store.state.user.avatar" />
+                    <!-- <el-avatar class="mr-2" :size="25" :src="$store.state.user.avatar" /> -->
+                    <el-avatar class="mr-2" :size="25" src="/src/assets/login/user.jpeg" />
                      {{ $store.state.user.username }}
                     <el-icon class="el-icon--right">
                         <arrow-down />
@@ -55,7 +52,6 @@
             </el-form-item>
         </el-form>
     </form-drawer>
-
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
@@ -158,19 +154,16 @@ const handleCommand = (e)=>{
     }
 }
 
-
 const handleRefresh = ()=> location.reload() 
 </script>
 <style>
-
-
 .header{
     @apply flex items-center text-light-50 fixed top-0 right-0 left-0;
     height: 64px;
     background-color: lightseagreen;
 }
 .logo{
-    width: 250px;
+    width: 170px;
     @apply flex justify-center items-center text-xl;
 }
 .icon-btn{

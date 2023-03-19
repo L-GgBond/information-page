@@ -8,11 +8,9 @@
                 <el-form-item  prop="username">
                      <el-input v-model="form.username" :prefix-icon="User" ></el-input>
                 </el-form-item> 
-
                 <el-form-item prop="password">
                      <el-input v-model="form.password" :prefix-icon="Lock" type="password" show-password></el-input>
                 </el-form-item> 
-                
                 <el-form-item prop="type">
                     <el-select  v-model="form.type" placeholder="请选择角色" size="default">
                         <el-option
@@ -22,7 +20,6 @@
                         :value="item.value"/>
                     </el-select>
                 </el-form-item>
-
                 <el-form-item class="btns">
                       <el-button type="primary" @click="doLogin" :loading="loading">提交</el-button>
                        <el-button type="info" @click="resetting">重置</el-button>
@@ -31,7 +28,6 @@
        </div>
     </div>
 </template>
-
 <script setup>
 import { ref,reactive } from 'vue'
 import { toast } from '~/utils/common'
@@ -42,7 +38,6 @@ import { useStore } from 'vuex'
 
 const store = useStore()
 const router = useRouter()
-
 const form = reactive({
   username:"admin",
   password:"12345678"
@@ -93,8 +88,6 @@ const doLogin = function () {
             loading.value = false
         })
     })
-
-
 }
 
 const resetting = function () {
@@ -103,7 +96,6 @@ const resetting = function () {
     form.password = ''
     form.type = ''
 }
-
 
 const type = ref('')
 const options = [
@@ -118,7 +110,6 @@ const options = [
 ]
 
 </script>
-
 <style lang="less" scoped>
 .login_container{
     background-color: #2b4b6b;
@@ -152,7 +143,6 @@ const options = [
         }
     }
 }
-
 .btns{
     // display:flex;
     // justify-content: flex-end;
@@ -165,6 +155,4 @@ const options = [
     padding:0 20px;
     box-sizing: border-box;
 }
-
-
 </style>
