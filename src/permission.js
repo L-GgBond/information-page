@@ -29,6 +29,9 @@ router.beforeEach(async (to,from,next)=>{
     let hasNewRoutes = false
     if(token){
         await store.dispatch("getUserInfo")
+        store.state.hasRoutes = 0
+        // let { nav }  = await store.dispatch("getinfo")
+        // hasNewRoutes = addRoutes(nav)
     }
     if(token && !hasGetInfo){
         if(hasRoutes.length != 0){
@@ -43,6 +46,7 @@ router.beforeEach(async (to,from,next)=>{
         }
    
     }else{
+        console.log("路由已存在")
         next()
     }
     // console.log(to.fullPath)

@@ -5,6 +5,5 @@ const config = {
     }
 };
 
-export function RequestUploads(file){
-    return axios.post('/upload', file)
-}
+
+export const RequestUploads = "/api/upload"

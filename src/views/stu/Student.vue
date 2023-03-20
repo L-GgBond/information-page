@@ -71,36 +71,12 @@
         <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
         <el-form-item label="头像" prop="avater">
-            <el-upload action="#" list-type="picture-card" :auto-upload="false">
+            <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 :on-success="handleAvatarSuccess">
                 <el-icon><Plus /></el-icon>
                 <template #file="{ file }">
-                <div>
-                    <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
-                    <span class="el-upload-list__item-actions">
-                    <span
-                        class="el-upload-list__item-preview"
-                        @click="handlePictureCardPreview(file)">
-                        <el-icon><zoom-in /></el-icon>
-                    </span>
-                    <span
-                        v-if="!disabled"
-                        class="el-upload-list__item-delete"
-                        @click="handleDownload(file)">
-                        <el-icon><Download /></el-icon>
-                    </span>
-                    <span
-                        v-if="!disabled"
-                        class="el-upload-list__item-delete"
-                        @click="handleRemove(file)">
-                        <el-icon><Delete /></el-icon>
-                    </span>
-                    </span>
-                </div>
+                    <div><img class="el-upload-list__item-thumbnail" :src="file.avatar" alt="" /></div>
                 </template>
             </el-upload>
-            <el-dialog v-model="dialogVisible">
-                <img w-full :src="dialogImageUrl" alt="Preview Image" />
-            </el-dialog>
          </el-form-item>
 
 
@@ -161,7 +137,6 @@
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
-import { Delete, Download, Plus, ZoomIn } from '@element-plus/icons-vue'
 import UploadFile  from 'element-plus'
 import store from '~/store'
 import { computed } from "@vue/reactivity";
@@ -169,19 +144,11 @@ import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData, RequestClassListData, RequestRoleListData } from '~/api/student.js'
+import { RequestUploads } from '~/api/uploads.js'
 
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
-const disabled = ref(false)
-const handleRemove = (file) => {
-  console.log(file)
-}
-const handlePictureCardPreview = (file) => {
-  dialogImageUrl.value = file.url
-  dialogVisible.value = true
-}
-const handleDownload = (file) => {
-  console.log(file)
+
+const handleAvatarSuccess =(file) =>{
+ console.log(file)
 }
 
 const current = ref(1)

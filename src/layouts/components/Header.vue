@@ -21,8 +21,8 @@
             </el-tooltip>
             <el-dropdown class="dropdown" @command="handleCommand">
                 <div class="flex items-center text-light-50">
-                    <!-- <el-avatar class="mr-2" :size="25" :src="$store.state.user.avatar" /> -->
-                    <el-avatar class="mr-2" :size="25" src="/src/assets/login/user.jpeg" />
+                    <el-avatar class="mr-2" :size="25" :src="$store.state.user.avatar" />
+                    <!-- <el-avatar class="mr-2" :size="25" src="/src/assets/login/user.jpeg" /> -->
                      {{ $store.state.user.username }}
                     <el-icon class="el-icon--right">
                         <arrow-down />
@@ -58,7 +58,7 @@ import { ref,reactive } from 'vue'
 import FormDrawer from '~/components/FormDrawer.vue'
 import { useFullscreen } from '@vueuse/core'
 import { useLogout } from '~/utils/UseManager'
-import { updatePassword } from '~/api/manager'
+import { updatePassword,logout } from '~/api/manager'
 import { toast } from '~/utils/common'
 import store  from '~/store/index.js'
 import { useRouter } from 'vue-router' 
@@ -145,6 +145,7 @@ const handleCommand = (e)=>{
     
         case "logout":
             console.log("退出登陆")
+            logout()
             handleLogout()
             break;
             
