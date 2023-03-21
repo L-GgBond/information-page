@@ -22,7 +22,6 @@ http.interceptors.request.use(function (config) {
     return Promise.reject(error);
   });
 
-
 // 添加响应拦截器
 http.interceptors.response.use(function (response) {
   if(response.data.code == 400){

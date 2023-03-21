@@ -5,7 +5,6 @@
             <el-form-item label="姓名" prop="searchNickname">
                 <el-input v-model="searchModel.searchNickname" placeholder="请输入姓名"  />
             </el-form-item>
-
             <el-form-item>
                 <el-button type="success"  @click="onSearchSubmit">搜索</el-button>
             </el-form-item>
@@ -31,7 +30,11 @@
             <el-table-column prop="nation" label="民族"  width="120px"/>
             <el-table-column prop="city" label="住址"   width="150px"/>
             <el-table-column prop="email" label="联系方式" width="150px" />
-            <el-table-column prop="rolename" label="角色"  width="120px"/>
+            <el-table-column prop="rolename" label="角色"  width="120px">
+                <template #default="scope">
+                    <el-tag >{{ scope.row.rolename }}</el-tag>  
+                </template>
+            </el-table-column>
             <el-table-column prop="duration" label="学年时长"  width="120px"/>
             <el-table-column prop="politics" label="政治面貌"  width="120px"/>
             <el-table-column prop="statu" label="状态">
@@ -71,10 +74,13 @@
         <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
         <el-form-item label="头像" prop="avater">
-            <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 :on-success="handleAvatarSuccess">
+            <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
+            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
                 <el-icon><Plus /></el-icon>
-                <template #file="{ file }">
-                    <div><img class="el-upload-list__item-thumbnail" :src="file.avatar" alt="" /></div>
+                <template>
+                    <div>
+                        <img class="el-upload-list__item-thumbnail" :src="avater" alt="" />
+                    </div>
                 </template>
             </el-upload>
          </el-form-item>
@@ -146,9 +152,22 @@ import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData, RequestClassListData, RequestRoleListData } from '~/api/student.js'
 import { RequestUploads } from '~/api/uploads.js'
 
-
+const hideUpload = ref(false)
+const avater = ref()
 const handleAvatarSuccess =(file) =>{
  console.log(file)
+  if(file.code == 200){
+    toast("上传成功")
+    formModel.avatar = file.data
+    avater.value = file.data
+  }
+}
+const handleAvataError =(file) =>{
+ console.log(file)
+    toast("上传失败","error")
+}
+const uploadOnChange =(file,fileList) =>{
+    hideUpload.value = true;
 }
 
 const current = ref(1)
@@ -236,6 +255,7 @@ const formModel = reactive({
 })
 const formRules = {
     username: [ { required: true, message: '请输入账号', trigger: 'blur' } ],
+    username: [ { min:6 , message: '账号至少是六位', trigger: 'blur' } ],
     nickname: [ { required: true, message: '请输入姓名', trigger: 'blur' } ],
     sex: [ { required: true, message: '请输入性别', trigger: 'blur' } ],
     nation: [ { required: true, message: '请输入民族', trigger: 'blur' } ],
@@ -340,5 +360,11 @@ const handleDelete =(id) =>{
     .pages{
         float: right;
         @apply mt-6 mb-6;
+    }
+    .el-upload--picture-card{
+        /* display: none !important; */
+    }
+    .hide .el-upload--picture-card{
+        display: none;
     }
 </style>

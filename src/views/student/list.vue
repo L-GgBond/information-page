@@ -20,7 +20,6 @@
 </template>
 <script setup>
 import ListHeader from "~/components/ListHeader.vue";
-
 const handleCreate =() =>{
 
 }

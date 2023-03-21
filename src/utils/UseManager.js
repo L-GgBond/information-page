@@ -4,7 +4,6 @@ import { useStore } from "vuex"
 import { showModal, toast } from "~/utils/common"
 import { logout } from '~/api/manager'
 
-
 export function useLogout() {
     const router = useRouter()
     const store = useStore()

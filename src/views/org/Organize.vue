@@ -1,5 +1,5 @@
 <template>
     <div>
-        org 
+        org  
     </div>
 </template>

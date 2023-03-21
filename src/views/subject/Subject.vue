@@ -22,7 +22,6 @@
                 </template>
             </el-table-column>
         </el-table>
-         
         <div class="pages">
             <el-pagination
                     @size-change="handleSizeChange"

@@ -76,7 +76,16 @@ const store = createStore({
                 getUserInfo().then(res=>{
                     commit("SET_USERINFO",res.data)
                     resolve(res.data)
-                }).catch(err=>reject(err))
+                
+                   
+                }).catch(err=>{
+                    console.log(err.code)
+                        // store.dispatch("logout")
+                    reject(err)
+                    // if(err.code){
+                        
+                    // }
+                })
             })
         },
     }

@@ -146,6 +146,7 @@ const options = [
 .btns{
     // display:flex;
     // justify-content: flex-end;
+    
     float: right;
 }
 .login_form{
