@@ -3,18 +3,19 @@
         <ListHeader @create="handleRoleCreate" @refresh="getData"/>
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column prop="id" label="#" />
-            <el-table-column prop="username" label="用户名" />
             <el-table-column label="头像">
                 <template #default="scope">
                     <el-avatar :size="50" :src="scope.row.avatar" />
                 </template>
             </el-table-column>
+            <el-table-column prop="username" label="账号" />
+            <el-table-column prop="nickname" label="姓名" />
+            <el-table-column prop="email" label="联系方式" />
             <el-table-column label="角色名称">
                 <template #default="scope">
                     <el-tag class="mt-1" size="small" type="default" v-for="item in scope.row.inRoles">{{ item.name }}</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="email" label="邮箱" />
             <el-table-column prop="statu" label="状态">
                 <template #default="scope">
                     <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">正常</el-tag>
@@ -49,23 +50,42 @@
     </el-card>
 
     <form-drawer ref="formRoleDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleRoleDrawerSubmit" >
-        <el-form ref="ruleRoleFormRef" :model="ruleRoleForm" :rules="roleRules" label-width="120px" 
+        <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
-            <el-form-item label="角色名称" prop="name">
-                <el-input v-model="ruleRoleForm.name" />
-            </el-form-item>
-            <el-form-item label="唯一编码" prop="code">
-                <el-input v-model="ruleRoleForm.code" />
-            </el-form-item>
-            <el-form-item label="描述" prop="remark">
-               <el-input v-model="ruleRoleForm.remark" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="状态" prop="statu">
-               <el-radio-group v-model="ruleRoleForm.statu">
-                  <el-radio :label=0>禁用</el-radio>
-                  <el-radio :label=1>正常</el-radio>
-               </el-radio-group>
-            </el-form-item>
+        <el-form-item label="头像" prop="avatar">
+            <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
+            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
+                <el-icon><Plus /></el-icon>
+                <template>
+                    <div>
+                        <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" />
+                    </div>
+                </template>
+            </el-upload>
+         </el-form-item>
+
+         <el-form-item label="账号" prop="username">
+            <el-input v-model="formModel.username" />
+        </el-form-item>
+        <el-form-item label="姓名" prop="nickname">
+            <el-input v-model="formModel.nickname" />
+        </el-form-item>
+        <el-form-item label="联系方式" prop="email">
+            <el-input v-model="formModel.email" />
+        </el-form-item>
+        <el-form-item label="角色权限" prop="roleid">
+            <el-select v-model="formModel.roleid" placeholder="请选择角色权限">
+                <template v-for="(item,index) in roleData">
+                    <el-option :label="item.name" :value="item.id" />
+                </template>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="状态" prop="statu">
+            <el-select v-model="formModel.statu" placeholder="请选择状态">
+                    <el-option label="正常" value="1" />
+                    <el-option label="禁用" value="0" />
+            </el-select>
+        </el-form-item>
         </el-form>
     </form-drawer>
 
@@ -81,6 +101,7 @@
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
+import UploadFile  from 'element-plus'
 import { computed } from "@vue/reactivity";
 import { toast } from '~/utils/common'
 import store from '~/store'
@@ -88,6 +109,27 @@ import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { getUserListData,getUserSaveData,getUserUpdateData,getUserDeleteData,getUserUpdateDataInfo } from '~/api/user.js'
 import { getMenuListData } from "~/api/menu.js"
+import { RequestUploads } from '~/api/uploads.js'
+import { RequestRoleListData } from '~/api/student.js'
+
+
+const hideUpload = ref(false)
+const avatar = ref()
+const handleAvatarSuccess =(file) =>{
+ console.log(file)
+  if(file.code == 200){
+    toast("上传成功")
+    formModel.avatar = file.data
+    avatar.value = file.data
+  }
+}
+const handleAvataError =(file) =>{
+ console.log(file)
+    toast("上传失败","error")
+}
+const uploadOnChange =(file,fileList) =>{
+    hideUpload.value = true;
+}
 
 const current = ref(1)
 const size = ref(5)
@@ -127,55 +169,92 @@ const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
 const formRoleDrawerRef = ref(null)
 const ruleRoleFormRef = ref(null)
-const handleRoleCreate = ()=> { ID.value = 0;formRoleDrawerRef.value.open() }
-const ruleRoleForm = reactive({
-    "name":'',
-    "code":'',
-    "remark":'',
-    "statu":'',
-})
-const roleRules = {
-    name: [
-        {required: true, message: '请输入角色名称', trigger: 'blur'}
-    ],
-    code: [
-        {required: true, message: '请输入唯一编码', trigger: 'blur'}
-    ],
-    remark: [
-        {required: true, message: '请输入备注', trigger: 'blur'}
-    ],
-    statu: [
-        {required: true, message: '请选择状态', trigger: 'blur'}
-    ]
+const formRef = ref()
+const roleData = ref([])
+const handleRoleCreate = ()=> { 
+    ResetFields()
+    ID.value = 0;formRoleDrawerRef.value.open() 
+    RequestRoleListData().then(res=>{
+        console.log(res)
+        if(res.code == 200){
+            roleData.value = res.data
+        }
+     })
 }
 
+
+const formModel = reactive({
+    "id":'',
+    "username":'',
+    "nickname":'',
+    "roleid":'',
+    "email":'',
+    "avatar":'',
+    "email":'',
+    "statu":'',
+    "types":'teacher',
+})
+const formRules = {
+    username: [ { required: true, message: '请输入账号', trigger: 'blur' } ],
+    username: [ { min:6 , message: '账号至少是六位', trigger: 'blur' } ],
+    nickname: [ { required: true, message: '请输入姓名', trigger: 'blur' } ],
+    roleid: [ { required: true, message: '请选择角色', trigger: 'blur' } ],
+    email: [ { required: true, message: '请输入联系方式', trigger: 'blur' } ],
+}
+const ResetFields = () =>{
+    formModel.id = ""
+    formModel.username = ""
+    formModel.nickname = ""
+    formModel.roleid = ""
+    formModel.email = ""
+    formModel.avatar = ""
+    formModel.email = ""
+}
 const handleRoleEdit = (row) => {
     console.log(row.id)
     ID.value = row.id
-    getRoleUpdateDataInfo(row.id).then(res=>{
+    RequestRoleListData().then(res=>{
+        console.log(res)
+        if(res.code == 200){
+            roleData.value = res.data
+        }
+     })
+    getUserUpdateDataInfo(row.id).then(res=>{
         if(res.code == 200){
             formRoleDrawerRef.value.open()
-            ruleRoleForm.name = row.name
-            ruleRoleForm.code = row.code
-            ruleRoleForm.remark = row.remark
-            ruleRoleForm.statu = row.statu
+            formModel.id = row.id
+            formModel.username = row.username
+            formModel.nickname = row.nickname
+            formModel.roleid = row.roleid
+            formModel.email = row.email
+            formModel.avatar = row.avatar
+            formModel.statu = res.data.statu ? "正常" : "禁用"
         }
     })
     
 }
 const handleRoleDrawerSubmit = () => {
-    ruleRoleFormRef.value.validate((valid) => {
+    formRef.value.validate((valid) => {
         console.log(valid)
         if(valid){
+            if(formModel.statu == "正常"){
+                formModel.statu = 1
+            }else if(formModel.statu == "禁用"){
+                formModel.statu = 0
+            }
             formRoleDrawerRef.value.showLoading()
-            const fun = ID.value ? getUserUpdateData(ruleRoleForm) : getUserSaveData(ruleRoleForm)
+            const fun = ID.value ? getUserUpdateData(formModel) : getUserSaveData(formModel)
             fun.then(res=>{
                 console.log(res)
                 if(res.code == 200){
                     formRoleDrawerRef.value.close()
-                    getRoleListTableData()
+                    toast("操作成功")
+                    ResetFields()
+                    getUserListTableData()
                     formRoleDrawerRef.value.hideLoading()
                 }
+            }).finally(() => {
+                formDrawerRef.value.hideLoading()
             })
         }
     })
@@ -200,7 +279,7 @@ const ruleRoleAccactFormRef = ref(null)
 const formRoleAccactDrawerRef = ref(null)
 const handleRoleAccact =(id) => {
     console.log(id.id)
-    getRoleUpdateDataInfo(id.id).then(r => {
+    getUserUpdateDataInfo(id.id).then(r => {
         console.log(r)
     })
     getMenuListData().then(res =>{
@@ -225,5 +304,8 @@ function AdddefaultExpandedKeysId(data){
     .pages{
         float: right;
         @apply mt-6 mb-6;
+    }
+    .hide .el-upload--picture-card{
+        display: none;
     }
 </style>

@@ -47,7 +47,7 @@
                 <el-input v-model="ruleRoleForm.title" />
             </el-form-item>
             <el-form-item label="内容" prop="content">
-                <el-input v-model="ruleRoleForm.content" />
+                <el-input type="textarea" v-model="ruleRoleForm.content" />
             </el-form-item>
         </el-form>
     </form-drawer>

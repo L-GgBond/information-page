@@ -73,13 +73,13 @@
     <form-drawer ref="formDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleDrawerSubmit" >
         <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
-        <el-form-item label="头像" prop="avater">
+        <el-form-item label="头像" prop="avatar">
             <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
             :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
                 <el-icon><Plus /></el-icon>
                 <template>
                     <div>
-                        <img class="el-upload-list__item-thumbnail" :src="avater" alt="" />
+                        <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" />
                     </div>
                 </template>
             </el-upload>
@@ -153,13 +153,13 @@ import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, R
 import { RequestUploads } from '~/api/uploads.js'
 
 const hideUpload = ref(false)
-const avater = ref()
+const avatar = ref()
 const handleAvatarSuccess =(file) =>{
  console.log(file)
   if(file.code == 200){
     toast("上传成功")
     formModel.avatar = file.data
-    avater.value = file.data
+    avatar.value = file.data
   }
 }
 const handleAvataError =(file) =>{
@@ -305,18 +305,19 @@ const handleEdit = (row) => {
     RequestInfoData(row.id).then(res=>{
         if(res.code == 200){
             formDrawerRef.value.open()
-            formModel.id = ""
+            formModel.id = res.data.id
             formModel.username = res.data.username
             formModel.nickname = res.data.nickname
             formModel.sex = res.data.sex ? "男" : "女"
             formModel.nation = res.data.nation
             formModel.city = res.data.city
-            // formModel.classid = res.data.classid
-            // formModel.roleid = res.data.roleid
-            // formModel.classname = res.data.classname
+            formModel.classid = res.data.classid
+            formModel.roleid = res.data.roleid
+            formModel.classname = res.data.classname
             formModel.duration = res.data.duration
             formModel.politics = res.data.politics
             formModel.email = res.data.email
+            avatar.value = res.data.avatar
             formModel.avatar = res.data.avatar
             formModel.age = res.data.age
             formModel.email = res.data.email
@@ -330,6 +331,16 @@ const handleDrawerSubmit = () => {
         console.log(valid)
         if(valid){
             formDrawerRef.value.showLoading()
+            if(formModel.statu == "正常"){
+                formModel.statu = 1
+            }else if(formModel.statu == "禁用"){
+                formModel.statu = 0
+            }
+            if(formModel.sex == "男"){
+                formModel.sex = 1
+            }else if(formModel.sex == "女"){
+                formModel.sex = 0
+            }
             const fun = ID.value ? RequestUpdateData(formModel) : RequestSaveData(formModel)
             fun.then(res=>{
                 console.log(res)

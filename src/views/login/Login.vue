@@ -40,7 +40,7 @@ const store = useStore()
 const router = useRouter()
 const form = reactive({
   username:"admin",
-  password:"12345678"
+  password:"123456"
 })
 const rules = {
     username:[
