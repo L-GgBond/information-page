@@ -22,30 +22,18 @@ router.beforeEach(async (to,from,next)=>{
         store.dispatch("logout")
         return next({ path:"/login" })
     }
-    // else if(token && !store.state.user.length){
-    //     console.log("登陆失效")
-    //     store.dispatch("logout")
-    //     return next({ path:"/login" })
-    // }
+
 
     if(token && to.path == "/login"){
         toast("请勿重复登录","error")
         return next({ path:from.path ? from.path : "/" })
     }
 
-  
-
     let hasNewRoutes = false
     if(token){
         console.log(1111)
-        let user  = await store.dispatch("getUserInfo")
-        // if(!user){
-        //     store.dispatch("logout")
-        // }
-        // console.log("user",user)
+        await store.dispatch("getUserInfo")
         store.state.hasRoutes = 0
-        // let { nav }  = await store.dispatch("getinfo")
-        // hasNewRoutes = addRoutes(nav)
     }
     if(token && !hasGetInfo){
         if(hasRoutes.length != 0){
