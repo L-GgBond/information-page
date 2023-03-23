@@ -82,7 +82,7 @@ const doLogin = function () {
             if(res.code == 200){
                 toast("登录成功")
                 store.dispatch('getinfo')
-                router.push("/")
+                router.push("/index")
             }
         }).finally(()=>{
             loading.value = false

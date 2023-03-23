@@ -52,13 +52,44 @@
             </el-form-item>
         </el-form>
     </form-drawer>
+
+    <form-drawer ref="formDrawerRefTwo" :title="drawerTitle" size="45%" destroyOnClose @submit="handleDrawerSubmitTwo" >
+    <div>
+        <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
+        class="demo-ruleForm"  status-icon>
+            <el-form-item prop="avatar" >
+                <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
+                :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange"
+                :before-remove="handeleAvatarDelete">
+                    <el-icon><Plus /></el-icon>
+                    <template>
+                        <div>
+                            <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" />
+                        </div>
+                    </template>
+                </el-upload>
+            </el-form-item>
+            <el-form-item  label="账号">
+                <el-input  ></el-input>
+            </el-form-item>
+            
+            <el-form-item  label="姓名">
+                <el-input  ></el-input>
+            </el-form-item>
+            <!-- <div v-if="formModel.types == 'student'">    
+            </div> -->
+      
+         </el-form>
+    </div>
+</form-drawer>
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
+import { ElMessageBox } from 'element-plus'
 import FormDrawer from '~/components/FormDrawer.vue'
 import { useFullscreen } from '@vueuse/core'
 import { useLogout } from '~/utils/UseManager'
-import { updatePassword,logout } from '~/api/manager'
+import { updatePassword,logout,getUserInfo } from '~/api/manager'
 import { toast } from '~/utils/common'
 import store  from '~/store/index.js'
 import { useRouter } from 'vue-router' 
@@ -68,6 +99,7 @@ const { isFullscreen, toggle } = useFullscreen()
 const logo = ref("https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png")
 
 const formDrawerRef = ref(null)
+const formDrawerRefTwo = ref(null)
 const form = reactive({
     currentPass:"",
     password:"",
@@ -135,6 +167,15 @@ const {
     handleLogout
 } = useLogout()
 const showDrawer = ref(false)
+const dialogVisible = ref(false)
+const userData = ref();
+const formModel = reactive({
+    "avatar":"",
+    "username":"",
+    "nickname":"",
+    "types":"",
+})
+
 const handleCommand = (e)=>{
     console.log(e)
     switch (e) {
@@ -151,6 +192,17 @@ const handleCommand = (e)=>{
             
         case "individual":
             console.log("个人信息")
+            getUserInfo().then(res=>{
+                console.log(res)
+                if(res.code == 200){
+                    userData.value = res.data
+                    formModel.avatar = res.data.avatar
+                    formModel.username = res.data.username
+                    formModel.nickname = res.data.nickname
+                    formModel.types = res.data.types
+                }
+            })
+            formDrawerRefTwo.value.open()
             break;
     }
 }
@@ -183,4 +235,7 @@ const handleRefresh = ()=> location.reload()
     @apply flex justify-center items-center mx-5;
 }
 
+/* .el-form-item__content div{
+    margin:auto;
+} */
 </style>

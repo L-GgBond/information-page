@@ -75,7 +75,8 @@
         class="demo-ruleForm"   :size="formSize" status-icon>
         <el-form-item label="头像" prop="avatar">
             <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
-            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
+            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange"
+            :before-remove="handeleAvatarDelete">
                 <el-icon><Plus /></el-icon>
                 <template>
                     <div>
@@ -169,7 +170,10 @@ const handleAvataError =(file) =>{
 const uploadOnChange =(file,fileList) =>{
     hideUpload.value = true;
 }
-
+const handeleAvatarDelete=(file) =>{
+    console.log(file)
+    hideUpload.value = false;
+}
 const current = ref(1)
 const size = ref(5)
 const total = ref(1)
