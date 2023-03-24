@@ -65,7 +65,7 @@
     <form-drawer ref="formRoleAccactDrawerRef" title="分配权限" size="45%" destroyOnClose @submit="handleRoleAccactDrawerSubmit" >
         <el-form ref="ruleRoleAccactFormRef">
             <el-tree
-                :ref="permTree"
+                ref="permTree"
                 :data="ThreeData"
                 show-checkbox
                 node-key="id"
@@ -81,7 +81,7 @@ import { getCurrentInstance, onMounted } from '@vue/runtime-core'
 import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
-import { getRoleListData,getRoleSaveData,getRoleUpdateData,getRoleDeleteData,getRoleUpdateDataInfo } from '~/api/role.js'
+import { getRoleListData,getRoleSaveData,getRoleUpdateData,getRoleDeleteData,getRoleUpdateDataInfo,getPermRoleData } from '~/api/role.js'
 import { getMenuListData } from "~/api/menu.js"
 //getRoleListData
 const current = ref(1)
@@ -193,12 +193,14 @@ const defaultCheckedKeys = ref([])
 const ruleRoleAccactFormRef = ref(null)
 const formRoleAccactDrawerRef = ref(null)
 const checkTree = ref([])
+const roleid = ref(null)
 const handleRoleAccact =(id) => {
     console.log("handleRoleAccact")
     console.log(id.id)
     getRoleUpdateDataInfo(id.id).then(r => {
         console.log("r",r)
         defaultCheckedKeys.value = r.data.menuIds
+        roleid.value = r.data.id
     })
     getMenuListData().then(res =>{
         if(res.code == 200){
@@ -220,23 +222,18 @@ function AdddefaultExpandedKeysId(data){
     }
 }
 
-const setCheckedNodes =() => {
-    console.log("setCheckedNodes")
-    console.log(permTree.value)
-
-}
-const getCheckedKeys = () => {
-  console.log(permTree.value.getCheckedKeys(false))
-}
 
 const handleRoleAccactDrawerSubmit = ()=>{
     console.log("分配权限")
-    console.log(defaultExpandedKeys)
-    console.log(ruleRoleAccactFormRef.value)
-    console.log(checkTree)
-    console.log(permTree)
-    console.log(getCheckedKeys())
-    
+    console.log(permTree.value.getCheckedKeys())
+    console.log(roleid.value)
+    getPermRoleData(roleid.value,permTree.value.getCheckedKeys()).then(res => {
+        console.log(res)
+        if(res.code == 200){
+            toast("权限分配成功")
+            formRoleAccactDrawerRef.value.close()
+        }
+    })
     
 }
 </script>

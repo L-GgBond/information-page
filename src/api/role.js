@@ -28,3 +28,8 @@ export function getRoleUpdateData(data){
 export function getRoleDeleteData(id){
     return axios.post('/in/role/delete',id,config)
 }
+
+
+export function getPermRoleData(id,data){
+    return axios.post('/in/role/perm/'+id,data,config)
+}

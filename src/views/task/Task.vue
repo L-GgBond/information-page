@@ -1,7 +1,7 @@
 <template>
    <el-card>
     <el-form ref="formRef" :model="formModel" :rules="formRules"  label-width="auto">
-      <el-form-item label="学期" prop="schoolterm">
+      <el-form-item label="学期" prop="schoolterm" :rules="[{required:true,message:'请选择学期',trigger:'blur'}]">
         <el-select  v-model="formModel.schoolterm" placeholder="请选择学期">
             <template v-for="(item,index) in tableTermDate" >
                 <el-option :label="item.termname" :value="item.termname" />
@@ -142,8 +142,12 @@ const uploadOnChange =(file,fileList) =>{
 }
 
 const loading = ref(false);
-function onHandleSubmit() {
+const formRef = ref(null)
+const  onHandleSubmit = () => {
     console.log(formModel)
+    // formRef.validate((valid) => {
+    //     console.log(valid)
+    // })
 }
 </script>
   

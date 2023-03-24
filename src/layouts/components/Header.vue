@@ -64,7 +64,7 @@
                     <el-icon><Plus /></el-icon>
                     <template>
                         <div>
-                            <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" />
+                            <img class="el-upload-list__item-thumbnail" :src="formModel.avatar" alt="" />
                         </div>
                     </template>
                 </el-upload>

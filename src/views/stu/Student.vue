@@ -16,6 +16,14 @@
             <el-table-column label="头像"  width="120px">
                 <template #default="scope">
                     <el-avatar :size="50" :src="scope.row.avatar" />
+                    <el-image
+                    style="width:50px;border-radius: 50%;"
+                    :src="scope.row.avatar"
+                    :zoom-rate="1.2"
+                    :preview-src-list="[scope.row.avatar]"
+                    :initial-index="4"
+                    fit="cover"
+                    />
                 </template>
             </el-table-column>
             <el-table-column prop="nickname" label="姓名"  width="120px"/>
@@ -382,4 +390,15 @@ const handleDelete =(id) =>{
     .hide .el-upload--picture-card{
         display: none;
     }
+
+    .demo-image__error .image-slot {
+  font-size: 30px;
+}
+.demo-image__error .image-slot .el-icon {
+  font-size: 30px;
+}
+.demo-image__error .el-image {
+  width: 100%;
+  height: 200px;
+}
 </style>
