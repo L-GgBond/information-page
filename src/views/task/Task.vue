@@ -9,6 +9,14 @@
         </el-select>
       </el-form-item>
 
+      <el-form-item label="审批" prop="approver">
+        <el-select  v-model="formModel.approver" placeholder="请选择审批人">
+            <template v-for="(item,index) in tableTeacherDate" >
+                <el-option :label="item.nickname" :value="item.id" />
+            </template>
+        </el-select>
+      </el-form-item>
+
       <el-form-item label="科目" v-for="(item,index) in tableSubjectDate" class="subjectlabel">
             <el-col :span="6">
                 <el-form-item :prop="'subject'+item.id" :key="item.id">
@@ -49,12 +57,13 @@
 import { ref,reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import { RequestTermListData,RequestSubjectListData } from '~/api/task.js'
+import { RequestTermListData,RequestSubjectListData,RequestTeacherListData } from '~/api/task.js'
 import { RequestUploads } from '~/api/uploads.js'
 import { forEach } from 'lodash'
 
 const formModel = reactive({
     "schoolterm":"",
+    "approver":"",
     "subject":[],
     "files":[],
     "content":[]
@@ -101,6 +110,17 @@ function tableSubjecDateFunc(){
     })
 }
 tableSubjecDateFunc()
+
+const tableTeacherDate = ref([])
+function tableTeacherDateFunc(){
+    RequestTeacherListData().then(res => {
+        console.log("teachder"+res)
+        if(res.code == 200){
+            tableTeacherDate.value = res.data
+        }
+    })
+}
+tableTeacherDateFunc()
 
 const hideUpload = ref(false)
 const avatar = ref()

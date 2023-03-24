@@ -6,8 +6,8 @@ const config = {
 };
 
 
-export function getRoleListData(){
-    return axios.get('/in/role/list')
+export function getRoleListData(current,size){
+    return axios.get('/in/role/list?current='+ current +"&size=" + size)
 }
 
 

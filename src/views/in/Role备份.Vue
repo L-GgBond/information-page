@@ -69,8 +69,7 @@
                 :data="ThreeData"
                 show-checkbox
                 node-key="id"
-                :props="{ label: 'name', children: 'children' }" :default-expanded-keys="defaultExpandedKeys" :current-node-key="checkTree"
-                :default-checked-keys="defaultCheckedKeys" check-strictly="true"/>
+                :props="{ label: 'name', children: 'children' }" :default-expanded-keys="defaultExpandedKeys" :current-node-key="checkTree"/>
         </el-form>
     </form-drawer>
 </template>
@@ -113,7 +112,6 @@ const formRoleDrawerRef = ref(null)
 const ruleRoleFormRef = ref(null)
 const handleRoleCreate = ()=> { ID.value = 0;formRoleDrawerRef.value.open() }
 const ruleRoleForm = reactive({
-    "id":'',
     "name":'',
     "code":'',
     "remark":'',
@@ -141,7 +139,6 @@ const handleRoleEdit = (row) => {
     getRoleUpdateDataInfo(row.id).then(res=>{
         if(res.code == 200){
             formRoleDrawerRef.value.open()
-            ruleRoleForm.id = row.id
             ruleRoleForm.name = row.name
             ruleRoleForm.code = row.code
             ruleRoleForm.remark = row.remark
@@ -189,7 +186,6 @@ onMounted(() => {
 const ThreeData = ref([])
 const permTree = ref(null)
 const defaultExpandedKeys = ref([])
-const defaultCheckedKeys = ref([])
 const ruleRoleAccactFormRef = ref(null)
 const formRoleAccactDrawerRef = ref(null)
 const checkTree = ref([])
@@ -198,12 +194,12 @@ const handleRoleAccact =(id) => {
     console.log(id.id)
     getRoleUpdateDataInfo(id.id).then(r => {
         console.log("r",r)
-        defaultCheckedKeys.value = r.data.menuIds
+        
+        defaultExpandedKeys.value = r.data.menuIds 
+        
     })
     getMenuListData().then(res =>{
         if(res.code == 200){
-            console.log("getMenuListData")
-            console.log(res)
             ThreeData.value = res.data
             AdddefaultExpandedKeysId(res.data)
         }
@@ -220,22 +216,12 @@ function AdddefaultExpandedKeysId(data){
     }
 }
 
-const setCheckedNodes =() => {
-    console.log("setCheckedNodes")
-    console.log(permTree.value)
-
-}
-const getCheckedKeys = () => {
-  console.log(permTree.value.getCheckedKeys(false))
-}
-
 const handleRoleAccactDrawerSubmit = ()=>{
     console.log("分配权限")
     console.log(defaultExpandedKeys)
     console.log(ruleRoleAccactFormRef.value)
     console.log(checkTree)
-    console.log(permTree)
-    console.log(getCheckedKeys())
+    console.log(permTree.getCheckedKeys())
     
     
 }

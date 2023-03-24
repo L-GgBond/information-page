@@ -69,12 +69,12 @@
                     </template>
                 </el-upload>
             </el-form-item>
-            <el-form-item  label="账号">
-                <el-input  ></el-input>
+            <el-form-item  label="账号" prop="username">
+                <el-input   v-model="formModel.username"></el-input>
             </el-form-item>
             
-            <el-form-item  label="姓名">
-                <el-input  ></el-input>
+            <el-form-item  label="姓名" prop="nickname">
+                <el-input  v-model="formModel.nickname"></el-input>
             </el-form-item>
             <!-- <div v-if="formModel.types == 'student'">    
             </div> -->

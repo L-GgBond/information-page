@@ -76,9 +76,7 @@ const doLogin = function () {
             return false
         }
         loading.value = true
-
         store.dispatch("login",form).then(res=>{
-            console.log('r',res)
             if(res.code == 200){
                 toast("登录成功")
                 store.dispatch('getinfo')

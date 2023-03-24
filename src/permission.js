@@ -7,17 +7,16 @@ import {
 } from "~/utils/common"
 import store from "~/store"
 import axios from '~/utils/request'
+import { getinfo } from '~/api/manager.js'
+import { ref,reactive } from 'vue'
 
 let hasRoutes = store.state.hasRoutes
 // 全局前置守卫
 let hasGetInfo = false
 router.beforeEach(async (to,from,next)=>{
-    console.log(1)
     // 显示loading
     showFullLoading()
     const token = getToken()
-    console.log(store.state.user.length)
-    console.log(token)
     if(!token && to.path != "/login"){
         store.dispatch("logout")
         return next({ path:"/login" })
@@ -31,15 +30,16 @@ router.beforeEach(async (to,from,next)=>{
 
     let hasNewRoutes = false
     if(token){
-        console.log(1111)
         await store.dispatch("getUserInfo")
         store.state.hasRoutes = 0
     }
+    const navData  = ref([]);
     if(token && !hasGetInfo){
         if(hasRoutes.length != 0){
             next()
         }else{
             let { nav }  = await store.dispatch("getinfo")
+            console.log(nav)
             hasGetInfo = true
             store.state.hasRoutes = 2
             // 动态添加路由
@@ -49,6 +49,7 @@ router.beforeEach(async (to,from,next)=>{
    
     }else{
         console.log("路由已存在")
+        console.log(to.fullPath)
         next()
     }
     

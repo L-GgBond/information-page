@@ -14,6 +14,13 @@ export function RequestSubjectListData(){
     return axios.get('/task/subjectlist')
 }
 
+export function RequestTeacherListData(){
+    return axios.get('/task/teacherlist')
+}
+
+
+
+
 
 export function RequestSaveData(data){
     return axios.post('/student/save', data)

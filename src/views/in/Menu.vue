@@ -119,6 +119,7 @@ function AdddefaultExpandedKeysId(data) {
 const ruleMenuFormRef = ref()
 const formDrawerRef = ref(null)
 const ruleMenuForm = reactive({
+    'id': '',
     'parentId': '',
     'name': '',
     'perms': '',
@@ -134,6 +135,7 @@ const drawerTitle = computed(() => editId.value ? "修改" : "新增")
 const handleCreate = () => {
     console.log("新增")
     editId.value = 0
+    ruleMenuForm.id = ""
     ruleMenuForm.parentId = ""
     ruleMenuForm.name = ""
     ruleMenuForm.perms = ""
@@ -177,6 +179,7 @@ const handleUpdateMenu = (id) => {
     getMenuUpdateDataInfo(id).then(res => {
         if (res.code == 200) {
             const r = res.data
+            ruleMenuForm.id = r.id
             ruleMenuForm.name = r.name
             ruleMenuForm.parentId = r.parentId
             ruleMenuForm.perms = r.perms
