@@ -36,3 +36,7 @@ export function getUserInfo(){
 export function updatePassword(data){
     return axios.post("/in/user/updatePass",data,config)
 }
+
+export function updateuser(data){
+    return axios.post("/in/user/updateuser",data)
+}

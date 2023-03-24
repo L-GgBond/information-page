@@ -77,9 +77,28 @@
                 <el-input  v-model="formModel.nickname"></el-input>
             </el-form-item>
             
-           
-           
-           
+            <el-form-item  label="年龄" prop="age">
+                <el-input  v-model="formModel.age"></el-input>
+            </el-form-item>
+            <el-form-item label="性别" prop="sex">
+               <el-radio-group v-model="formModel.sex">
+                  <el-radio :label=0>女</el-radio>
+                  <el-radio :label=1>男</el-radio>
+               </el-radio-group>
+            </el-form-item>
+
+            <el-form-item  label="联系方式" prop="email">
+                <el-input  v-model="formModel.email"></el-input>
+            </el-form-item>
+
+            <el-form-item  label="民族" prop="nation">
+                <el-input  v-model="formModel.nation"></el-input>
+            </el-form-item>
+
+            <el-form-item  label="地址" prop="city">
+                <el-input  v-model="formModel.city"></el-input>
+            </el-form-item>
+
             <!-- <div v-if="formModel.types == 'student'">    
             </div> -->
       
@@ -93,7 +112,7 @@ import { ElMessageBox } from 'element-plus'
 import FormDrawer from '~/components/FormDrawer.vue'
 import { useFullscreen } from '@vueuse/core'
 import { useLogout } from '~/utils/UseManager'
-import { updatePassword,logout,getUserInfo } from '~/api/manager'
+import { updatePassword,logout,getUserInfo,updateuser } from '~/api/manager'
 import { toast } from '~/utils/common'
 import store  from '~/store/index.js'
 import { useRouter } from 'vue-router' 
@@ -174,9 +193,15 @@ const showDrawer = ref(false)
 const dialogVisible = ref(false)
 const userData = ref();
 const formModel = reactive({
+    "id":"",
     "avatar":"",
     "username":"",
     "nickname":"",
+    "age":"",
+    "sex":"",
+    "email":"",
+    "nation":"",
+    "city":"",
     "types":"",
 })
 
@@ -200,9 +225,15 @@ const handleCommand = (e)=>{
                 console.log(res)
                 if(res.code == 200){
                     userData.value = res.data
+                    formModel.id = res.data.id
                     formModel.avatar = res.data.avatar
                     formModel.username = res.data.username
                     formModel.nickname = res.data.nickname
+                    formModel.age = res.data.age
+                    formModel.sex = res.data.sex
+                    formModel.email = res.data.email
+                    formModel.nation = res.data.nation
+                    formModel.city = res.data.city
                     formModel.types = res.data.types
                 }
             })
@@ -212,6 +243,19 @@ const handleCommand = (e)=>{
 }
 
 const handleRefresh = ()=> location.reload() 
+
+const handleDrawerSubmitTwo = () => {
+    console.log("更新用户信息")
+    console.log(formModel)
+    loading.value = true
+    updateuser(formModel).then(res => {
+        if(res.code == 200){
+            loading.value = false
+            toast("更新成功");
+            formDrawerRefTwo.value.close()
+        }
+    })
+}
 </script>
 <style>
 .header{
