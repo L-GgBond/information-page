@@ -5,6 +5,12 @@
             <el-table-column prop="id" label="#" />
             <el-table-column  prop="subjectname" label="科目" />
             <el-table-column  prop="subjectdesc" label="描述" />
+            <el-table-column  prop="status" label="状态">
+                <template #default="scope">
+                        <el-tag type="danger" v-if="scope.row.status == 1">禁用</el-tag>
+                        <el-tag type="success" v-else>正常</el-tag>
+                </template>
+            </el-table-column>
             <el-table-column prop="createtime" label="更新时间">
                 <template #default="scope">
                 {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
@@ -44,6 +50,13 @@
             <el-form-item label="描述" prop="subjectdesc">
                 <el-input v-model="formModel.subjectdesc" type="textarea" />
             </el-form-item>
+
+            <el-form-item label="状态" prop="status">
+                <el-select v-model="formModel.status" placeholder="请选择状态">
+                        <el-option label="正常" value="0" />
+                        <el-option label="禁用" value="1" />
+                </el-select>
+            </el-form-item>
         </el-form>
     </form-drawer>
 </template>
@@ -55,7 +68,10 @@ import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData } from '~/api/subject.js'
+import { Check, Close } from '@element-plus/icons-vue'
 
+const switchTrue = ref(true)
+const switchFalse = ref(false)
 const current = ref(1)
 const size = ref(5)
 const total = ref(1)
@@ -94,6 +110,7 @@ const formModel = reactive({
     "id":'',
     "subjectname":'',
     "subjectdesc":'',
+    "status":'',
 })
 const formRules = {
     subjectname: [ { required: true, message: '请输入科目名称', trigger: 'blur' } ],
@@ -102,6 +119,7 @@ const ResetFields = () =>{
     formModel.id = ""
     formModel.subjectname = ""
     formModel.subjectdesc = ""
+    formModel.status = ""
 }
 
 //详情
@@ -114,6 +132,7 @@ const handleEdit = (row) => {
             formModel.id = res.data.id
             formModel.subjectname = res.data.subjectname
             formModel.subjectdesc = res.data.subjectdesc
+            formModel.status = res.data.status ? "禁用" : "正常"
         }
     })
     
@@ -123,6 +142,11 @@ const handleDrawerSubmit = () => {
         console.log(valid)
         if(valid){
             formDrawerRef.value.showLoading()
+            if(formModel.status  == "正常"){
+                formModel.status  = 0
+            }else if(formModel.status  == "禁用"){
+                formModel.status  = 1
+            }
             const fun = ID.value ? RequestUpdateData(formModel) : RequestSaveData(formModel)
             fun.then(res=>{
                 console.log(res)

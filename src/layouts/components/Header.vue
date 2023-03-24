@@ -76,6 +76,10 @@
             <el-form-item  label="姓名" prop="nickname">
                 <el-input  v-model="formModel.nickname"></el-input>
             </el-form-item>
+            
+           
+           
+           
             <!-- <div v-if="formModel.types == 'student'">    
             </div> -->
       
