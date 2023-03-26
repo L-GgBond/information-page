@@ -20,6 +20,9 @@ const store = createStore({
         }
     },
     mutations: {
+        SET_hasRoutes(state){
+            state.hasRoutes = []
+        },
         SET_Authorization(state,authorization){
             state.token_authorization = authorization
         },
@@ -61,6 +64,7 @@ const store = createStore({
             removeToken()
             // 清除当前用户状态 vuex
             commit("SET_USERINFO",{})
+            // commit("SET_hasRoutes",{})
         },
         getinfo({ commit }){
             return new Promise((resolve,reject)=>{

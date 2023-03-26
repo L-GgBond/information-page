@@ -55,13 +55,18 @@
         <el-form-item label="头像" prop="avatar">
             <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
             :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
-                <el-icon><Plus /></el-icon>
-                <template>
+                <el-icon class="icons" :class="{icons:Icons}" ><Plus /></el-icon>
+                <!-- <template> -->
                     <div>
+                        <!-- <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="avatar" alt="" /> -->
                         <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" />
                     </div>
-                </template>
+                    
+                <!-- </template> -->
             </el-upload>
+            <!-- <div>{{ avatar }}</div> -->
+           
+
          </el-form-item>
 
          <el-form-item label="账号" prop="username">
@@ -112,7 +117,8 @@ import { getMenuListData } from "~/api/menu.js"
 import { RequestUploads } from '~/api/uploads.js'
 import { RequestRoleListData } from '~/api/student.js'
 
-
+const Icons =ref(false)
+const uploadImgs = ref(false)
 const hideUpload = ref(false)
 const avatar = ref()
 const handleAvatarSuccess =(file) =>{
@@ -228,11 +234,24 @@ const handleRoleEdit = (row) => {
             formModel.roleid = row.roleid
             formModel.email = row.email
             formModel.avatar = row.avatar
+            avatar.value = row.avatar
             formModel.statu = res.data.statu ? "正常" : "禁用"
+            if(row.avatar == ""){
+                Icons.value = false
+                // uploadImgs.value = false
+            }
+            // const blob = new Blob([row.avatar], { type: 'application/octet-stream' })
+            // const qrUrl = window.URL.createObjectURL(blob)
+            // avatar.value = qrUrl;
         }
     })
     
 }
+
+
+
+
+
 const handleRoleDrawerSubmit = () => {
     formRef.value.validate((valid) => {
         console.log(valid)
@@ -306,6 +325,12 @@ function AdddefaultExpandedKeysId(data){
         @apply mt-6 mb-6;
     }
     .hide .el-upload--picture-card{
+        display: none;
+    }
+    .icons{
+        display: none;
+    }
+    .uploadImg{
         display: none;
     }
 </style>

@@ -14,6 +14,7 @@ let hasRoutes = store.state.hasRoutes
 // 全局前置守卫
 let hasGetInfo = false
 router.beforeEach(async (to,from,next)=>{
+    console.log("to",to)
     // 显示loading
     showFullLoading()
     const token = getToken()
@@ -30,7 +31,13 @@ router.beforeEach(async (to,from,next)=>{
 
     let hasNewRoutes = false
     if(token){
-        await store.dispatch("getUserInfo")
+        let user = await store.dispatch("getUserInfo")
+        if(user.statu == 0){
+            toast("已被禁用登陆!","error")
+            store.dispatch("logout")
+            return next({ path:"/login" })
+        }
+        console.log("user",user)
         store.state.hasRoutes = 0
     }
     const navData  = ref([]);
@@ -53,6 +60,9 @@ router.beforeEach(async (to,from,next)=>{
         next()
     }
     
+    if(to.fullPath == "/login"){
+        hasGetInfo = false
+    }
     // console.log(to.fullPath)
     // 设置页面标题
     let title = (to.meta.title ? to.meta.title : "") + "信息管理系统"

@@ -262,6 +262,7 @@ const handleDrawerSubmitTwo = () => {
     @apply flex items-center text-light-50 fixed top-0 right-0 left-0;
     height: 64px;
     background-color: lightseagreen;
+    z-index: 99;
 }
 .logo{
     width: 170px;

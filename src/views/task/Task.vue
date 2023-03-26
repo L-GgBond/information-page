@@ -1,7 +1,7 @@
 <template>
    <el-card>
     <el-form ref="formRef" :model="formModel" :rules="formRules"  label-width="auto">
-      <el-form-item label="学期" prop="schoolterm" :rules="[{required:true,message:'请选择学期',trigger:'blur'}]">
+      <el-form-item label="学期" prop="schoolterm">
         <el-select  v-model="formModel.schoolterm" placeholder="请选择学期">
             <template v-for="(item,index) in tableTermDate" >
                 <el-option :label="item.termname" :value="item.termname" />
@@ -26,8 +26,8 @@
         <el-col class="text-center" :span="1" >-</el-col>
             <el-col :span="6" style="text-align: center;">
                 <el-form-item label="附件" :prop="'files'+item.id.key">
-                    <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
-                    :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
+                    <el-upload :action="RequestUploads+'?id'+index" :data="uploadData" :before-upload="beforeUpload"  list-type="picture-card" multiple="false" name="f" :limit=1 
+                    :on-success="handleAvatarSuccess"  :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
                         <el-icon><Plus /></el-icon>
                         <template>
                             <div>
@@ -39,8 +39,9 @@
             </el-col>
             <el-col class="text-center" :span="1" >-</el-col>
             <el-col :span="6">
-                <el-form-item :prop="'content'+item.id">
-                    <el-input type="textarea" :model="item.id" placeholder="详细内容"/>
+                <el-form-item prop="content">
+                    <el-input type="textarea" v-model="formModel.content[index].value" placeholder="详细内容"   />
+                    <!-- @change="specifiName($event)" -->
                 </el-form-item>
             </el-col>
       </el-form-item>
@@ -66,10 +67,14 @@ const formModel = reactive({
     "approver":"",
     "subject":[],
     "files":[],
-    "content":[]
-})
+    "content":[],
 
+})
+const uploadData = ref(null)
 console.log(formModel)
+function specifiName(e){
+console.log('e',e)
+}
 
 const tableTermDate = ref([])
 function tableTermDateFunc(){
@@ -96,12 +101,13 @@ function tableSubjecDateFunc(){
                     key:item.id,
                     value:item.subjectname
                 })
-                // formModel.files.push({
-                //     key:item.id,
-                //     value:""
-                // })
+                formModel.files.push({
+                    key:item.id,
+                    value:""
+                })
                 formModel.content.push({
-                   
+                    key:item.id,
+                    value:""
                 })
             })
 
@@ -110,6 +116,11 @@ function tableSubjecDateFunc(){
     })
 }
 tableSubjecDateFunc()
+
+
+function beforeUpload(){
+    
+}
 
 const tableTeacherDate = ref([])
 function tableTeacherDateFunc(){

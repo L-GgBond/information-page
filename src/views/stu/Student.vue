@@ -10,7 +10,7 @@
             </el-form-item>
         </el-form>
 
-        <el-table :data="tableData"  style="width: 1100px" v-loading="loading">
+        <el-table :data="tableData"  style="width: 1100px;padding: 10px;" v-loading="loading" >
             <el-table-column prop="id"  label="#" />
             <el-table-column  prop="username" label="账号"  width="150px"/>
             <el-table-column label="头像"  width="120px">
