@@ -1,10 +1,10 @@
 <template>
    <el-card>
     <el-form ref="formRef" :model="formModel" :rules="formRules"  label-width="auto">
-      <el-form-item label="学期" prop="schoolterm">
+      <el-form-item label="学期" prop="schoolterm"  >
         <el-select  v-model="formModel.schoolterm" placeholder="请选择学期">
             <template v-for="(item,index) in tableTermDate" >
-                <el-option :label="item.termname" :value="item.termname" />
+                <el-option :label="item.termname" :value="item.termname"/>
             </template>
         </el-select>
       </el-form-item>
@@ -26,8 +26,8 @@
         <el-col class="text-center" :span="1" >-</el-col>
             <el-col :span="6" style="text-align: center;">
                 <el-form-item label="附件" :prop="'files'+item.id.key">
-                    <el-upload :action="RequestUploads+'?id'+index" :data="uploadData" :before-upload="beforeUpload"  list-type="picture-card" multiple="false" name="f" :limit=1 
-                    :on-success="handleAvatarSuccess"  :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
+                    <el-upload :action="RequestUploadsApi+'?id='+index"  :before-upload="beforeUpload"  list-type="picture-card" multiple="false" name="f" :limit=1 
+                    :on-success="handleAvatarSuccess"  :on-error="handleAvatarError" :class="{hide:hideUpload[index]}" :on-progress="uploadOnChange">
                         <el-icon><Plus /></el-icon>
                         <template>
                             <div>
@@ -58,9 +58,10 @@
 import { ref,reactive } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import { RequestTermListData,RequestSubjectListData,RequestTeacherListData } from '~/api/task.js'
-import { RequestUploads } from '~/api/uploads.js'
+import { RequestTermListData,RequestSubjectListData,RequestTeacherListData,RequestTaskSaveData } from '~/api/task.js'
+import { RequestUploads,RequestUploadsApi } from '~/api/uploads.js'
 import { forEach } from 'lodash'
+import store from '~/store/index'
 
 const formModel = reactive({
     "schoolterm":"",
@@ -109,7 +110,13 @@ function tableSubjecDateFunc(){
                     key:item.id,
                     value:""
                 })
+                
             })
+            console.log(tableSubjectDate.value.length)
+            // for(var i = 0;i <  tableSubjectDate.value.length;i++){
+            //     console.log(i)
+            //     // const hideUpload[i] = ref(false)
+            // }
 
         }
     }).finally(err => {
@@ -134,14 +141,15 @@ function tableTeacherDateFunc(){
 tableTeacherDateFunc()
 
 const hideUpload = ref(false)
+
 const avatar = ref()
 const handleAvatarSuccess =(file) =>{
  console.log(file)
   if(file.code == 200){
-    toast("上传成功")
+    formModel.files[file.data.id].value = file.data.url
+    hideUpload[file.data.id] = true
+    // avatar.value = file.data.url
 
-    formModel.files = file.data
-    avatar.value = file.data
   }
 }
 const handleAvataError =(file) =>{
@@ -154,11 +162,42 @@ const uploadOnChange =(file,fileList) =>{
 
 const loading = ref(false);
 const formRef = ref(null)
-const  onHandleSubmit = () => {
+
+const IsContent =(rule,value,callback) =>{
+    console.log(rule)
+    console.log(value)
+    console.log(callback)
+    for(var i =0;i<value.length;i++){
+       if(content[i].value == '' || content[i].value == undefined){
+        callback(new Error('请输入内容'))
+       }else{
+        callback()
+       }
+    }
+}
+
+const formRules = {
+    schoolterm:[{required:true,message:"请选择学期",trigger:'blur'}],
+    approver:[{required:true,message:"请选择审批人",trigger:'blur'}],
+    // content:[{validator:IsContent,message:"请输入内容",trigger:'blur'}],
+    
+}
+function onHandleSubmit (){
     console.log(formModel)
-    // formRef.validate((valid) => {
-    //     console.log(valid)
-    // })
+    formRef.value.validate((valid) => {
+        console.log(valid)
+        console.log(store.state.user.id)
+
+        if(valid){
+            console.log(formModel.content)
+            RequestTaskSaveData({uid:store.state.user.id,subject:formModel.subject,schoolterm:formModel.schoolterm,approver:formModel.approver,files:formModel.files,content:formModel.content})
+            .then(res => {
+                console.log(res)
+            })
+        }
+    })
+   
+
 }
 </script>
   

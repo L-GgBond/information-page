@@ -6,3 +6,5 @@ const config = {
 };
 
 export const RequestUploads = "/api/upload"
+
+export const RequestUploadsApi = "/api/uploads"

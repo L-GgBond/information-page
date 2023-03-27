@@ -18,6 +18,11 @@ export function RequestTeacherListData(){
     return axios.get('/task/teacherlist')
 }
 
+export function RequestTaskSaveData(data){
+    return axios.post('/task/tasksave', data,config)
+}
+
+
 
 
 
