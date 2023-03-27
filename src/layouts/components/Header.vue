@@ -58,16 +58,30 @@
         <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"  status-icon>
             <el-form-item prop="avatar" >
-                <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
+                <!-- <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
                 :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange"
                 :before-remove="handeleAvatarDelete">
-                    <el-icon><Plus /></el-icon>
+                  <el-icon :class="{icons:Isicons}" ><Plus /></el-icon>
                     <template>
                         <div>
-                            <img class="el-upload-list__item-thumbnail" :src="formModel.avatar" alt="" />
+                            <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="formModel.avatar" alt="" />
                         </div>
                     </template>
-                </el-upload>
+                </el-upload> -->
+
+                <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
+            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
+                <el-icon :class="{icons:Isicons}" ><Plus /></el-icon>
+                <!-- <template> -->
+                    <div>
+                        <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="formModel.avatar" alt="" />
+                        <!-- <img class="el-upload-list__item-thumbnail" :src="formModel.avatar" alt="" /> -->
+                    </div>
+                    
+                <!-- </template> -->
+            </el-upload>
+
+            
             </el-form-item>
             <el-form-item  label="账号" prop="username">
                 <el-input   v-model="formModel.username"></el-input>
@@ -120,7 +134,8 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const { isFullscreen, toggle } = useFullscreen()
 const logo = ref("https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png")
-
+const Isicons =ref(true)
+const uploadImgs = ref(true)
 const formDrawerRef = ref(null)
 const formDrawerRefTwo = ref(null)
 const form = reactive({
@@ -236,7 +251,16 @@ const handleCommand = (e)=>{
                     formModel.city = res.data.city
                     formModel.types = res.data.types
                 }
+                console.log(res.data.avatar)
+                if( res.data.avatar == "" ||  res.data.avatar == undefined ||  res.data.avatar == ' '){
+                    Isicons.value = false
+                    uploadImgs.value = true
+                }else{
+                    Isicons.value = true
+                    uploadImgs.value = false
+                }
             })
+           
             formDrawerRefTwo.value.open()
             break;
     }
@@ -284,6 +308,12 @@ const handleDrawerSubmitTwo = () => {
     @apply flex justify-center items-center mx-5;
 }
 
+.icons{
+        display: none;
+    }
+.uploadImg{
+    display: none;
+}
 /* .el-form-item__content div{
     margin:auto;
 } */

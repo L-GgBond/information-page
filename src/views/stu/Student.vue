@@ -1,5 +1,5 @@
 <template>
-    <el-card shadow="never" class="border-0">
+    <el-card shadow="never" class="border-0" style="position: relative;">
         <ListHeader @create="handleCreate" @refresh="getData"/>
         <el-form ref="searchRef" :model="searchModel" :rules="searchRules" :inline="true"  class="demo-form-inline">
             <el-form-item label="姓名" prop="searchNickname">
@@ -10,20 +10,20 @@
             </el-form-item>
         </el-form>
 
-        <el-table :data="tableData"  style="width: 1100px;padding: 10px;" v-loading="loading" >
+        <el-table :data="tableData"  style="width: 1100px;top: 20px;" v-loading="loading" >
             <el-table-column prop="id"  label="#" />
             <el-table-column  prop="username" label="账号"  width="150px"/>
             <el-table-column label="头像"  width="120px">
                 <template #default="scope">
                     <el-avatar :size="50" :src="scope.row.avatar" />
-                    <el-image
+                    <!-- <el-image
                     style="width:50px;border-radius: 50%;"
                     :src="scope.row.avatar"
                     :zoom-rate="1.2"
                     :preview-src-list="[scope.row.avatar]"
                     :initial-index="4"
                     fit="cover"
-                    />
+                    /> -->
                 </template>
             </el-table-column>
             <el-table-column prop="nickname" label="姓名"  width="120px"/>
@@ -65,7 +65,7 @@
             </el-table-column>
         </el-table>
        
-        <div class="pages">
+        <div class="pages" style="">
             <el-pagination
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
@@ -85,12 +85,13 @@
             <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
             :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange"
             :before-remove="handeleAvatarDelete">
-                <el-icon><Plus /></el-icon>
-                <template>
+            <el-icon :class="{icons:Isicons}" ><Plus /></el-icon>
+                <!-- <template> -->
                     <div>
-                        <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" />
+                        <!-- <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" /> -->
+                        <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="avatar" alt="" />
                     </div>
-                </template>
+                <!-- </template> -->
             </el-upload>
          </el-form-item>
 
@@ -161,6 +162,8 @@ import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData, RequestClassListData, RequestRoleListData } from '~/api/student.js'
 import { RequestUploads } from '~/api/uploads.js'
 
+const Isicons =ref(true)
+const uploadImgs = ref(true)
 const hideUpload = ref(false)
 const avatar = ref()
 const handleAvatarSuccess =(file) =>{
@@ -231,6 +234,13 @@ const formDrawerRef = ref(null)
 const formRef = ref(null)
 const handleCreate = ()=> {
      ResetFields(); 
+     if(avatar.value == "" || avatar.value == undefined){
+        Isicons.value = false
+        uploadImgs.value = true
+    }else{
+        Isicons.value = true
+        uploadImgs.value = false
+    }
      ID.value = 0;
      formDrawerRef.value.open() 
      RequestClassListData().then(res=>{
@@ -295,6 +305,7 @@ const ResetFields = () =>{
     formModel.avatar = ""
     formModel.age = ""
     formModel.email = ""
+    avatar.value = ""
 
 }
 
@@ -335,6 +346,13 @@ const handleEdit = (row) => {
             formModel.email = res.data.email
             formModel.statu = res.data.statu ? "正常" : "禁用"
         }
+        if(avatar.value == "" || avatar.value == undefined){
+                Isicons.value = false
+                uploadImgs.value = true
+            }else{
+                Isicons.value = true
+                uploadImgs.value = false
+            }
     })
     
 }
@@ -401,4 +419,10 @@ const handleDelete =(id) =>{
   width: 100%;
   height: 200px;
 }
+.icons{
+        display: none;
+    }
+    .uploadImg{
+        display: none;
+    }
 </style>

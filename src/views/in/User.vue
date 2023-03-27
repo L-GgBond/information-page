@@ -55,11 +55,11 @@
         <el-form-item label="头像" prop="avatar">
             <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
             :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
-                <el-icon class="icons" :class="{icons:Icons}" ><Plus /></el-icon>
+                <el-icon :class="{icons:Isicons}" ><Plus /></el-icon>
                 <!-- <template> -->
                     <div>
-                        <!-- <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="avatar" alt="" /> -->
-                        <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" />
+                        <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="avatar" alt="" />
+                        <!-- <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" /> -->
                     </div>
                     
                 <!-- </template> -->
@@ -117,8 +117,8 @@ import { getMenuListData } from "~/api/menu.js"
 import { RequestUploads } from '~/api/uploads.js'
 import { RequestRoleListData } from '~/api/student.js'
 
-const Icons =ref(false)
-const uploadImgs = ref(false)
+const Isicons =ref(true)
+const uploadImgs = ref(true)
 const hideUpload = ref(false)
 const avatar = ref()
 const handleAvatarSuccess =(file) =>{
@@ -178,7 +178,17 @@ const ruleRoleFormRef = ref(null)
 const formRef = ref()
 const roleData = ref([])
 const handleRoleCreate = ()=> { 
+
     ResetFields()
+    console.log(avatar.value)
+    if(avatar.value == "" || avatar.value == undefined){
+        Isicons.value = false
+        uploadImgs.value = true
+    }else{
+        Isicons.value = true
+        uploadImgs.value = false
+    }
+   
     ID.value = 0;formRoleDrawerRef.value.open() 
     RequestRoleListData().then(res=>{
         console.log(res)
@@ -215,6 +225,7 @@ const ResetFields = () =>{
     formModel.email = ""
     formModel.avatar = ""
     formModel.email = ""
+    avatar.value = ""
 }
 const handleRoleEdit = (row) => {
     console.log(row.id)
@@ -236,13 +247,13 @@ const handleRoleEdit = (row) => {
             formModel.avatar = row.avatar
             avatar.value = row.avatar
             formModel.statu = res.data.statu ? "正常" : "禁用"
-            if(row.avatar == ""){
-                Icons.value = false
-                // uploadImgs.value = false
+            if(avatar.value == "" || avatar.value == undefined){
+                Isicons.value = false
+                uploadImgs.value = true
+            }else{
+                Isicons.value = true
+                uploadImgs.value = false
             }
-            // const blob = new Blob([row.avatar], { type: 'application/octet-stream' })
-            // const qrUrl = window.URL.createObjectURL(blob)
-            // avatar.value = qrUrl;
         }
     })
     
