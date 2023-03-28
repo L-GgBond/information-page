@@ -23,7 +23,18 @@ export function RequestTaskSaveData(data){
 }
 
 
+export function RequestListData(current, size, types, nickname,uid){
+    return axios.get('/task/tasklist?current='+ current +"&size=" + size + "&types=" + types + "&nickname=" + nickname + "&uid=" + uid)
+}
 
+
+export function RequestDeleteData(id){
+    return axios.post('/task/listdelete/'+ id, {}, config)
+}
+
+export function RequestInfoData(id){
+    return axios.get('/task/tasklistinfo/' + id)
+}
 
 
 
@@ -31,9 +42,6 @@ export function RequestSaveData(data){
     return axios.post('/student/save', data)
 }
 
-export function RequestInfoData(id){
-    return axios.get('/student/info/' + id)
-}
 
 
 export function RequestUpdateData(data){
@@ -41,9 +49,6 @@ export function RequestUpdateData(data){
 }
 
 
-export function RequestDeleteData(id){
-    return axios.post('/student/delete/'+ id, {}, config)
-}
 
 export function RequestClassListData(){
     return axios.get('/student/classlist')

@@ -26,7 +26,7 @@
             <el-table-column  prop="uname" label="学号"  />
             <el-table-column  prop="unickname" label="名称" />
             <el-table-column  prop="schoolterm" label="学期" />
-            <el-table-column  prop="approver" label="审批人"/>
+            <!-- <el-table-column  prop="approver" label="审批人"/> -->
             <el-table-column prop="statu" label="状态">
                 <template #default="scope">
                     <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">已评分</el-tag>
@@ -90,7 +90,7 @@ import { computed } from "@vue/reactivity";
 import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
-import { RequestListData,RequestDeleteData,RequestInfoData } from '~/api/task.js'
+import { RequestListData,RequestDeleteData,RequestInfoData } from '~/api/tea.js'
 
 const current = ref(1)
 const size = ref(5)
