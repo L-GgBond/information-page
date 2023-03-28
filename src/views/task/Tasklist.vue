@@ -29,7 +29,7 @@
             <el-table-column  prop="approver" label="审批人"/>
             <el-table-column prop="statu" label="状态">
                 <template #default="scope">
-                    <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">已评分</el-tag>
+                    <el-tag class="ml-2" v-if="scope.row.status == 1" type="success">已评分</el-tag>
                     <el-tag class="ml-2" v-else type="danger">待评分</el-tag>
                 </template>
             </el-table-column>
@@ -79,7 +79,13 @@
                    
                 </template>
             </el-table-column>
+            
         </el-table>
+        <div style="">
+            <el-text style="font-size: 14px;font-weight: 400;margin-top: 10px;">当前总分数：</el-text>
+            <el-text class="mx-1" type="danger" style="color:red">{{ totals }}</el-text>
+        </div>
+       
     </el-drawer>
 </template>
 <script setup>
@@ -92,6 +98,7 @@ import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestListData,RequestDeleteData,RequestInfoData } from '~/api/task.js'
 
+const totals = ref(null)
 const current = ref(1)
 const size = ref(5)
 const total = ref(1)
@@ -129,6 +136,7 @@ const getListTableData = ()=>{
         if(res.code == 200){
             tableData.value = res.data.data
             total.value = res.data.total
+
         }
     })
 }
@@ -150,9 +158,14 @@ const tableDataInfo = ref(null)
 const handleTaskInfo =(id) =>{
     console.log(id)
     infoId.value = id;
+    totals.value = 0
     RequestInfoData(id).then(res => {
         console.log(res)
         tableDataInfo.value = res.data
+        res.data.forEach(item => {
+            console.log(item)
+            totals.value += item.grade 
+        })
     })
     formDrawerRef.value = true 
 }

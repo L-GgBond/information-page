@@ -19,3 +19,8 @@ export function RequestDeleteData(id){
 export function RequestInfoData(id){
     return axios.get('/tea/listinfo/' + id)
 }
+
+
+export function RequestSaveData(id,data){
+    return axios.post('/tea/save/'+ id,data, config)
+}
