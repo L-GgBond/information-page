@@ -20,7 +20,7 @@
       <el-form-item label="科目" v-for="(item,index) in tableSubjectDate" class="subjectlabel">
             <el-col :span="6">
                 <el-form-item :prop="'subject'+item.id" :key="item.id">
-                    <el-input type="text" :model="'subject'+item.id" :placeholder="item.subjectname" />
+                    <el-input type="text" :model="'subject'+item.id" :placeholder="item.subjectname" disabled="" />
                 </el-form-item>
             </el-col>
         <el-col class="text-center" :span="1" >-</el-col>
@@ -62,6 +62,10 @@ import { RequestTermListData,RequestSubjectListData,RequestTeacherListData,Reque
 import { RequestUploads,RequestUploadsApi } from '~/api/uploads.js'
 import { forEach } from 'lodash'
 import store from '~/store/index'
+import { useRouter } from 'vue-router'
+import { toast } from '~/utils/common'
+
+const router = useRouter();
 
 const formModel = reactive({
     "schoolterm":"",
@@ -110,6 +114,8 @@ function tableSubjecDateFunc(){
                     key:item.id,
                     value:""
                 })
+
+         
                 
             })
             console.log(tableSubjectDate.value.length)
@@ -190,9 +196,13 @@ function onHandleSubmit (){
 
         if(valid){
             console.log(formModel.content)
-            RequestTaskSaveData({uid:store.state.user.id,subject:formModel.subject,schoolterm:formModel.schoolterm,approver:formModel.approver,files:formModel.files,content:formModel.content})
+            RequestTaskSaveData({uid:store.state.user.id,uname:store.state.user.username,unickname:store.state.user.nickname,subject:formModel.subject,schoolterm:formModel.schoolterm,approver:formModel.approver,files:formModel.files,content:formModel.content})
             .then(res => {
                 console.log(res)
+                if(res.code == 200){
+                    toast("作业提交成功！")
+                    router.push("/task/tasklist")
+                }
             })
         }
     })

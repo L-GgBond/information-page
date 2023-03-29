@@ -282,8 +282,11 @@ const handleRoleDrawerSubmit = () => {
                     ResetFields()
                     getUserListTableData()
                     formRoleDrawerRef.value.hideLoading()
+                }else{
+                    loading.value = false
                 }
             }).finally(() => {
+                loading.value = false
                 formDrawerRef.value.hideLoading()
             })
         }
