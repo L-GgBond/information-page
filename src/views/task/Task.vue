@@ -206,7 +206,6 @@ function onHandleSubmit (){
             })
         }
     })
-   
 
 }
 </script>

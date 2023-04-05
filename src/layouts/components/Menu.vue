@@ -1,8 +1,8 @@
 <template>
     <div class="menu"  :style="{width:$store.state.asideWidth}">
-        <el-menu default-active="1" class="border-0" unique-opened="true">
+        <el-menu :default-active="this.$store.state.editableTabsValue" class="border-0" unique-opened="true">
             <router-link to="/index">
-                <el-menu-item index="1">
+                <el-menu-item index="index"  @click="selectMenu({name:'index',title:'首页'})">
                     <el-icon><House /></el-icon>
                     <span>首页</span>
                 </el-menu-item>
@@ -18,7 +18,7 @@
                         <span>{{menu.title}}</span>
                     </template>
                     <router-link :to="item.path" v-for="item in menu.children">
-                        <el-menu-item :index="item.name">
+                        <el-menu-item :index="item.name" @click="selectMenu(item)">
                             <template #title>
                                 <el-icon> <component :is="item.icon"></component></el-icon>
                                 <span>{{item.title}}</span>
@@ -51,6 +51,12 @@ const asideMenus = computed(()=> store.state.menus)
 const handleSelect = (e) => {
     console.log(e)
     router.push(e)
+}
+
+
+function selectMenu(item){
+    console.log('item',item)
+    store.commit('addTab',item)
 }
 </script>
 <style>

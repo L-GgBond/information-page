@@ -5,7 +5,6 @@ const config = {
     }
 };
 
-
 export function RequestListData(current, size, types, nickname){
     return axios.get('/student/list?current='+ current +"&size=" + size + "&types=" + types + "&nickname=" + nickname )
 }

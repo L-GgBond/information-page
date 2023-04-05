@@ -18,6 +18,11 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 
+
+// import * as echarts from "echarts"
+// app.config.globalProperties.$echarts = echarts
+
+
 import locale from 'element-plus/dist/locale/zh-cn.mjs'
 app.use(ElementPlus, {locale})
 app.use(store)

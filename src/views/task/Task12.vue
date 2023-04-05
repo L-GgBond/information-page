@@ -76,7 +76,7 @@
       dynamicValidateForm.domains.splice(index, 1)
     }
   }
-  
+   
   const addDomain = () => {
     dynamicValidateForm.domains.push({
       key: Date.now(),

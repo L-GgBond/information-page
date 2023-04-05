@@ -161,7 +161,7 @@ import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData, RequestClassListData, RequestRoleListData } from '~/api/student.js'
 import { RequestUploads } from '~/api/uploads.js'
-
+ 
 const Isicons =ref(true)
 const uploadImgs = ref(true)
 const hideUpload = ref(false)

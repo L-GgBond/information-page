@@ -10,7 +10,6 @@ export function RequestListData(current, size){
     return axios.get('/term/list?current='+ current +"&size=" + size)
 }
 
-
 export function RequestSaveData(data){
     return axios.post('/term/save', data)
 }

@@ -4,7 +4,7 @@ import { setToken,removeToken } from '~/utils/auth'
 const store = createStore({
     state() {
         return {
-            user: {},
+            user: {}, 
             token_authorization:null,
             asideWidth:"250px",
             menus:[],
@@ -16,7 +16,12 @@ const store = createStore({
             editableTabs: [{
                 title: '首页',
                 name: 'Index',
-            }]
+            }],
+            editableTabsValue: 'index',
+            editableTabs: [{
+              title: '首页',
+              name: 'index',
+            }],
         }
     },
     mutations: {
@@ -46,7 +51,18 @@ const store = createStore({
 
 		changeRouteStatus(state, hasRoutes) {
 			state.hasRoutes = hasRoutes
-		}
+		},
+        addTab(state,tab) {
+            let index = state.editableTabs.findIndex(e => e.name === tab.name)
+            if(index   === -1){
+                state.editableTabs.push({
+                    title: tab.title,
+                    name: tab.name,
+                  });
+            }
+            
+            state.editableTabsValue = tab.name;
+        },
     },
     actions:{
         // 登录

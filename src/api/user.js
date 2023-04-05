@@ -25,3 +25,12 @@ export function getUserUpdateData(data){
 export function getUserDeleteData(id){
     return axios.post('/in/user/delete',id,config)
 }
+
+
+export function getUserRole(id,data){
+    return axios.post('/in/user/role/'+id,data,config)
+}
+
+export function getUserClass(){
+    return axios.get('/class/userclass')
+}

@@ -4,11 +4,12 @@
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column prop="id" label="#" />
             <el-table-column prop="title" label="标题" />
-            <el-table-column label="附件">
+            <!-- <el-table-column label="附件">
                 <template #default="scope">
                     <el-avatar :size="50" :src="scope.row.avatar" />
                 </template>
-            </el-table-column>
+            </el-table-column> -->
+            
             <el-table-column prop="content" label="内容" />
             <el-table-column prop="createtime" label="发布时间">
                 <template #default="scope">

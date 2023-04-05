@@ -11,7 +11,7 @@
                 <el-form-item prop="password">
                      <el-input v-model="form.password" :prefix-icon="Lock" type="password" show-password></el-input>
                 </el-form-item> 
-                <el-form-item prop="type">
+                <!-- <el-form-item prop="type">
                     <el-select  v-model="form.type" placeholder="请选择角色" size="default">
                         <el-option
                         v-for="item in options"
@@ -19,7 +19,7 @@
                         :label="item.label"
                         :value="item.value"/>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item class="btns">
                       <el-button type="primary" @click="doLogin" :loading="loading">提交</el-button>
                        <el-button type="info" @click="resetting">重置</el-button>
@@ -57,13 +57,13 @@ const rules = {
             trigger: 'blur' 
         },
     ],
-    type:[
-        { 
-            required: true, 
-            message: '请选择类型', 
-            trigger: 'blur' 
-        },
-    ]
+    // type:[
+    //     { 
+    //         required: true, 
+    //         message: '请选择类型', 
+    //         trigger: 'blur' 
+    //     },
+    // ]
 }
 
 const formRef = ref(null)
@@ -92,20 +92,20 @@ const resetting = function () {
     console.log("重置")
     form.username = ''
     form.password = ''
-    form.type = ''
+    // form.type = ''
 }
 
-const type = ref('')
-const options = [
-  {
-    value: 'teacher',
-    label: '工作人员',
-  },
-  {
-    value: 'student',
-    label: '学生',
-  },
-]
+// const type = ref('')
+// const options = [
+//   {
+//     value: 'teacher',
+//     label: '工作人员',
+//   },
+//   {
+//     value: 'student',
+//     label: '学生',
+//   },
+// ]
 
 </script>
 <style lang="less" scoped>
