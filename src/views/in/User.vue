@@ -90,25 +90,40 @@
         <el-form-item label="联系方式" prop="email">
             <el-input v-model="formModel.email" />
         </el-form-item>
-        <el-form-item label="班级" prop="classid">
-            <el-select v-model="formModel.classid" placeholder="请选择管理班级">
+        <!-- <el-form-item label="班级" prop="classid">
+            <el-select v-model="formModel.classid" placeholder="请选择班级">
                 <template v-for="(item,index) in classData">
                     <el-option :label="item.classname" :value="item.id" />
                 </template>
             </el-select>
+        </el-form-item> -->
+
+        <el-form-item label="班级">
+            <!-- prop="classid" -->
+            <!-- <template> -->
+                <!-- formModel.classid -->
+
+                <el-checkbox-group v-model="classidList">
+                        <el-checkbox  v-for="item in classData" :label="item.id"
+                       :key="item.id" >{{item.classname}}</el-checkbox>
+                       <!-- @change="changeCheckbox(item)"  -->
+                </el-checkbox-group>
+            <!-- </template>     -->
+            <!-- <el-tree
+                :data="classData"
+                show-checkbox
+                ref="classTree"
+                node-key="id"
+                check-strictly="true"
+                :props="{ label: 'classname', children: 'children' }" default-expand-all="true" /> -->
         </el-form-item>
 
 
         <el-form-item label="状态" prop="statu">
-            <!-- <el-select v-model="formModel.statu" placeholder="请选择状态">
-                    <el-option label="正常" value="1" />
-                    <el-option label="禁用" value="0" />
-            </el-select> -->
             <el-radio-group v-model="formModel.statu">
                 <el-radio label="正常" value="1"></el-radio>
                 <el-radio label="禁用" value="0"></el-radio>
             </el-radio-group>
-
         </el-form-item>
         </el-form>
     </form-drawer>
@@ -138,6 +153,10 @@ import { getRoleListData } from "~/api/role.js"
 import { RequestUploads } from '~/api/uploads.js'
 import { RequestRoleListData } from '~/api/student.js'
 
+const classidList = ref([])
+const changeCheckbox =(item) => {
+console.log(item)
+}
 const Isicons =ref(true)
 const uploadImgs = ref(true)
 const hideUpload = ref(false)
@@ -160,7 +179,7 @@ const uploadOnChange =(file,fileList) =>{
 
 const current = ref(1)
 const size = ref(5)
-const total = ref(1)
+const total = ref(0)
 console.log(store.state.user.types)
 const handleSizeChange = (val) =>{
     console.log(`每页 ${val} 条`)
@@ -229,7 +248,7 @@ const formModel = reactive({
     "id":'',
     "username":'',
     "nickname":'',
-    "classid":'',
+    "classid":['一年级一班',1,3],
     // "roleid":'',
     "email":'',
     "avatar":'',
@@ -246,6 +265,7 @@ const formRules = {
     statu: [ { required: true, message: '请选择状态', trigger: 'blur' } ],
 }
 const ResetFields = () =>{
+    classidList.value = []
     formModel.id = ""
     formModel.username = ""
     formModel.nickname = ""
@@ -256,6 +276,7 @@ const ResetFields = () =>{
     avatar.value = ""
 }
 const handleRoleEdit = (row) => {
+    classidList.value = []
     getUserClass().then(res => {
         console.log(res)
         if(res.code == 200){
@@ -273,15 +294,20 @@ const handleRoleEdit = (row) => {
     getUserUpdateDataInfo(row.id).then(res=>{
         if(res.code == 200){
             formRoleDrawerRef.value.open()
-            formModel.id = row.id
-            formModel.username = row.username
-            formModel.nickname = row.nickname
+            console.log(res)
+            formModel.id = res.data.user.id
+            formModel.username = res.data.user.username
+            formModel.nickname = res.data.user.nickname
             // formModel.roleid = row.roleid
-            formModel.classid = row.classid
-            formModel.email = row.email
-            formModel.avatar = row.avatar
-            avatar.value = row.avatar
-            formModel.statu = res.data.statu ? "正常" : "禁用"
+            formModel.classid = res.data.user.classid
+            formModel.email = res.data.user.email
+            formModel.avatar = res.data.user.avatar
+            avatar.value = res.data.user.avatar
+            res.data.class.forEach(item => {
+                classidList.value.push(item.cid) 
+            })
+            
+            formModel.statu = res.data.user.statu ? "正常" : "禁用"
             if(avatar.value == "" || avatar.value == undefined){
                 Isicons.value = false
                 uploadImgs.value = true
@@ -299,6 +325,9 @@ const handleRoleEdit = (row) => {
 
 
 const handleRoleDrawerSubmit = () => {
+    formModel.classid = classidList.value
+    console.log(formModel.classid)
+    
     formRef.value.validate((valid) => {
         console.log(valid)
         if(valid){
@@ -306,6 +335,11 @@ const handleRoleDrawerSubmit = () => {
                 formModel.statu = 1
             }else if(formModel.statu == "禁用"){
                 formModel.statu = 0
+            }
+
+            if(formModel.classid.length == 0){
+                toast("请选择班级",'error')
+                return;
             }
             formRoleDrawerRef.value.showLoading()
             const fun = ID.value ? getUserUpdateData(formModel) : getUserSaveData(formModel)
@@ -316,13 +350,13 @@ const handleRoleDrawerSubmit = () => {
                     toast("操作成功")
                     ResetFields()
                     getUserListTableData()
-                    formRoleDrawerRef.value.hideLoading()
                 }else{
-                    loading.value = false
+                    // loading.value = false
+                    formRoleDrawerRef.value.hideLoading()
                 }
             }).finally(() => {
-                loading.value = false
-                formDrawerRef.value.hideLoading()
+                // loading.value = false
+                formRoleDrawerRef.value.hideLoading()
             })
         }
     })

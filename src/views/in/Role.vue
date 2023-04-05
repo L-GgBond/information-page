@@ -14,7 +14,8 @@
             </el-table-column>
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
-                <el-button type="warning" size="small" v-if="scope.row.id != 1" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
+                    <!-- v-if="scope.row.id != 1"  -->
+                <el-button type="warning" size="small" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
                 <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
                 <el-popconfirm title="是否要删除？" v-if="scope.row.id != 1" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
