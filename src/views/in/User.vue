@@ -394,7 +394,7 @@ const handleRoleAccact =(id) => {
         console.log(r)
         console.log(roleTree)
         let roleIds = []
-        r.data.inRoles.forEach(row =>{
+        r.data.user.inRoles.forEach(row =>{
             roleIds.push(row.id)
         })
         roleTree.value.setCheckedKeys(roleIds);

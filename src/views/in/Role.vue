@@ -50,7 +50,16 @@
             </el-form-item>
             <el-form-item label="唯一编码" prop="code">
                 <el-input v-model="ruleRoleForm.code" />
+                <el-alert
+                v-if="IDDD == 11"
+                title="编码请勿随意修改编辑！！！"
+                type="info"
+                close-text="知道了">
+            </el-alert>
             </el-form-item>
+           
+
+
             <el-form-item label="描述" prop="remark">
                <el-input v-model="ruleRoleForm.remark" autocomplete="off"></el-input>
             </el-form-item>
@@ -109,10 +118,11 @@ const getRoleListTableData = ()=>{
 getRoleListTableData()
 
 const ID = ref(0)
+const IDDD = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
 const formRoleDrawerRef = ref(null)
 const ruleRoleFormRef = ref(null)
-const handleRoleCreate = ()=> { ID.value = 0;formRoleDrawerRef.value.open() }
+const handleRoleCreate = ()=> { ID.value = 0;IDDD.value = 0;formRoleDrawerRef.value.open() }
 const ruleRoleForm = reactive({
     "id":'',
     "name":'',
@@ -139,6 +149,7 @@ const handleRoleEdit = (row) => {
     console.log("handleRoleEdit")
     console.log(row.id)
     ID.value = row.id
+    IDDD.value = 11;
     getRoleUpdateDataInfo(row.id).then(res=>{
         if(res.code == 200){
             formRoleDrawerRef.value.open()

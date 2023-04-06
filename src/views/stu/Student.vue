@@ -103,10 +103,15 @@
                 <el-input v-model="formModel.nickname" />
             </el-form-item>
             <el-form-item label="性别" prop="sex">
-                <el-select v-model="formModel.sex" placeholder="请选择性别">
+                <!-- <el-select v-model="formModel.sex" placeholder="请选择性别">
                         <el-option label="男" value="1" />
-                        <el-option label="女" value="0" />
-                </el-select>
+                        <el-option label="女" value="0" /> -->
+
+                        <el-radio-group v-model="formModel.sex">
+                            <el-radio  label="男">男</el-radio>
+                            <el-radio  label="女">女</el-radio>
+                         </el-radio-group>
+                <!-- </el-select> -->
             </el-form-item>
             <el-form-item label="年龄" prop="age">
                 <el-input type="number" v-model="formModel.age" />
@@ -121,18 +126,30 @@
                 <el-input v-model="formModel.email" />
             </el-form-item>
             <el-form-item label="班级" prop="classname">
-                <el-select v-model="formModel.classname" placeholder="请选择班级">
+                <!-- <el-select v-model="formModel.classname" placeholder="请选择班级">
                     <template v-for="(item,index) in classData">
                         <el-option :label="item.classname" :value="item.classname" />
                     </template>
-                </el-select>
+                </el-select> -->
+
+                <el-radio-group v-for="(item,index) in classData" v-model="formModel.classname">
+                    <el-radio style="margin-right:15px" :label="item.classname" >{{item.classname}}</el-radio>
+                </el-radio-group>
+
             </el-form-item>
+
+
+
             <el-form-item label="角色权限" prop="roleid">
-                <el-select v-model="formModel.roleid" placeholder="请选择角色权限">
+                <!-- <el-select v-model="formModel.roleid" placeholder="请选择角色权限">
                     <template v-for="(item,index) in roleData">
                         <el-option :label="item.name" :value="item.id" />
                     </template>
-                </el-select>
+                </el-select> -->
+                <el-radio-group v-for="(item,index) in roleData" v-model="formModel.roleid">
+                    <el-radio style="margin-right:10px" :label="item.id" v-if="item.name != '学生'" disabled >{{item.name}}</el-radio>
+                    <el-radio style="margin-right:10px" :label="item.id" v-else>{{item.name}}</el-radio>
+                </el-radio-group>
             </el-form-item>
 
             <el-form-item label="学年时间" prop="duration">
@@ -143,10 +160,14 @@
             </el-form-item>
 
             <el-form-item label="状态" prop="statu">
-                <el-select v-model="formModel.statu" placeholder="请选择状态">
+                <!-- <el-select v-model="formModel.statu" placeholder="请选择状态">
                         <el-option label="正常" value="1" />
                         <el-option label="禁用" value="0" />
-                </el-select>
+                </el-select> -->
+                <el-radio-group v-model="formModel.statu">
+                    <el-radio style="margin-right:10px" label="正常" >正常</el-radio>
+                    <el-radio style="margin-right:10px" label="禁用" >禁用</el-radio>
+                </el-radio-group>
             </el-form-item>
         </el-form>
     </form-drawer>
@@ -258,6 +279,7 @@ const handleCreate = ()=> {
         }
      })
 }
+const roleid = ref(null);
 const formModel = reactive({
     "id":'',
     "username":'',
@@ -281,7 +303,7 @@ const formRules = {
     username: [ { required: true, message: '请输入账号', trigger: 'blur' } ],
     username: [ { min:6 , message: '账号至少是六位', trigger: 'blur' } ],
     nickname: [ { required: true, message: '请输入姓名', trigger: 'blur' } ],
-    sex: [ { required: true, message: '请输入性别', trigger: 'blur' } ],
+    sex: [ { required: true, message: '请选择性别', trigger: 'blur' } ],
     nation: [ { required: true, message: '请输入民族', trigger: 'blur' } ],
     classname: [ { required: true, message: '请选择班级', trigger: 'blur' } ],
     roleid: [ { required: true, message: '请选择角色', trigger: 'blur' } ],
@@ -300,6 +322,7 @@ const ResetFields = () =>{
     formModel.city = ""
     formModel.classid = ""
     formModel.roleid = ""
+    roleid.value = ""
     formModel.classname = ""
     formModel.duration = ""
     formModel.politics = ""
@@ -338,6 +361,7 @@ const handleEdit = (row) => {
             formModel.city = res.data.city
             formModel.classid = res.data.classid
             formModel.roleid = res.data.roleid
+            roleid.value = res.data.roleid
             formModel.classname = res.data.classname
             formModel.duration = res.data.duration
             formModel.politics = res.data.politics
