@@ -213,10 +213,12 @@ const onSearchSubmit = ()=>{
 const getData = () =>{
     getListTableData()
 }
+
+console.log("id",store.state.user.id)
 //获取列表
 const tableData = ref([])
 const getListTableData = ()=>{
-    RequestListData(current.value, size.value, "student", searchModel.searchNickname).then(res =>{
+    RequestListData(current.value, size.value, "student", searchModel.searchNickname,store.state.user.id).then(res =>{
         console.log(res)
         if(res.code == 200){
             tableData.value = res.data.records
@@ -352,7 +354,7 @@ const handleEdit = (row) => {
             }else{
                 Isicons.value = true
                 uploadImgs.value = false
-            }
+        }
     })
     
 }
@@ -422,7 +424,7 @@ const handleDelete =(id) =>{
 .icons{
         display: none;
     }
-    .uploadImg{
-        display: none;
-    }
+.uploadImg{
+    display: none;
+}
 </style>

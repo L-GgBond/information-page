@@ -57,7 +57,8 @@
         class="demo-ruleForm"   :size="formSize" status-icon>
         <el-form-item label="头像" prop="avatar">
             <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
-            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
+            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange"
+            :before-remove="handeleAvatarDelete">
                 <el-icon :class="{icons:Isicons}" ><Plus /></el-icon>
                 <!-- <template> -->
                     <div>
@@ -176,7 +177,10 @@ const handleAvataError =(file) =>{
 const uploadOnChange =(file,fileList) =>{
     hideUpload.value = true;
 }
-
+const handeleAvatarDelete=(file) =>{
+    console.log(file)
+    hideUpload.value = false;
+}
 const current = ref(1)
 const size = ref(5)
 const total = ref(0)
@@ -248,7 +252,7 @@ const formModel = reactive({
     "id":'',
     "username":'',
     "nickname":'',
-    "classid":['一年级一班',1,3],
+    "classid":[],
     // "roleid":'',
     "email":'',
     "avatar":'',
@@ -314,7 +318,7 @@ const handleRoleEdit = (row) => {
             }else{
                 Isicons.value = true
                 uploadImgs.value = false
-            }
+        }
         }
     })
     
@@ -355,6 +359,8 @@ const handleRoleDrawerSubmit = () => {
                     formRoleDrawerRef.value.hideLoading()
                 }
             }).finally(() => {
+                getUserListTableData()
+
                 // loading.value = false
                 formRoleDrawerRef.value.hideLoading()
             })
@@ -396,6 +402,11 @@ const handleRoleAccact =(id) => {
     })
     getRoleListData(1,20).then(res =>{
         if(res.code == 200){
+            res.data.records.forEach(item=>{
+                if(item.name == "学生"){
+                    item.disabled = true
+                }
+            })
             ThreeData.value = res.data.records
             // AdddefaultExpandedKeysId(res.data.records)
         }
@@ -405,6 +416,7 @@ const handleRoleAccact =(id) => {
 }
 function AdddefaultExpandedKeysId(data){
     for(let i = 0; i < data.length; i++){
+
         defaultExpandedKeys.value.push(data[i].id)
         if(data[i].children){
             AdddefaultExpandedKeysId(data[i].children)
