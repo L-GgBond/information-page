@@ -27,8 +27,8 @@ export function RequestDeleteData(id){
     return axios.post('/student/delete/'+ id, {}, config)
 }
 
-export function RequestClassListData(){
-    return axios.get('/student/classlist')
+export function RequestClassListData(id){
+    return axios.get('/student/classlist/'+id)
 }
 
 export function RequestRoleListData(){

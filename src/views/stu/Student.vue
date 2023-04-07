@@ -34,7 +34,8 @@
                 </template>
             </el-table-column>
             <el-table-column prop="age" label="年纪"  width="120px" />
-            <el-table-column prop="classname" label="班级"  width="120px" />
+
+            <el-table-column v-if="$store.state.user.id == 1" prop="classname" label="班级"  width="120px" />
             <el-table-column prop="nation" label="民族"  width="120px"/>
             <el-table-column prop="city" label="住址"   width="150px"/>
             <el-table-column prop="email" label="联系方式" width="150px" />
@@ -266,10 +267,25 @@ const handleCreate = ()=> {
     }
      ID.value = 0;
      formDrawerRef.value.open() 
-     RequestClassListData().then(res=>{
+
+     RequestClassListData(store.state.user.id).then(res=>{
         console.log(res)
         if(res.code == 200){
-            classData.value = res.data
+            classData.value = [];// res.data
+            const arr = [];
+            for(var i = 0; i < res.data.length;i++){
+                // console.log(res.data[i])
+                if(res.data[i].hasOwnProperty("id")){
+                    console.log("存在")
+                    classData.value = res.data
+                }else{
+                    console.log("不存在")
+                    arr.push({"id":res.data[i][0],"classname":res.data[i][1]})
+                    classData.value = arr
+                    console.log(arr)
+                }
+            }
+           
         }
      })
      RequestRoleListData().then(res=>{
@@ -338,10 +354,24 @@ const ResetFields = () =>{
 const handleEdit = (row) => {
     console.log(row.id)
     ID.value = row.id
-    RequestClassListData().then(res=>{
+    RequestClassListData(store.state.user.id).then(res=>{
         console.log(res)
         if(res.code == 200){
-            classData.value = res.data
+            classData.value = [];// res.data
+            const arr = [];
+            for(var i = 0; i < res.data.length;i++){
+                // console.log(res.data[i])
+                if(res.data[i].hasOwnProperty("id")){
+                    console.log("存在")
+                    classData.value = res.data
+                }else{
+                    console.log("不存在")
+                    arr.push({"id":res.data[i][0],"classname":res.data[i][1]})
+                    classData.value = arr
+                    console.log(arr)
+                }
+            }
+           
         }
      })
      RequestRoleListData().then(res=>{
