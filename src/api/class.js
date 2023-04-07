@@ -5,8 +5,8 @@ const config = {
     }
 };
 
-export function RequestListData(current, size){
-    return axios.get('/class/list?current='+ current +"&size=" + size)
+export function RequestListData(current, size,uid){
+    return axios.get('/class/list?current='+ current +"&size=" + size+"&uid=" + uid)
 }
 
 

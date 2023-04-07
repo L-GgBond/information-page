@@ -76,7 +76,7 @@ const getData = () =>{
 
 const tableData = ref([])
 const getListTableData = ()=>{
-    RequestListData(current.value, size.value).then(res =>{
+    RequestListData(current.value, size.value,store.state.user.id).then(res =>{
         console.log(res)
         // if(res.code == 200){
             tableData.value = res.records
