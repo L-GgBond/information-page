@@ -23,3 +23,8 @@ export function RequestInfoData(id){
 export function RequestSaveData(id,data){
     return axios.post('/tea/save/'+ id,data, config)
 }
+
+export function RequestCreateData(id,data){
+    return axios.post('/tea/create/'+ id,data, config)
+}
+

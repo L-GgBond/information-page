@@ -1,6 +1,6 @@
 <template>
     <el-card shadow="never" class="border-0" style="position: relative;">
-        <div class="flex items-center justify-between mb-4">
+        <!-- <div class="flex items-center justify-between mb-4">
             <div></div>
             <div>
             <el-tooltip  effect="dark" content="刷新数据" placement="top">
@@ -11,7 +11,9 @@
                     </el-button>
                 </el-tooltip>
             </div>
-        </div>
+        </div> -->
+        <ListHeader @create="handleCreate" @refresh="getData"/>
+
         <!-- <el-form ref="searchRef" :model="searchModel" :rules="searchRules" :inline="true"  class="demo-form-inline">
             <el-form-item label="姓名" prop="searchNickname">
                 <el-input v-model="searchModel.searchNickname" placeholder="请输入姓名"  />
@@ -24,31 +26,21 @@
        
         <el-table :data="tableData"  style="width: 1100px;top: 20px;" v-loading="loading" >
             <el-table-column prop="id"  label="#" />
-            <el-table-column  prop="uname" label="学号"  />
-            <el-table-column  prop="unickname" label="名称" />
-            <el-table-column  prop="schoolterm" label="学期" />
-            <!-- <el-table-column  prop="approver" label="审批人"/> -->
-            <el-table-column prop="statu" label="状态">
-                <template #default="scope">
-                    
-                    <el-tag class="ml-2" v-if="scope.row.status == 1" type="success">已评分</el-tag>
-                    <el-tag class="ml-2" v-else type="danger">待评分</el-tag>
-                </template>
+            <el-table-column  prop="classname" label="班级" />
+            <el-table-column  prop="" label="完成率">
+                    <el-progress :text-inside="true" :stroke-width="20" :percentage="50" status="exception"></el-progress>
             </el-table-column>
-            <el-table-column prop="createtime" label="发布时间" width="180px">
-                <template #default="scope">
-                {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
-                </template>
-            </el-table-column>
+
             <el-table-column label="操作" width="160">
                 <template #default="scope">
-                    <el-button type="primary" size="small" text @click="handleTaskInfo(scope.row.id)">详情</el-button>
-                    <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
+                    <el-button type="primary" size="small" text @click="OpenView(scope)">详情</el-button>
+                    <!-- <el-button type="primary" size="small" text @click="handleTaskInfo(scope.row.id)">详情</el-button> -->
+                    <!-- <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
                         @confirm="handleDelete(scope.row.id)">
                         <template #reference>
                             <el-button type="danger" size="small" text >删除</el-button>
                         </template>
-                    </el-popconfirm>
+                    </el-popconfirm> -->
                 </template>
             </el-table-column>
         </el-table>
@@ -71,6 +63,7 @@
         <el-table :data="tableDataInfo" style="width: 100%" type="index">
           
             <el-table-column prop="kmname" label="科目" width="180" />
+
             <el-table-column  label="附件" width="180">
                 <template #default="scope">
                     <el-image style="width: 50px; height: 50px" :src="scope.row.files"  />
@@ -95,6 +88,61 @@
         </el-table>
     </el-form>
     </el-drawer>
+
+
+    <!-- 添加作业 -->
+    <form-drawer  v-model="formDrawerRefAddData" :title="t"  size="50%"  destroyOnClose @submit="handleDrawerSubmitAdd">
+
+        <!-- <vue-ueditor-wrap v-model="msg" :config="myConfig"></vue-ueditor-wrap>
+                        <div v-html="msg"></div> -->
+        <el-form ref="formRefAdd" :model="formModelAdd" :rules="formRulesAdd"  label-width="auto">
+            <el-row>
+                <!-- <el-col :span="10"> -->
+                    <div style="padding:10px">
+                       
+                        <el-form-item label="学期" prop="termid">
+                            <el-radio-group v-for="(item,index) in termData" v-model="formModelAdd.termid">
+                                <el-radio style="margin-right:15px" :label="item.id" >{{item.termname}}</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="班级" prop="bid">
+                            <el-radio-group v-for="(item,index) in classData" v-model="formModelAdd.bid">
+                                <el-radio style="margin-right:15px" :label="item.id" >{{item.classname}}</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+
+                        <el-form-item label="科目" prop="kid">
+                            <el-radio-group v-for="(item,index) in subData" v-model="formModelAdd.kid">
+                                <el-radio style="margin-right:15px" :label="item.id" v-if="item.status == 1" disabled>{{item.subjectname}}</el-radio>
+                                <el-radio style="margin-right:15px" :label="item.id" v-else>{{item.subjectname}}</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="标题" prop="title">
+                            <el-input v-model="formModelAdd.title" />
+                        </el-form-item>
+                        <el-form-item label="分数" prop="fraction">
+                            <el-input type="number" v-model="formModelAdd.fraction" />
+                        </el-form-item>
+                        
+                        <div class="grid-content bg-purple-light">
+                            <el-form-item prop="ask" label="要求" >
+                                <el-input type="textarea" v-model="formModelAdd.ask" placeholder=""   />
+                            </el-form-item>
+                        </div>
+                    </div>
+                <!-- </el-col> -->
+                
+                <!-- <el-col :span="14">
+                    <div class="grid-content bg-purple-light">
+                        <el-form-item prop="ask">
+                            <el-input type="textarea" v-model="formModelAdd.ask" placeholder="详细内容"   />
+                        </el-form-item>
+                    </div>
+                </el-col> -->
+            </el-row>
+        </el-form>
+    </form-drawer>
+
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
@@ -104,7 +152,97 @@ import { computed } from "@vue/reactivity";
 import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
-import { RequestListData,RequestDeleteData,RequestInfoData,RequestSaveData } from '~/api/tea.js'
+import { RequestDeleteData,RequestInfoData,RequestSaveData,RequestCreateData } from '~/api/tea.js'
+import { RequestClassListData } from '~/api/student.js'
+import { RequestListData } from '~/api/class.js'
+import { RequestListDatas } from '~/api/subject.js'
+
+import VueUeditorWrap from 'vue-ueditor-wrap' 
+components: {
+  VueUeditorWrap
+}
+//添加作业
+const t = ref("发布作业");
+const formModelAdd = reactive({
+    "tid":"",
+    "termid":"",
+    "bid":"",
+    "kid":"",
+    "title":"",
+    "ask":"",
+    "fraction":"",
+})
+const formRulesAdd = {
+    termid:[{ required: true, message: '请选择学期', trigger: 'blur' }],
+    bid:[{ required: true, message: '请选择班级', trigger: 'blur' }],
+    kid:[{ required: true, message: '请选择科目', trigger: 'blur' }],
+    title:[{ required: true, message: '请填写标题', trigger: 'blur' }],
+    fraction:[{ required: true, message: '请填写分数', trigger: 'blur' }],
+    ask:[{ required: true, message: '请填写要求', trigger: 'blur' }],
+};
+const handleDrawerSubmitAdd =() =>{
+    console.log(formModelAdd)
+    formRefAdd.value.validate((valid) => {
+        console.log(valid)
+        if(valid){
+            RequestCreateData(store.state.user.id,formModelAdd).then(res => {
+                console.log(res)
+                if(res.code == 200){
+                    toast("发布作业成功")
+                    getListTableData()
+                }
+            })
+        }
+    })
+
+}
+const  msg = ref('<h2><img src="//i2.wp.com/img.baidu.com/hi/jx2/j_0003.gif"/>Vue + UEditor + v-model双向绑定</h2>')
+const myConfig = ref({
+    // 编辑器不自动被内容撑高
+    autoHeightEnabled: false,
+    // 初始容器高度
+    initialFrameHeight: 450,
+    // 初始容器宽度
+    initialFrameWidth: '1000',
+    // 上传文件接口（这个地址是我为了方便各位体验文件上传功能搭建的临时接口，请勿在生产环境使用！！！）
+    serverUrl: '/api/upload',
+    // UEditor 资源文件的存放路径，如果你使用的是 vue-cli 生成的项目，通常不需要设置该选项，vue-ueditor-wrap 会自动处理常见的情况
+    UEDITOR_HOME_URL: '/public/UE/'
+})
+
+const formRefAdd = ref(null);
+const formDrawerRefAddData = ref(false)
+const classData = ref([])
+const termData = ref([])
+const subData = ref([])
+const handleCreate =() => {
+    formDrawerRefAddData.value = true
+    RequestListDatas(store.state.user.id).then(res => {
+        console.log(res)
+        subData.value = res.data.records
+        termData.value = res.data.term
+    })
+    RequestClassListData(store.state.user.id).then(res=>{
+        if(res.code == 200){
+            classData.value = [];// res.data
+            const arr = [];
+            for(var i = 0; i < res.data.length;i++){
+                // console.log(res.data[i])
+                if(res.data[i].hasOwnProperty("id")){
+                    console.log("存在")
+                    classData.value = res.data
+                }else{
+                    console.log("不存在")
+                    arr.push({"id":res.data[i][0],"classname":res.data[i][1]})
+                    classData.value = arr
+                    console.log(arr)
+                }
+            }
+           
+        }
+     })
+}
+
 
 const current = ref(1)
 const size = ref(5)
@@ -135,18 +273,30 @@ const onSearchSubmit = ()=>{
 const getData = () =>{
     getListTableData()
 }
-//获取列表
 const tableData = ref([])
+tableData.value = [];
 const getListTableData = ()=>{
-    RequestListData(current.value, size.value, "student", searchModel.searchNickname,store.state.user.id).then(res =>{
+    RequestListData(current.value, size.value,store.state.user.id).then(res =>{
         console.log(res)
-        if(res.code == 200){
-            tableData.value = res.data.data
-            total.value = res.data.total
-        }
+        // if(res.code == 200){
+            if(store.state.user.id == 1){
+                tableData.value = res.data.records.records
+                total.value = res.data.records.total
+            }else{
+                tableData.value = res.data.records
+                total.value = res.data.records
+            }
+          
+        // }
     })
 }
 getListTableData()
+
+
+
+
+
+
 
 const handleDelete =(id) => {
     console.log(id)

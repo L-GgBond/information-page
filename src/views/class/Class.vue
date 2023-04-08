@@ -4,6 +4,29 @@
         <el-table :data="tableData" stripe style="width: 100%" v-loading="loading">
             <el-table-column prop="id" label="#" />
             <el-table-column  prop="classname" label="班级名称" />
+            <!-- <el-table-column prop="classname" label="班级"  width="120px">
+                <template #default="scope">
+                    <el-tag :key="scope.row.id" type="info" effect="dark">
+                        {{ scope.row.classname }}
+                    </el-tag>
+                </template>
+            </el-table-column> -->
+
+            <el-table-column   label="工作人员"  width="120px" v-if="store.state.user.id == 1">
+                <template #default="scope">
+                    <el-tag v-for="(item,index) in scope.row.users"  style="margin:5px" effect="dark">
+                            {{ item.nickname}}
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+            <el-table-column  label="人数"  width="120px">
+                <template #default="scope">
+                    <el-tag :key="scope.row.id" type="danger" effect="plain">
+                        {{ scope.row.total }}
+                    </el-tag>
+                </template>
+            </el-table-column>
             <el-table-column  prop="classdesc" label="描述" />
             <el-table-column prop="createtime" label="更新时间">
                 <template #default="scope">
@@ -75,12 +98,21 @@ const getData = () =>{
 }
 
 const tableData = ref([])
+tableData.value = [];
 const getListTableData = ()=>{
     RequestListData(current.value, size.value,store.state.user.id).then(res =>{
         console.log(res)
         // if(res.code == 200){
-            tableData.value = res.records
-            total.value = res.total
+            // if(store.state.user.id == 1){
+            //     tableData.value = res.data.records.records
+            //     total.value = res.data.records.total
+            // }else{
+                tableData.value = res.data.records
+                total.value = res.data.total
+                size.value = res.data.size
+                current.value = res.data.current
+            // }
+          
         // }
     })
 }
@@ -93,8 +125,10 @@ const formRef = ref(null)
 const handleCreate = ()=> { ResetFields(); ID.value = 0;formDrawerRef.value.open() }
 const formModel = reactive({
     "id":'',
+    "uid":'',
     "classname":'',
     "classdesc":'',
+    "users":[],
 })
 const formRules = {
     classname: [ { required: true, message: '请输入班级名称', trigger: 'blur' } ],
@@ -124,6 +158,7 @@ const handleDrawerSubmit = () => {
         console.log(valid)
         if(valid){
             formDrawerRef.value.showLoading()
+            formModel.uid = store.state.user.id
             const fun = ID.value ? RequestUpdateData(formModel) : RequestSaveData(formModel)
             fun.then(res=>{
                 console.log(res)

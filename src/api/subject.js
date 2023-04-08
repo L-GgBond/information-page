@@ -6,9 +6,15 @@ const config = {
 };
 
 
-export function RequestListData(current, size){
-    return axios.get('/subject/list?current='+ current +"&size=" + size)
+export function RequestListData(current, size,uid){
+    return axios.get('/subject/list?current='+ current +"&size=" + size +"&uid=" + uid)
 }
+
+
+export function RequestListDatas(uid){
+    return axios.get('/subject/lists?uid=' + uid)
+}
+
 
 export function RequestSaveData(data){
     return axios.post('/subject/save', data)

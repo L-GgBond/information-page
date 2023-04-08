@@ -91,11 +91,17 @@ const getData = () =>{
 
 const tableData = ref([])
 const getListTableData = ()=>{
-    RequestListData(current.value, size.value).then(res =>{
+    RequestListData(current.value, size.value,store.state.user.id).then(res =>{
         console.log(res)
         // if(res.code == 200){
-            tableData.value = res.records
-            total.value = res.total
+            if(store.state.user.id == 1){
+                tableData.value = res.data.records.records
+                total.value = res.data.records.total
+            }else{
+                tableData.value = res.data.records
+                total.value = res.data.records
+            }
+           
         // }
     })
 }
@@ -108,6 +114,7 @@ const formRef = ref(null)
 const handleCreate = ()=> { ResetFields(); ID.value = 0;formDrawerRef.value.open() }
 const formModel = reactive({
     "id":'',
+    "uid":'',
     "subjectname":'',
     "subjectdesc":'',
     "status":'',
@@ -145,6 +152,9 @@ const handleDrawerSubmit = () => {
                 formModel.status  = 0
             }else if(formModel.status  == "禁用"){
                 formModel.status  = 1
+            }
+            if(store.state.user.id != 1){
+                formModel.uid = store.state.user.id 
             }
             const fun = ID.value ? RequestUpdateData(formModel) : RequestSaveData(formModel)
             fun.then(res=>{

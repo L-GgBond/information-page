@@ -11,7 +11,7 @@ export function RequestListData(current, size,uid){
 
 
 export function RequestSaveData(data){
-    return axios.post('/class/save', data)
+    return axios.post('/class/save', data,config)
 }
 
 export function RequestInfoData(id){

@@ -27,6 +27,16 @@
                 </template>
             </el-table-column>
             <el-table-column prop="nickname" label="姓名"  width="120px"/>
+           
+
+            <!-- v-if="$store.state.user.id == 1"  -->
+            <el-table-column prop="classname" label="班级"  width="120px">
+                <template #default="scope">
+                    <el-tag :key="scope.row.id" type="info" effect="dark">
+                        {{ scope.row.classname }}
+                    </el-tag>
+                </template>
+            </el-table-column>
             <el-table-column  label="性别"  width="120px">
                 <template #default="scope">
                     <el-text v-if="scope.row.sex == 1">男</el-text>
@@ -34,8 +44,12 @@
                 </template>
             </el-table-column>
             <el-table-column prop="age" label="年纪"  width="120px" />
-
-            <el-table-column v-if="$store.state.user.id == 1" prop="classname" label="班级"  width="120px" />
+            <el-table-column prop="statu" label="状态">
+                <template #default="scope">
+                    <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">正常</el-tag>
+                    <el-tag class="ml-2" v-else type="danger">禁用</el-tag>
+                </template>
+            </el-table-column>
             <el-table-column prop="nation" label="民族"  width="120px"/>
             <el-table-column prop="city" label="住址"   width="150px"/>
             <el-table-column prop="email" label="联系方式" width="150px" />
@@ -46,12 +60,7 @@
             </el-table-column>
             <el-table-column prop="duration" label="学年时长"  width="120px"/>
             <el-table-column prop="politics" label="政治面貌"  width="120px"/>
-            <el-table-column prop="statu" label="状态">
-                <template #default="scope">
-                    <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">正常</el-tag>
-                    <el-tag class="ml-2" v-else type="danger">禁用</el-tag>
-                </template>
-            </el-table-column>
+           
             
             <el-table-column fixed="right" label="操作" width="160">
                 <template #default="scope">
@@ -99,6 +108,12 @@
 
             <el-form-item label="学号" prop="username">
                 <el-input v-model="formModel.username" />
+                <el-alert
+                    v-if="ID == 0"
+                    title="默认密码123456"
+                    type="info"
+                    close-text="知道了">
+                </el-alert>
             </el-form-item>
             <el-form-item label="姓名" prop="nickname">
                 <el-input v-model="formModel.nickname" />

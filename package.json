@@ -18,9 +18,11 @@
     "less-loader": "^11.1.0",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.32",
+    "tinymce": "^5.10.2",
     "universal-cookie": "^4.0.4",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
+    "vue-ueditor-wrap": "^3.0.8",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
