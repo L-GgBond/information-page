@@ -2,7 +2,10 @@
     <el-card shadow="never" class="border-0" style="position: relative;">
         <!-- <ListHeader @create="handleCreate" @refresh="getData"/> -->
         <div class="flex items-center justify-between mb-4">
-            <div></div>
+            <div @click="ToBack" style="margin-left:10px">
+                <el-icon><Back /></el-icon>  
+                <!-- <el-text class="mx-1" size="small" style="font-size:14px" type="info">返回</el-text> -->
+            </div>
             <div>
             <el-tooltip  effect="dark" content="刷新数据" placement="top">
                     <el-button size="small" text @click="getData">
@@ -13,16 +16,21 @@
                 </el-tooltip>
             </div>
         </div>
+       
+
         <el-table :data="tableData"  style="width: 1100px;top: 20px;" v-loading="loading" >
             <el-table-column prop="id"  label="#" />
-            <!-- <el-table-column  prop="subjectname" label="科目" /> -->
-            <el-table-column prop="subjectname" label="科目">
+            <!-- <el-table-column  prop="title" label="作业" /> -->
+            <el-table-column prop="title" label="作业"  width="120px">
                 <template #default="scope">
                     <el-tag :key="scope.row.id" type="info" effect="dark">
-                        {{ scope.row.subjectname }}
+                        {{ scope.row.title }}
                     </el-tag>
                 </template>
             </el-table-column>
+
+            <el-table-column  prop="fraction" label="满分" />
+            <el-table-column  prop="ask" label="要求" />
             <el-table-column  prop="" label="完成率">
                     <el-progress :text-inside="true" :stroke-width="20" :percentage="50" status="exception"></el-progress>
             </el-table-column>
@@ -33,8 +41,10 @@
                 </template>
             </el-table-column>
         </el-table>
-      
-        <div class="pages" style="">
+  
+        <div class="pages" style="display:flex;align-items: center;">
+           
+           
             <el-pagination
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
@@ -55,11 +65,20 @@ import { computed } from "@vue/reactivity";
 import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
-import { RequestListData } from '~/api/t.js'
+import { RequestDeleteData,RequestInfoData,RequestSaveData,RequestCreateData } from '~/api/tea.js'
+import { RequestTasklistListData } from '~/api/as.js'
+import { RequestClassListData } from '~/api/student.js'
+import { RequestListData } from '~/api/class.js'
+import { RequestListDatas } from '~/api/subject.js'
 import { createRouter, useRouter,useRoute } from 'vue-router'
 const router = useRouter()
 const route = useRoute()
-const rid = route.query.id
+
+const kid = route.query.id
+
+const ToBack = () => {
+    router.push({name:'task:task:list',query:{}})
+}
 
 const current = ref(1)
 const size = ref(5)
@@ -79,23 +98,25 @@ const getData = () =>{
 const tableData = ref([])
 tableData.value = [];
 const getListTableData = ()=>{
-    RequestListData(current.value, size.value,store.state.user.id).then(res =>{
+    RequestTasklistListData(current.value, size.value,store.state.user.id,kid).then(res =>{
         console.log(res)
-            tableData.value = res.data.subjectlist
+            tableData.value = res.data.data
             total.value = res.data.total
     })
 }
 getListTableData()
 
-
-
-
 const OpenView =(row) => {
     console.log(row)
-    router.push({name:'Tasklist',query:{id:row.id,rid:rid}})
+    router.addRoute('admin',{
+        path: "/tea/assignment",
+        name:"Assignment",
+        component: () => import("~/views/tea/Assignment.vue")
+    })
+    
+    // router.push({name:'Assignment',query:{id:row.bid}})
     // router.go(-1)
 }
-
 
 </script>
 <style>

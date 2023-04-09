@@ -65,7 +65,9 @@ const rules = {
     //     },
     // ]
 }
-
+// document.onkeydown = e => {
+//     doLogin()
+// }
 const formRef = ref(null)
 const loading = ref(false)
 const doLogin = function () {

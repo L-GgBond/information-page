@@ -1,39 +1,19 @@
 <template>
     <el-card shadow="never" class="border-0" style="position: relative;">
-        <!-- <div class="flex items-center justify-between mb-4">
-            <div></div>
-            <div>
-            <el-tooltip  effect="dark" content="刷新数据" placement="top">
-                    <el-button size="small" text @click="getData">
-                        <el-icon :size="15">
-                        <Refresh />
-                        </el-icon>
-                    </el-button>
-                </el-tooltip>
-            </div>
-        </div> -->
         <ListHeader @create="handleCreate" @refresh="getData"/>
-
-        <!-- <el-form ref="searchRef" :model="searchModel" :rules="searchRules" :inline="true"  class="demo-form-inline">
-            <el-form-item label="姓名" prop="searchNickname">
-                <el-input v-model="searchModel.searchNickname" placeholder="请输入姓名"  />
-            </el-form-item>
-            <el-form-item>
-                <el-button type="success"  @click="onSearchSubmit">搜索</el-button>
-            </el-form-item>
-        </el-form> -->
-
-       
         <el-table :data="tableData"  style="width: 1100px;top: 20px;" v-loading="loading" >
             <el-table-column prop="id"  label="#" />
-            <!-- <el-table-column  prop="classname" label="班级" /> -->
-            <el-table-column prop="classname" label="班级">
+            <!-- <el-table-column  prop="title" label="作业" /> -->
+            <el-table-column prop="title" label="作业"  width="120px">
                 <template #default="scope">
                     <el-tag :key="scope.row.id" type="info" effect="dark">
-                        {{ scope.row.classname }}
+                        {{ scope.row.title }}
                     </el-tag>
                 </template>
             </el-table-column>
+
+            <el-table-column  prop="fraction" label="满分" />
+            <el-table-column  prop="ask" label="要求" />
             <el-table-column  prop="" label="完成率">
                     <el-progress :text-inside="true" :stroke-width="20" :percentage="50" status="exception"></el-progress>
             </el-table-column>
@@ -41,18 +21,27 @@
             <el-table-column label="操作" width="160">
                 <template #default="scope">
                     <el-button type="primary" size="small" text @click="OpenView(scope.row)">详情</el-button>
-                    <!-- <el-button type="primary" size="small" text @click="handleTaskInfo(scope.row.id)">详情</el-button> -->
-                    <!-- <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
-                        @confirm="handleDelete(scope.row.id)">
-                        <template #reference>
-                            <el-button type="danger" size="small" text >删除</el-button>
-                        </template>
-                    </el-popconfirm> -->
                 </template>
             </el-table-column>
         </el-table>
-      
-        <div class="pages" style="">
+        <div class="pages" style="display:flex;padding-top:6px">
+            <div @click="ToBack" style="position:absolute;left:30px;">
+                <el-icon><Back /></el-icon>  
+                <!-- <el-text class="mx-1" size="small" style="font-size:14px" type="info">返回</el-text> -->
+            </div>
+            <div  >
+                <el-pagination
+                        @size-change="handleSizeChange"
+                        @current-change="handleCurrentChange"
+                        layout="total, sizes, prev, pager, next, jumper"
+                        :page-sizes="[5, 10, 15, 20, 25, 30]"
+                        :current-page="current"
+                        :page-size="size"
+                        :total="total">
+                </el-pagination>
+            </div>
+        </div>
+        <!-- <div class="pages" style="">
             <el-pagination
                     @size-change="handleSizeChange"
                     @current-change="handleCurrentChange"
@@ -62,7 +51,7 @@
                     :page-size="size"
                     :total="total">
             </el-pagination>
-        </div>
+        </div> -->
     </el-card>
 
    <el-drawer  v-model="formDrawerRef" title="详情"  size="65%"  :with-header="false">
@@ -88,8 +77,6 @@
                         <el-input type="number" v-model="formModel.grade[scope.row.id]" @blur="InputBlur(scope.row.id,scope.row.tid)" 
                         :placeholder="scope.row.grade" v-else />
                     </el-form-item>
-                    <!-- <el-text class="mx-1" type="danger" style="color:red">{{ scope.row.grade }}</el-text> -->
-                   
                 </template>
             </el-table-column>
         </el-table>
@@ -137,15 +124,6 @@
                             </el-form-item>
                         </div>
                     </div>
-                <!-- </el-col> -->
-                
-                <!-- <el-col :span="14">
-                    <div class="grid-content bg-purple-light">
-                        <el-form-item prop="ask">
-                            <el-input type="textarea" v-model="formModelAdd.ask" placeholder="详细内容"   />
-                        </el-form-item>
-                    </div>
-                </el-col> -->
             </el-row>
         </el-form>
     </form-drawer>
@@ -160,11 +138,48 @@ import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestDeleteData,RequestInfoData,RequestSaveData,RequestCreateData } from '~/api/tea.js'
+import { RequestAssListData } from '~/api/as.js'
 import { RequestClassListData } from '~/api/student.js'
 import { RequestListData } from '~/api/class.js'
 import { RequestListDatas } from '~/api/subject.js'
-import { createRouter, useRouter } from 'vue-router'
+import { createRouter, useRouter,useRoute } from 'vue-router'
 const router = useRouter()
+const route = useRoute()
+const bid = route.query.rid
+const kid = route.query.id
+console.log("bid"+bid)
+console.log("kid"+kid)
+const ToBack = () => {
+    router.push({name:'TeaKm',query:{id:bid}})
+}
+
+const current = ref(1)
+const size = ref(5)
+const total = ref(1)
+const formDrawerRef = ref(false)
+const handleSizeChange = (val) =>{
+    size.value = val
+    getListTableData()
+}
+const handleCurrentChange = (val) =>{
+    current.value = val
+    getListTableData()
+}
+const getData = () =>{
+    getListTableData()
+}
+const tableData = ref([])
+tableData.value = [];
+const getListTableData = ()=>{
+    RequestAssListData(current.value, size.value,store.state.user.id,bid,kid).then(res =>{
+        console.log(res)
+            tableData.value = res.data.data
+            total.value = res.data.total
+    })
+}
+getListTableData()
+
+
 
 //添加作业
 const t = ref("发布作业");
@@ -194,8 +209,6 @@ const handleDrawerSubmitAdd =() =>{
                 console.log(res)
                 if(res.code == 200){
                     toast("发布作业成功")
-                    // formDrawerRefAddData.value.close()
-                    formDrawerRefAddData.value = false
                     getListTableData()
                 }
             })
@@ -206,19 +219,13 @@ const handleDrawerSubmitAdd =() =>{
 
 const OpenView =(row) => {
     console.log(row)
-    // router.addRoute('admin',{
-    //     path: "/tea/teakm",
-    //     name:"TeaKm",
-    //     component: () => import("~/views/tea/Km.vue")
-    // })
+    router.addRoute('admin',{
+        path: "/tea/assignment",
+        name:"Assignment",
+        component: () => import("~/views/tea/Assignment.vue")
+    })
     
-    router.push({name:'TeaKm',query:{id:row.id}})
-
-    // store.state.nav.push( router.addRoute('admin',{
-    //     path: "/tea/teakm",
-    //     name:"TeaKm",
-    //     component: () => import("~/views/tea/Km.vue")
-    // }))
+    router.push({name:'Assignment',query:{id:row.bid}})
     // router.go(-1)
 }
 
@@ -255,48 +262,6 @@ const handleCreate =() => {
      })
 }
 
-
-const current = ref(1)
-const size = ref(5)
-const total = ref(1)
-const formDrawerRef = ref(false)
-const handleSizeChange = (val) =>{
-    console.log(`每页 ${val} 条`)
-    size.value = val
-    getListTableData()
-}
-const handleCurrentChange = (val) =>{
-    current.value = val
-    getListTableData()
-    console.log(`当前页: ${val}`)
-}
-
-const searchRef = ref(null)
-const searchModel = reactive({
-    "searchNickname":""
-})
-const searchRules = {
-    searchNickname:[ { required: true, message: '请输入姓名', trigger: 'blur' } ]
-}
-const onSearchSubmit = ()=>{
-    getListTableData()
-    searchModel.searchNickname = ""
-}
-const getData = () =>{
-    getListTableData()
-}
-const tableData = ref([])
-tableData.value = [];
-const getListTableData = ()=>{
-    RequestListData(current.value, size.value,store.state.user.id).then(res =>{
-        console.log(res)
-        // if(res.code == 200){
-            tableData.value = res.data.records
-            total.value = res.data.total
-        // }
-    })
-}
-getListTableData()
 
 
 

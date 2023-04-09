@@ -9,8 +9,22 @@
                     <el-avatar :size="50" :src="scope.row.avatar" />
                 </template>
             </el-table-column> -->
-            
             <el-table-column prop="content" label="内容" />
+            
+            <!-- <el-table-column prop="content" label="内容">
+                <template #default="scope">
+                    <el-popover
+                        placement="top-start"
+                        title="标题"
+                        width="200"
+                        trigger="hover"
+                        :content="scope.row.content">
+                        <el-button slot="referen1ce">hover 激活</el-button>
+                    </el-popover>
+                </template>
+            </el-table-column> -->
+
+
             <el-table-column prop="createtime" label="发布时间">
                 <template #default="scope">
                 {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    

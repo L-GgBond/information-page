@@ -2,7 +2,9 @@ import { createRouter, createWebHistory,createWebHashHistory} from 'vue-router'
 let modules = import.meta.glob("../views/**/*.vue");
 console.log(modules);
 import Index from '../views/index.vue'
-import Test from '../views/test.vue'
+import KM from '../views/tea/Km.vue'
+import Assignment from '../views/tea/Assignment.vue'
+import TaskList from '../views/task/List.vue'
 
 // 默认路由，所有用户共享
 const routes = [
@@ -20,12 +22,28 @@ const routes = [
             component: Index
         },
         {
-            path: '/test',
-            name: 'Test',
+            path: '/tea/teakm',
+            name: 'TeaKm',
             meta: {
-                title: "1"
+                title: "科目列"
             },
-            component: Test
+            component: KM
+        },
+        {
+            path: '/tea/assignment',
+            name: 'Assignment',
+            meta: {
+                title: "作业目列"
+            },
+            component: Assignment
+        },
+        {
+            path: '/tea/tasklist',
+            name: 'Tasklist',
+            meta: {
+                title: "作业信息"
+            },
+            component: TaskList
         }
     ]
   },

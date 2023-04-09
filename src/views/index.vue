@@ -11,9 +11,18 @@
   <router-view></router-view>
 </template>
 <script setup>
-import { ref, onMounted } from "vue";
- 
+ import { ref, onMounted } from "vue";
  import * as echarts from "echarts";
+ import store from '~/store'
+ import { RequestGetNumberData } from '~/api/index.js'
+ 
+ function indexInit(){
+  RequestGetNumberData(store.state.user.id).then(res => {
+    console.log(res)
+  })
+ }
+ indexInit()
+
  const main = ref(); // 使用ref创建虚拟DOM引用，使用时用main.value
  onMounted(() => {
    init();
