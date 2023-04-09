@@ -310,7 +310,6 @@ const handleRoleEdit = (row) => {
             res.data.class.forEach(item => {
                 classidList.value.push(item.cid) 
             })
-            
             formModel.statu = res.data.user.statu ? "正常" : "禁用"
             if(avatar.value == "" || avatar.value == undefined){
                 Isicons.value = false

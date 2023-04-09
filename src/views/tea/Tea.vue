@@ -33,7 +33,7 @@
 
             <el-table-column label="操作" width="160">
                 <template #default="scope">
-                    <el-button type="primary" size="small" text @click="OpenView(scope)">详情</el-button>
+                    <el-button type="primary" size="small" text @click="OpenView(scope.row)">详情</el-button>
                     <!-- <el-button type="primary" size="small" text @click="handleTaskInfo(scope.row.id)">详情</el-button> -->
                     <!-- <el-popconfirm title="是否要删除？" confirmButtonText="确认" cancelButtonText="取消"
                         @confirm="handleDelete(scope.row.id)">
@@ -156,11 +156,9 @@ import { RequestDeleteData,RequestInfoData,RequestSaveData,RequestCreateData } f
 import { RequestClassListData } from '~/api/student.js'
 import { RequestListData } from '~/api/class.js'
 import { RequestListDatas } from '~/api/subject.js'
+import { createRouter, useRouter } from 'vue-router'
+const router = useRouter()
 
-import VueUeditorWrap from 'vue-ueditor-wrap' 
-components: {
-  VueUeditorWrap
-}
 //添加作业
 const t = ref("发布作业");
 const formModelAdd = reactive({
@@ -196,19 +194,18 @@ const handleDrawerSubmitAdd =() =>{
     })
 
 }
-const  msg = ref('<h2><img src="//i2.wp.com/img.baidu.com/hi/jx2/j_0003.gif"/>Vue + UEditor + v-model双向绑定</h2>')
-const myConfig = ref({
-    // 编辑器不自动被内容撑高
-    autoHeightEnabled: false,
-    // 初始容器高度
-    initialFrameHeight: 450,
-    // 初始容器宽度
-    initialFrameWidth: '1000',
-    // 上传文件接口（这个地址是我为了方便各位体验文件上传功能搭建的临时接口，请勿在生产环境使用！！！）
-    serverUrl: '/api/upload',
-    // UEditor 资源文件的存放路径，如果你使用的是 vue-cli 生成的项目，通常不需要设置该选项，vue-ueditor-wrap 会自动处理常见的情况
-    UEDITOR_HOME_URL: '/public/UE/'
-})
+
+const OpenView =(row) => {
+    console.log(row)
+    router.addRoute('admin',{
+        path: "/tea/teainfo",
+        name:"TeaInfo",
+        component: () => import("~/views/tea/TeaInfo.vue")
+    })
+    
+    router.push({name:'TeaInfo',query:{id:row.id}})
+    // router.go(-1)
+}
 
 const formRefAdd = ref(null);
 const formDrawerRefAddData = ref(false)
@@ -279,14 +276,8 @@ const getListTableData = ()=>{
     RequestListData(current.value, size.value,store.state.user.id).then(res =>{
         console.log(res)
         // if(res.code == 200){
-            if(store.state.user.id == 1){
-                tableData.value = res.data.records.records
-                total.value = res.data.records.total
-            }else{
-                tableData.value = res.data.records
-                total.value = res.data.records
-            }
-          
+            tableData.value = res.data.records
+            total.value = res.data.total
         // }
     })
 }

@@ -62,6 +62,28 @@
     <form-drawer ref="formDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleDrawerSubmit" >
         <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
+
+            <el-form-item label="班级">
+                <!-- prop="classid" -->
+                <!-- <template> -->
+                    <!-- formModel.classid -->
+
+                    <el-checkbox-group v-model="subList">
+                            <el-checkbox  v-for="item in subData" :label="item.id"
+                        :key="item.id" >{{item.subjectname}}</el-checkbox>
+                        <!-- @change="changeCheckbox(item)"  -->
+                    </el-checkbox-group>
+                <!-- </template>     -->
+                <!-- <el-tree
+                    :data="classData"
+                    show-checkbox
+                    ref="classTree"
+                    node-key="id"
+                    check-strictly="true"
+                    :props="{ label: 'classname', children: 'children' }" default-expand-all="true" /> -->
+            </el-form-item>
+
+
             <el-form-item label="班级名称" prop="classname">
                 <el-input v-model="formModel.classname" />
             </el-form-item>
@@ -79,6 +101,8 @@ import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData } from '~/api/class.js'
+import { RequestListDatas } from '~/api/subject.js'
+
 
 const current = ref(1)
 const size = ref(5)
@@ -97,23 +121,16 @@ const getData = () =>{
     getListTableData()
 }
 
+
 const tableData = ref([])
 tableData.value = [];
 const getListTableData = ()=>{
     RequestListData(current.value, size.value,store.state.user.id).then(res =>{
         console.log(res)
-        // if(res.code == 200){
-            // if(store.state.user.id == 1){
-            //     tableData.value = res.data.records.records
-            //     total.value = res.data.records.total
-            // }else{
-                tableData.value = res.data.records
-                total.value = res.data.total
-                size.value = res.data.size
-                current.value = res.data.current
-            // }
-          
-        // }
+        tableData.value = res.data.records
+        total.value = res.data.total
+        size.value = res.data.size
+        current.value = res.data.current
     })
 }
 getListTableData()
@@ -122,13 +139,22 @@ const ID = ref(0)
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
 const formDrawerRef = ref(null)
 const formRef = ref(null)
-const handleCreate = ()=> { ResetFields(); ID.value = 0;formDrawerRef.value.open() }
+const subList = ref([])
+const subData = ref([])
+const handleCreate = ()=> {
+    ResetFields(); ID.value = 0;formDrawerRef.value.open()
+    RequestListDatas(store.state.user.id).then(res => {
+        console.log(res)
+        subData.value = res.data.records
+    })
+}
 const formModel = reactive({
     "id":'',
     "uid":'',
     "classname":'',
     "classdesc":'',
     "users":[],
+    "cids":[],
 })
 const formRules = {
     classname: [ { required: true, message: '请输入班级名称', trigger: 'blur' } ],
@@ -137,26 +163,44 @@ const ResetFields = () =>{
     formModel.id = ""
     formModel.classname = ""
     formModel.classdesc = ""
+    subList.value = []
 }
 
 //详情
 const handleEdit = (row) => {
+    subList.value = []
     console.log(row.id)
     ID.value = row.id
+    RequestListDatas(store.state.user.id).then(res => {
+        console.log(res)
+        subData.value = res.data.records
+    })
     RequestInfoData(row.id).then(res=>{
         if(res.code == 200){
             formDrawerRef.value.open()
             formModel.id = res.data.id
             formModel.classname = res.data.classname
             formModel.classdesc = res.data.classdesc
+            res.data.subjects.forEach(item => {
+                subList.value.push(item.id) 
+            })
+            console.log(subList.value)
+            
         }
     })
     
 }
 const handleDrawerSubmit = () => {
+    console.log(subList.value)
+    formModel.cids = subList.value
     formRef.value.validate((valid) => {
         console.log(valid)
         if(valid){
+            
+            if(formModel.cids.length == 0){
+                toast("请选择科目",'error')
+                return;
+            }
             formDrawerRef.value.showLoading()
             formModel.uid = store.state.user.id
             const fun = ID.value ? RequestUpdateData(formModel) : RequestSaveData(formModel)
@@ -177,7 +221,7 @@ const handleDrawerSubmit = () => {
 
 const handleDelete =(id) =>{
     console.log(id)
-    RequestDeleteData(id).then(res=>{
+    RequestDeleteData(id,store.state.user.id).then(res=>{
         if(res.code == 200){
             toast("删除成功")
             getListTableData()

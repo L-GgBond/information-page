@@ -99,7 +99,7 @@ const getListTableData = ()=>{
                 total.value = res.data.records.total
             }else{
                 tableData.value = res.data.records
-                total.value = res.data.records
+                total.value = res.data.total
             }
            
         // }

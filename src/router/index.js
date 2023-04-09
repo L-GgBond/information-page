@@ -2,6 +2,7 @@ import { createRouter, createWebHistory,createWebHashHistory} from 'vue-router'
 let modules = import.meta.glob("../views/**/*.vue");
 console.log(modules);
 import Index from '../views/index.vue'
+import Test from '../views/test.vue'
 
 // 默认路由，所有用户共享
 const routes = [
@@ -17,6 +18,14 @@ const routes = [
                 title: "首页"
             },
             component: Index
+        },
+        {
+            path: '/test',
+            name: 'Test',
+            meta: {
+                title: "1"
+            },
+            component: Test
         }
     ]
   },
