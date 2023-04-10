@@ -14,3 +14,12 @@ export function RequestAssListData(current, size,uid,rid,kid){
 export function RequestTasklistListData(current, size,uid,kid){
     return axios.get('/task/tasklist?current='+ current +"&size=" + size + "&uid=" + uid  +  "&kid=" + kid)
 }
+
+export function RequestTaskSaveData(aid,uid,ascontent,filelist){
+    return axios.post('/task/tasksave',{aid:aid,uid:uid,ascontent:ascontent,filelist:filelist},config)
+}
+
+
+export function RequestTasklistListInfoData(current, size,uid,kid){
+    return axios.get('/task/tasklistinfo?current='+ current +"&size=" + size + "&uid=" + uid  +  "&kid=" + kid)
+}
