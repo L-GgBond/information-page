@@ -26,14 +26,16 @@
             <el-table-column  prop="ask" label="要求" />
             <el-table-column label="操作" width="160">
                 <template #default="scope">
-                    <el-button type="primary" size="small" text @click="answer(scope.row)">详情</el-button>
+                    <el-button type="danger" size="small" text @click="datasIfView(scope.row)">详情</el-button>
+                    <!-- <el-button type="danger" size="small" text @click="answer(scope.row)">答题</el-button>
+                    <el-button type="primary" size="small" text @click="handleInfo(scope.row)">详情</el-button> -->
                 </template>
             </el-table-column>
         </el-table>
   
-        <div class="pages" style="display:flex;padding-top:6px">
+        <div class="pages">
             <div @click="ToBack" style="position:absolute;left:30px;">
-                <el-icon><Back /></el-icon>  
+                <el-icon style="color: dodgerblue;"><Back /></el-icon>  
             </div>
             <div  >
                 <el-pagination
@@ -47,44 +49,16 @@
                 </el-pagination>
             </div>
         </div>
+        
         <el-dialog
             v-model="dialogVisible"
             title="答题"
-            width="90%"
-            :before-close="handleClose">
+            width="90%">
             <div>
                 <el-row>
-                    <el-col :span="10">
+                    <el-col :span="8">
                         <el-form :model="formModelInfo" label-width="120">
-                            <el-form-item label="学期" prop="termid" >
-                                <el-input  disabled v-model="formModelInfo.termid" />
-                            </el-form-item>
-                            <el-form-item label="班级" prop="bid">
-                                <el-input  disabled v-model="formModelInfo.bid" />
-                            </el-form-item>
-                            <el-form-item label="科目" prop="kid">
-                                <el-input  disabled v-model="formModelInfo.kid  " />
-                            </el-form-item>
-                            <el-form-item label="审核人" prop="tid">
-                                <el-input  disabled v-model="formModelInfo.tid" />
-                            </el-form-item>
-                            <el-form-item label="作业" prop="title">
-                                <el-input  disabled v-model="formModelInfo.title" />
-                            </el-form-item>
-                            <el-form-item label="分数" prop="fraction">
-                                <el-input  disabled v-model="formModelInfo.fraction" />
-                            </el-form-item>
-                            <el-form-item label="要求" prop="ask">
-                                <el-input type="textarea" disabled v-model="formModelInfo.ask" />
-                            </el-form-item>
-                        </el-form>
-                    </el-col>
-                    <el-col :span="2">
-                    </el-col>
-                    <el-col :span="12">
-                        
-                        <el-form ref="formRef" :model="formModel" :rules="formRules"  label-width="">
-                            <el-form-item label="附件" prop="ascontent">
+                            <el-form-item label="附件">
                                 <el-upload
                                     v-model:file-list="fileList"
                                     class="upload-demo"
@@ -92,8 +66,7 @@
                                     :action="RequestUp"
                                     :data="{id:aid,uid:store.state.user.id}"
                                     :on-success="handleAvatarSuccess"
-                                    :before-remove="beforeRemove"
-                                    :on-exceed="handleExceed">
+                                    :before-remove="beforeRemove">
                                     <el-button type="primary">Click to upload</el-button>
                                     <template #tip>
                                     <div class="el-upload__tip">
@@ -103,6 +76,10 @@
                                 </el-upload>
                             </el-form-item>
                         </el-form>
+                    </el-col>
+                    <el-col :span="2">
+                    </el-col>
+                    <el-col :span="14">
                         <div class="app-container">
                             <editor id="tinymce" v-model="formModel.ascontent" :init="init"></editor>
                         </div>
@@ -118,6 +95,90 @@
             </span>
             </template>
         </el-dialog>
+        
+
+        <el-dialog
+            v-model="dialogVisibleInfo"
+            title="详情"
+            width="90%">
+            <div>
+                <el-row>
+                    <el-col :span="8">
+                        <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 35px;">
+                            <div>
+                                <el-text>标题：</el-text>
+                                <el-text>{{contentInfo.title}}</el-text>
+                            </div>
+                            <div>
+                                <el-text>分数：</el-text>
+                                <el-text>{{contentInfo.fraction}}</el-text>
+                            </div>
+                            <div>
+                                <el-text>要求：</el-text>
+                                <el-text>{{contentInfo.ask}}</el-text>
+                            </div>
+                            <div>
+                                <el-text>科目：</el-text>
+                                <el-text>{{contentInfo.subject}}</el-text>
+                            </div>
+                            <div>
+                                <el-text>班级：</el-text>
+                                <el-text>{{contentInfo.classname}}</el-text>
+                            </div>
+                            <div>
+                                <el-text>学期：</el-text>
+                                <el-text>{{contentInfo.termname}}</el-text>
+                            </div>
+                            <div>
+                                <el-text>审批人：</el-text>
+                                <el-text>{{contentInfo.username}}</el-text>
+                            </div>
+                        </div>
+                    </el-col>
+
+                    <el-col :span="2">
+                    </el-col>
+                    <el-col :span="14">
+                        <span class="demonstration">文件列表</span>
+                        <div style=""> 
+                            <div class="demo-image" style="display:flex;flex-wrap:wrap">
+                                <div v-for="(item,index) in dataFile"  class="block">
+                                     <el-image v-if="filetype = 'image/jpeg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:15px">
+                            <span class="demonstration">内容</span>
+                            <div v-html="ascontent">
+                               
+                            </div>
+                        </div>
+                        <div style="margin-top:20px;" v-if="status == 1">
+                            <el-text>得分：</el-text>
+                            <el-tag  type="danger" effect="dark">
+                                {{ score }}
+                            </el-tag>
+                        </div>
+                        <div style="margin-top:20px;" v-else>
+                            <el-text>得分：</el-text>
+                            <el-tag  type="info" effect="dark">
+                                待批改
+                            </el-tag>
+                         
+                        </div>
+
+
+                    </el-col>
+
+                </el-row>
+            </div>
+            <template #footer>
+            <span class="dialog-footer">
+                <el-button @click="dialogVisibleInfo = false">取消</el-button>
+            </span>
+            </template>
+        </el-dialog>
     </el-card>
 </template>
 <script setup>
@@ -125,12 +186,12 @@ import { ref,reactive,onMounted } from 'vue'
 import UploadFile  from 'element-plus'
 import store from '~/store'
 import { toast } from '~/utils/common'
-import ListHeader from "~/components/ListHeader.vue";
-import FormDrawer from '~/components/FormDrawer.vue'
-import { RequestTasklistListData,RequestTaskSaveData } from '~/api/as.js'
-import { createRouter, useRouter,useRoute } from 'vue-router'
+import { RequestTasklistListData,RequestTaskSaveData,RequestTasklistListInfoData,RequestIfViewsInfoData } from '~/api/as.js'
+import { useRouter,useRoute } from 'vue-router'
 import { RequestUp } from '~/api/uploads.js'
-const dialogVisible = ref(false)
+
+const dialogVisible = ref(false) 
+const dialogVisibleInfo = ref(false)
 const fileList = ref([])
 const fileLists = ref([])
 const aid = ref(0)
@@ -167,29 +228,46 @@ const handleSubmitFormData =() => {
 
 
 const formModelInfo = reactive({
-    "termid":"学期",//学期
-    "bid":"班级",//班级
-    "kid":"科目",//科目
-    "tid":"teacher5",//审核人
-    "title":"作业",//作业
-    "fraction":"分数",//分数
-    "ask":"要求",//要求
+    "termid":"",//学期
+    "bid":"",//班级
+    "kid":"",//科目
+    "tid":"",//审核人
+    "title":"",//作业
+    "fraction":"",//分数
+    "ask":"",//要求
 })
-const formDrawerRef = ref(false)
 //打开详情
-const answerDrawer =(item) => {
-    formDrawerRef.value = true
+const dataFile = ref(0)
+const dataInfo = ref(0)
+const ascontent = ref(0)
+const score = ref(0)
+const status = ref(0)
+const contentInfo = ref("")
+const handleInfo =(item) => {
+    console.log(item)
+    dialogVisibleInfo.value = true
+    RequestTasklistListInfoData(item.id,store.state.user.id).then(res => {
+        console.log(res)
+        dataFile.value = res.data.filelist
+        dataInfo.value = res.data.list[0]
+        ascontent.value = res.data.list[0].ascontent
+        score.value = res.data.list[0].score
+        status.value = res.data.list[0].status
+        contentInfo.value = res.data.info
+    })
 } 
 const answer =(item) => {
     console.log(item)
     aid.value = item.id
-    tinymce.init({});
+    tinymce.init({}); 
     dialogVisible.value = true
 }
 const router = useRouter()
 const route = useRoute()
 const kid = route.query.id
-const ToBack = () => router.push({name:'task:task:list',query:{}})
+const ToBack = () => {
+    router.push({name:'task:task:list',query:{}})
+}
 const current = ref(1)
 const size = ref(5)
 const total = ref(1)
@@ -216,7 +294,20 @@ const getListTableData = ()=>{
 getListTableData()
 
 
-
+//根据判断 来显示添加或者是详情
+const datasIfView =(rows) => {
+    console.log("rows",rows.id)
+    RequestIfViewsInfoData(rows.id).then(res => {
+        console.log("res",res)
+        if(res.data.result == 0){
+            //暂未上传作业
+            answer(rows)
+        }else{
+            //已上传
+            handleInfo(rows)
+        }
+    })
+}
 
 import Editor from "@tinymce/tinymce-vue"; // 引入组件
 import tinymce from "tinymce/tinymce";
@@ -235,7 +326,7 @@ const init = {
   language_url: "/skins/langs/zh-Hans.js", // 引入语言包（该语言包在public下，注意文件名称）
   language: "zh-Hans", // 这里名称根据 zh-Hans.js 里面写的名称而定
   skin_url: "/skins/ui/oxide", // 这里引入的样式
-  height: 200, // 限制高度
+  height: 400, // 限制高度
   plugins: "link lists image code table wordcount", // 富文本插件
   toolbar:
     "bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | link unlink image code | removeformat",
@@ -255,23 +346,23 @@ const init = {
               resolve("返回的上传图片后的地址");
             });
         }),
-    };
+};
+
 onMounted(() => {
   tinymce.init({}); // 初始化富文本
 });
 
 </script>
 <style>
-    .pages{
-        float: right;
-        @apply mt-6 mb-6;
-    }
-    .el-upload--picture-card{
-        /* display: none !important; */
-    }
-    .hide .el-upload--picture-card{
-        display: none;
-    }
+.pages{
+    float: right;
+    display:flex;padding-top:6px
+    @apply mt-6 mb-6;
+}
+
+/* .hide .el-upload--picture-card{
+    display: none;
+}
 
     .demo-image__error .image-slot {
   font-size: 30px;
@@ -282,10 +373,10 @@ onMounted(() => {
 .demo-image__error .el-image {
   width: 100%;
   height: 200px;
-}
-avatar-uploader .avatar {
+} */
+/* avatar-uploader .avatar {
   width: 178px;
   height: 178px;
   display: block;
-}
+} */
 </style>

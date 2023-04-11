@@ -24,7 +24,7 @@
         
         <div class="pages" style="display:flex;padding-top:6px">
             <div @click="ToBack" style="position:absolute;left:30px;">
-                <el-icon><Back /></el-icon>  
+                <el-icon style="color: dodgerblue;"><Back /></el-icon>  
                 <!-- <el-text class="mx-1" size="small" style="font-size:14px" type="info">返回</el-text> -->
             </div>
             <div  >
@@ -115,12 +115,20 @@
                         <el-form-item label="分数" prop="fraction">
                             <el-input type="number" v-model="formModelAdd.fraction" />
                         </el-form-item>
-                        
+<!--                         
                         <div class="grid-content bg-purple-light">
                             <el-form-item prop="ask" label="要求" >
                                 <el-input type="textarea" v-model="formModelAdd.ask" placeholder=""   />
                             </el-form-item>
-                        </div>
+                        </div> -->
+                        <div class="grid-content bg-purple-light" style="display:flex">
+                            <el-text style="font-size:14px;width:30px;color: var(--el-text-color-regular);margin-left:10px">
+                                要求
+                            </el-text>
+                            <div class="app-container" style="margin-left:13px;">
+                                <editor id="tinymce" v-model="formModelAdd.ask" :init="init"></editor>
+                            </div>
+                        </div> 
                     </div>
             </el-row>
         </el-form>
@@ -128,7 +136,7 @@
 
 </template>
 <script setup>
-import { ref,reactive } from 'vue'
+import { ref,reactive,onMounted } from 'vue'
 import UploadFile  from 'element-plus'
 import store from '~/store'
 import { computed } from "@vue/reactivity";
@@ -194,7 +202,7 @@ const formRulesAdd = {
     kid:[{ required: true, message: '请选择科目', trigger: 'blur' }],
     title:[{ required: true, message: '请填写标题', trigger: 'blur' }],
     fraction:[{ required: true, message: '请填写分数', trigger: 'blur' }],
-    ask:[{ required: true, message: '请填写要求', trigger: 'blur' }],
+    // ask:[{ required: true, message: '请填写要求', trigger: 'blur' }],
 };
 const handleDrawerSubmitAdd =() =>{
     console.log(formModelAdd)
@@ -314,6 +322,51 @@ const InputBlur =(id,tid) =>{
     toast("默认是0分","error")
    }
 }
+
+
+
+import Editor from "@tinymce/tinymce-vue"; // 引入组件
+import tinymce from "tinymce/tinymce";
+import "tinymce/themes/silver/theme";
+// 都是富文本插件
+import "tinymce/icons/default";
+import "tinymce/plugins/image";
+import "tinymce/plugins/link";
+import "tinymce/plugins/code";
+import "tinymce/plugins/table";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/wordcount";
+const tinymceHtml = ref("请输入内容");
+const init = {
+  //初始化数据
+  language_url: "/skins/langs/zh-Hans.js", // 引入语言包（该语言包在public下，注意文件名称）
+  language: "zh-Hans", // 这里名称根据 zh-Hans.js 里面写的名称而定
+  skin_url: "/skins/ui/oxide", // 这里引入的样式
+  height: 400, // 限制高度
+  plugins: "link lists image code table wordcount", // 富文本插件
+  toolbar:
+    "bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | link unlink image code | removeformat",
+  branding: false, // //是否禁用“Powered by TinyMCE”
+  menubar: true, //顶部菜单栏显示
+  // paste_convert_word_fake_lists: false, // 插入word文档需要该属性
+  content_css: "/skins/content/default/content.css", //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
+  images_upload_handler: (blobInfo) =>
+        new Promise((resolve, reject) => {
+          // console.log(blobInfo.blob());
+          // 上传图片需要，FormData 格式的文件；
+          const formDataUp = new FormData();
+         // img  是接口需要的上传的属性名，一般属性名是 file
+          formDataUp.append("img", blobInfo.blob());
+          // // console.log(formDataUp);
+          axios.post("xxxx", formDataUp).then((res) => {
+              resolve("返回的上传图片后的地址");
+            });
+        }),
+};
+
+onMounted(() => {
+  tinymce.init({}); // 初始化富文本
+});
 </script>
 <style>
     .pages{

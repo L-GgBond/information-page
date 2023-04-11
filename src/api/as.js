@@ -20,6 +20,11 @@ export function RequestTaskSaveData(aid,uid,ascontent,filelist){
 }
 
 
-export function RequestTasklistListInfoData(current, size,uid,kid){
-    return axios.get('/task/tasklistinfo?current='+ current +"&size=" + size + "&uid=" + uid  +  "&kid=" + kid)
+export function RequestTasklistListInfoData(aid,uid){
+    return axios.get('/task/tasklistinfo?aid='+ aid +"&uid=" + uid ,{} )
+}
+
+
+export function RequestIfViewsInfoData(id){
+    return axios.get('/task/taskifview?id='+ id,{} )
 }

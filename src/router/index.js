@@ -5,6 +5,7 @@ import Index from '../views/index.vue'
 import KM from '../views/tea/Km.vue'
 import Assignment from '../views/tea/Assignment.vue'
 import TaskList from '../views/task/List.vue'
+import SubmitList from '../views/tea/SubmitList.vue'
 
 // 默认路由，所有用户共享
 const routes = [
@@ -44,6 +45,14 @@ const routes = [
                 title: "作业信息"
             },
             component: TaskList
+        },
+        {
+            path: '/tea/submitlist',
+            name: 'SubmitList',
+            meta: {
+                title: "用户提交列表"
+            },
+            component: SubmitList
         }
     ]
   },
