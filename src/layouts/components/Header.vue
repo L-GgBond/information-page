@@ -83,12 +83,12 @@
 
             
             </el-form-item>
-            <el-form-item  label="班级">
+            <el-form-item  v-if="t == 2" label="班级">
                      <el-tag  type="danger" effect="dark">
                         {{banji }}
                     </el-tag>
             </el-form-item>
-            <el-form-item  label="老师" v-for="(item,index) in laoshi">
+            <el-form-item   v-if="t == 2"  label="老师" v-for="(item,index) in laoshi">
                      <el-tag  type="default" effect="dark">
                        {{ item }}
                     </el-tag>
