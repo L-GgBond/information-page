@@ -2,8 +2,8 @@
     <el-card shadow="never" class="border-0" style="position: relative;">
         <ListHeader @create="handleCreate" @refresh="getData"/>
         <el-form ref="searchRef" :model="searchModel" :rules="searchRules" :inline="true"  class="demo-form-inline">
-            <el-form-item label="姓名" prop="searchNickname">
-                <el-input v-model="searchModel.searchNickname" placeholder="请输入姓名"  />
+            <el-form-item label="账号" prop="searchNickname">
+                <el-input v-model="searchModel.searchNickname" placeholder="请输入账号"  />
             </el-form-item>
             <el-form-item>
                 <el-button type="success"  @click="onSearchSubmit">搜索</el-button>
@@ -50,7 +50,7 @@
                     <el-tag class="ml-2" v-else type="danger">禁用</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="nation" label="民族"  width="120px"/>
+            <!-- <el-table-column prop="nation" label="民族"  width="120px"/> -->
             <el-table-column prop="city" label="住址"   width="150px"/>
             <el-table-column prop="email" label="联系方式" width="150px" />
             <el-table-column prop="rolename" label="角色"  width="120px">
@@ -58,8 +58,8 @@
                     <el-tag >{{ scope.row.rolename }}</el-tag>  
                 </template>
             </el-table-column>
-            <el-table-column prop="duration" label="学年时长"  width="120px"/>
-            <el-table-column prop="politics" label="政治面貌"  width="120px"/>
+            <!-- <el-table-column prop="duration" label="学年时长"  width="120px"/>
+            <el-table-column prop="politics" label="政治面貌"  width="120px"/> -->
            
             
             <el-table-column fixed="right" label="操作" width="160">
@@ -132,9 +132,9 @@
             <el-form-item label="年龄" prop="age">
                 <el-input type="number" v-model="formModel.age" />
             </el-form-item>
-            <el-form-item label="民族" prop="nation">
+            <!-- <el-form-item label="民族" prop="nation">
                 <el-input v-model="formModel.nation" />
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="住址" prop="city">
                 <el-input v-model="formModel.city" />
             </el-form-item>
@@ -168,12 +168,12 @@
                 </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="学年时间" prop="duration">
+            <!-- <el-form-item label="学年时间" prop="duration">
                 <el-input type="number" v-model="formModel.duration" />
             </el-form-item>
             <el-form-item label="政治面貌" prop="politics">
                 <el-input v-model="formModel.politics" />
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item label="状态" prop="statu">
                 <!-- <el-select v-model="formModel.statu" placeholder="请选择状态">
@@ -241,7 +241,7 @@ const searchModel = reactive({
     "searchNickname":""
 })
 const searchRules = {
-    searchNickname:[ { required: true, message: '请输入姓名', trigger: 'blur' } ]
+    searchNickname:[ { required: true, message: '请输入账号', trigger: 'blur' } ]
 }
 const onSearchSubmit = ()=>{
     getListTableData()
@@ -316,13 +316,13 @@ const formModel = reactive({
     "username":'',
     "nickname":'',
     "sex":'',
-    "nation":'',
+    "nation":'汗',
     "city":'',
     "classid":'',
     "roleid":'',
     "classname":'',
-    "duration":'',
-    "politics":'',
+    "duration":'3',
+    "politics":'无',
     "email":'',
     "avatar":'',
     "age":'',

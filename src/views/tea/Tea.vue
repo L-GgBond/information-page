@@ -121,7 +121,7 @@
                         <el-form-item label="科目" prop="kid">
                             <el-radio-group v-for="(item,index) in subData" v-model="formModelAdd.kid">
                                 <el-radio style="margin-right:15px" :label="item.id" v-if="item.status == 1" disabled>{{item.subjectname}}</el-radio>
-                                <el-radio style="margin-right:15px" :label="item.id" v-else>{{item.subjectname}}</el-radio>
+                                <el-radio style="margin-right:15px" :label="item.id" @change="changeIfClass(item)" v-else>{{item.subjectname}}</el-radio>
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="标题" prop="title">
@@ -173,6 +173,14 @@ import { RequestListDatas } from '~/api/subject.js'
 import { createRouter, useRouter } from 'vue-router'
 import { RequestListData,RequestInfoDataClass } from '~/api/class.js'
 
+
+
+
+const changeIfClass = () =>{
+    return false;
+}
+
+const arrSubInfo = ref([])
 const changeRadioClass =(item) => {
     RequestInfoDataClass(item.id).then(res => {
         let arrSubData = [];
@@ -186,6 +194,7 @@ const changeRadioClass =(item) => {
                 arrSubData.push(rows)
              }
         })
+        arrSubInfo.value = arrSubData
         subData.value = arrSubData
     })
 }
@@ -214,6 +223,7 @@ const handleDrawerSubmitAdd =() =>{
     formRefAdd.value.validate((valid) => {
         console.log(valid)
         if(valid){
+            console.log(arrSubInfo.value)
             RequestCreateData(store.state.user.id,formModelAdd).then(res => {
                 console.log(res)
                 if(res.code == 200){
@@ -255,7 +265,13 @@ const handleCreate =() => {
     formDrawerRefAddData.value = true
     RequestListDatas(store.state.user.id).then(res => {
         console.log(res)
-        subData.value = res.data.records
+
+        let subs = []
+        res.data.records.forEach(item => {
+            item.status = 1
+            subs.push(item)
+        })
+        subData.value = subs
         termData.value = res.data.term
     })
     RequestClassListData(store.state.user.id).then(res=>{

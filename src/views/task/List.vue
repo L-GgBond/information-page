@@ -144,6 +144,11 @@
                                 <el-text>审批人：</el-text>
                                 <el-text>{{contentInfo.username}}</el-text>
                             </div>
+                            
+                            <div>
+                                <el-text>答题时间：</el-text>
+                                <el-text>{{createtime}}</el-text>
+                            </div>
                         </div>
                     </el-col>
 
@@ -278,6 +283,7 @@ const ascontent = ref(0)
 const score = ref(0)
 const status = ref(0)
 const contentInfo = ref("")
+const createtime = ref("")
 const handleInfo =(item) => {
     fileList.value = []
     fileLists.value = []
@@ -292,6 +298,7 @@ const handleInfo =(item) => {
         ascontent.value = res.data.list[0].ascontent
         score.value = res.data.list[0].score
         status.value = res.data.list[0].status
+        createtime.value = res.data.list[0].createtime
         contentInfo.value = res.data.info
     })
 } 

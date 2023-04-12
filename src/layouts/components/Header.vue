@@ -83,6 +83,18 @@
 
             
             </el-form-item>
+            <el-form-item  label="班级">
+                     <el-tag  type="danger" effect="dark">
+                        {{banji }}
+                    </el-tag>
+            </el-form-item>
+            <el-form-item  label="老师" v-for="(item,index) in laoshi">
+                     <el-tag  type="default" effect="dark">
+                       {{ item }}
+                    </el-tag>
+            </el-form-item>
+
+
             <el-form-item  label="账号" prop="username">
                 <el-input   v-model="formModel.username"></el-input>
             </el-form-item>
@@ -105,9 +117,9 @@
                 <el-input  v-model="formModel.email"></el-input>
             </el-form-item>
 
-            <el-form-item  label="民族" prop="nation">
+            <!-- <el-form-item  label="民族" prop="nation">
                 <el-input  v-model="formModel.nation"></el-input>
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item  label="地址" prop="city">
                 <el-input  v-model="formModel.city"></el-input>
@@ -215,11 +227,13 @@ const formModel = reactive({
     "age":"",
     "sex":"",
     "email":"",
-    "nation":"",
+    "nation":"汗",
     "city":"",
     "types":"",
 })
-
+const t = ref(0);
+const laoshi = ref([])
+const banji = ref("")
 const handleCommand = (e)=>{
     console.log(e)
     switch (e) {
@@ -250,6 +264,9 @@ const handleCommand = (e)=>{
                     formModel.nation = res.data.nation
                     formModel.city = res.data.city
                     formModel.types = res.data.types
+                    t.value = res.data.t
+                    laoshi.value = res.data.laoshi
+                    banji.value = res.data.banji
                 }
                 console.log(res.data.avatar)
                 if( res.data.avatar == "" ||  res.data.avatar == undefined ||  res.data.avatar == ' '){

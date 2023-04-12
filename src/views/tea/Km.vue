@@ -270,7 +270,12 @@ const handleCreate =() => {
     formDrawerRefAddData.value = true
     RequestListDatas(store.state.user.id).then(res => {
         console.log(res)
-        subData.value = res.data.records
+        let subs = []
+        res.data.records.forEach(item => {
+            item.status = 1
+            subs.push(item)
+        })
+        subData.value = subs
         termData.value = res.data.term
     })
     RequestClassListData(store.state.user.id).then(res=>{
