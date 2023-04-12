@@ -72,11 +72,15 @@
                                     :data="{id:aid,uid:store.state.user.id}"
                                     :on-success="handleAvatarSuccess"
                                     :before-remove="beforeRemove">
-                                    <el-button type="primary">Click to upload</el-button>
+                                    <el-button type="primary">点击上传</el-button>
                                     <template #tip>
                                     <div class="el-upload__tip">
-                                        jpg/png or word files with a size less than 500KB.
+                                       图片支持 jpg / png / jpeg /svg / gif .
                                     </div>
+                                    <div class="el-upload__tip">
+                                       文件大小不可超过50MB .
+                                    </div>
+
                                     </template>
                                 </el-upload>
                             </el-form-item>
@@ -151,8 +155,8 @@
                             <div style="margin-left: 20px;"> 
                                 <div class="demo-image" style="display:flex;flex-wrap:wrap">
                                     <div v-for="(item,index) in dataFile"  class="block">
-                                        <el-image v-if="filetype = 'image/jpeg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
-                                        <!-- <el-image v-else style="width: 100px; height: 100px;margin-right:10px" src="/src/assets/x.png"  /> -->
+                                        <el-image v-if="item.filetype == 'image/jpeg' || item.filetype == 'image/gif' || item.filetype == 'image/png' ||  item.filetype == 'image/svg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
+                                        <el-image v-else style="width: 100px; height: 100px;margin-right:10px;cursor: pointer;" @click="downLoadFile(item)" src="/src/assets/x.png"  />
                                         
                                     </div>
                                 </div>
@@ -215,6 +219,12 @@ import "tinymce/plugins/table";
 import "tinymce/plugins/lists";
 import "tinymce/plugins/wordcount";
  
+
+
+const downLoadFile =(files) => {
+    console.log(files)
+    window.location.href = files.filepath
+}
 const dialogVisible = ref(false) 
 const dialogVisibleInfo = ref(false)
 const fileList = ref([])

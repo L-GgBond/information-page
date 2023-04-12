@@ -140,7 +140,9 @@
                             </div>
                             <div>
                                 <el-text>要求：</el-text>
-                                <el-text>{{contentInfo.ask}}</el-text>
+                                <el-text v-html="contentInfo.ask"></el-text>
+                                <!-- <div v-html="contentInfo.ask"></div> -->
+
                             </div>
                             <div>
                                 <el-text>科目：</el-text>
@@ -169,7 +171,9 @@
                             <div style="margin-left: 20px;"> 
                                 <div class="demo-image" style="display:flex;flex-wrap:wrap">
                                     <div v-for="(item,index) in dataFile"  class="block">
-                                        <el-image v-if="filetype = 'image/jpeg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
+                                        <!-- <el-image v-if="filetype = 'image/jpeg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  /> -->
+                                        <el-image v-if="item.filetype == 'image/jpeg' || item.filetype == 'image/gif' || item.filetype == 'image/png' ||  item.filetype == 'image/svg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
+                                        <el-image v-else style="width: 100px; height: 100px;margin-right:10px;cursor: pointer;" @click="downLoadFile(item)" src="/src/assets/x.png"  />
                                         
                                         <!-- <el-image v-else style="width: 100px; height: 100px;margin-right:10px" src="/src/assets/x.png"  /> -->
                                     </div>
@@ -231,6 +235,13 @@ import { RequestClassListData } from '~/api/student.js'
 import { RequestListData,RequestInfoDataClass } from '~/api/class.js'
 import { RequestListDatas } from '~/api/subject.js'
 import { createRouter, useRouter,useRoute } from 'vue-router'
+
+
+
+const downLoadFile =(files) => {
+    console.log(files)
+    window.location.href = files.filepath
+}
 const changeRadioClass =(item) => {
     RequestInfoDataClass(item.id).then(res => {
         let arrSubData = [];
