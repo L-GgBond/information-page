@@ -88,8 +88,6 @@ const getListTableData = ()=>{
 getListTableData()
 
 
-
-
 const OpenView =(row) => {
     console.log(row)
     router.push({name:'Tasklist',query:{id:row.id,rid:rid}})

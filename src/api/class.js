@@ -22,6 +22,11 @@ export function RequestInfoData(id){
     return axios.get('/class/info/' + id)
 }
 
+export function RequestInfoDataClass(id){
+    return axios.get('/class/info/' + id)
+}
+
+
 
 export function RequestUpdateData(data){
     return axios.post('/class/update', data,config)
@@ -31,3 +36,4 @@ export function RequestUpdateData(data){
 export function RequestDeleteData(id,uid){
     return axios.post('/class/delete/'+ id, {uid:uid}, config)
 }
+

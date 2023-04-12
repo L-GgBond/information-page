@@ -10,7 +10,6 @@ export function RequestAssListData(current, size,uid,rid,kid){
 }
 
 
-
 export function RequestTasklistListData(current, size,uid,kid){
     return axios.get('/task/tasklist?current='+ current +"&size=" + size + "&uid=" + uid  +  "&kid=" + kid)
 }
@@ -25,6 +24,19 @@ export function RequestTasklistListInfoData(aid,uid){
 }
 
 
-export function RequestIfViewsInfoData(id){
-    return axios.get('/task/taskifview?id='+ id,{} )
+export function RequestIfViewsInfoData(id,uid){
+    return axios.get('/task/taskifview?id='+ id +"&uid=" + uid,{} )
+}
+
+export function RequestSubmitAssListData(current, size,aid){
+    return axios.get('/ass/submitlist?current='+ current +"&size=" + size + "&aid=" + aid )
+}
+
+export function RequestSubmitInfoData(aid,uid){
+    return axios.get('/ass/submitlistinfo?aid='+ aid +"&uid=" + uid ,{} )
+}
+
+
+export function RequestSubmitInfoSaveData(id,score){
+    return axios.get('/ass/save?id='+ id +"&score=" + score ,{} )
 }

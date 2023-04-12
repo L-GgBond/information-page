@@ -9,5 +9,5 @@ export const RequestUploads = "/api/upload"
 
 export const RequestUploadsApi = "/api/uploads"
 
-
 export const RequestUp = "/api/up"
+

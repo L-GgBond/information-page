@@ -25,7 +25,7 @@
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
                 <el-button type="warning" size="small" v-if="scope.row.id != 1" text @click="handleRoleAccact(scope.row)">分配角色</el-button>
-                <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
+                <el-button type="primary" size="small" v-if="scope.row.id != 1"  text @click="handleRoleEdit(scope.row)">修改</el-button>
                
                 <el-popconfirm title="是否要删除？" v-if="scope.row.id != 1" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
@@ -396,6 +396,7 @@ const handleRoleAccact =(id) => {
         r.data.user.inRoles.forEach(row =>{
             roleIds.push(row.id)
         })
+        console.log("roleIds",roleIds)
         roleTree.value.setCheckedKeys(roleIds);
         // this.$refs.roleTree.setCheckedKeys(roleIds)
     })

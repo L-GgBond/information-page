@@ -2,8 +2,10 @@
     <el-card>
         <div style="display:flex">
           <div ref="main" style="width: 50%; height: 280px;border: px solid red;"></div>
-          <div style="width: 50%; height: 280px;border: px solid red;"></div>
+          <!-- <div ref="broken" style="width: 50%; height: 280px;border: px solid red;"></div> -->
+
         </div>
+
         <div ref="brokenline" style="width: 100%; height: 300px;border: px solid red;">
 
         </div>
@@ -16,7 +18,7 @@
  import store from '~/store'
  import { RequestGetNumberData } from '~/api/index.js'
  import { RequestListData } from '~/api/class.js'
-
+ 
  function indexInit(){
   RequestGetNumberData(store.state.user.id).then(res => {
     console.log(res)
@@ -24,60 +26,58 @@
  }
  indexInit()
 
+
  const mainData = ref([])
-//  function classInit(){
-//    RequestListData(1, 100,store.state.user.id).then(res =>{
-//         console.log(res)
-//         res.data.records.forEach(item => {
-//            mainData.value.push({name:item.classname,value:item.total})
-//         })
+ function classInit(){
+   RequestListData(1, 100,store.state.user.id).then(res =>{
+        console.log(res)
+        res.data.records.forEach(item => {
+           mainData.value.push({name:item.classname,value:item.total})
+          //  console.log(mainData.value)
+        })
  
-//     })
-//  }
-
-
-
- const main = ref(); // 使用ref创建虚拟DOM引用，使用时用main.value
+    })
+ }
+ classInit()
  onMounted(() => {
-  console.log("1",store.state.user.id)
+  brokenlineInit();
+   brokeninit()
    init();
-   brokenlineInit();
  });
-
 //  setTimeout(() => {
-//     init();
+//    brokenlineInit();
+//    brokeninit()
+//    init();
 //   }, 500);
- 
+
+
+const main = ref(); // 使用ref创建虚拟DOM引用，使用时用main.value
  function init() {
-    console.log("init")
-    console.log( mainData.value)
-    console.log("inits")
 
    // 基于准备好的dom，初始化echarts实例
    const myChart = echarts.init(main.value);
-   const schoolData =// mainData.value
-
-   [
+   const schoolData = [
      {
-       name:"五年级三班",
-       value:1
+       name:'张三',
+       value:4253
      },
      {
-       name:"五年级一班",
-       value:2
+       name:'李四',
+       value:5691
      },
      {
-       name:'三年级一班',
-       value:2
+       name:'王五',
+       value:4536
      },
      {
-       name:'二年级一班',
-       value:1
+       name:'赵六',
+       value:4369
      },
      {
-       name:'一年级二班',
-       value:2
-     }]
+       name:'周七',
+       value:5124
+     }]////mainData.value
+   
    // 指定图表的配置项和数据
    const option = {
      title: {
@@ -121,10 +121,81 @@
  //   }
  // ]
  // 赋值
- option.legend.data = schoolData.map((a) => a.name)
+  option.legend.data = schoolData.map((a) => a.name)
    // 使用刚指定的配置项和数据显示图表。
    myChart.setOption(option);
  }
+
+
+
+ const broken = ref()
+ function brokeninit(){
+  const myChart = echarts.init(broken.value)
+ const option = {
+  title: {
+    // text: 'Stacked Line'
+  },
+  tooltip: {
+    trigger: 'axis'
+  },
+  legend: {
+    data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  toolbox: {
+    feature: {
+      saveAsImage: {}
+    }
+  },
+  xAxis: {
+    type: 'category',
+    boundaryGap: false,
+    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+  },
+  yAxis: {
+    type: 'value'
+  },
+  series: [
+    {
+      name: 'Email',
+      type: 'line',
+      stack: 'Total',
+      data: [120, 132, 101, 134, 90, 230, 210]
+    },
+    {
+      name: 'Union Ads',
+      type: 'line',
+      stack: 'Total',
+      data: [220, 182, 191, 234, 290, 330, 310]
+    },
+    {
+      name: 'Video Ads',
+      type: 'line',
+      stack: 'Total',
+      data: [150, 232, 201, 154, 190, 330, 410]
+    },
+    {
+      name: 'Direct',
+      type: 'line',
+      stack: 'Total',
+      data: [320, 332, 301, 334, 390, 330, 320]
+    },
+    {
+      name: 'Search Engine',
+      type: 'line',
+      stack: 'Total',
+      data: [820, 932, 901, 934, 1290, 1330, 1320]
+    }
+  ]
+};
+myChart.setOption(option);
+}
+
 
  
  const brokenline = ref(); // 使用ref创建虚拟DOM引用，使用时用main.value
@@ -151,6 +222,5 @@
       ]
   };
   myCharts.setOption(options);
-  console.log("initss")
  }
 </script>

@@ -63,24 +63,12 @@
         <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
 
-            <el-form-item label="班级">
-                <!-- prop="classid" -->
-                <!-- <template> -->
-                    <!-- formModel.classid -->
+            <el-form-item label="科目" v-if="store.state.user.id != 1">
 
                     <el-checkbox-group v-model="subList">
                             <el-checkbox  v-for="item in subData" :label="item.id"
                         :key="item.id" >{{item.subjectname}}</el-checkbox>
-                        <!-- @change="changeCheckbox(item)"  -->
-                    </el-checkbox-group>
-                <!-- </template>     -->
-                <!-- <el-tree
-                    :data="classData"
-                    show-checkbox
-                    ref="classTree"
-                    node-key="id"
-                    check-strictly="true"
-                    :props="{ label: 'classname', children: 'children' }" default-expand-all="true" /> -->
+                    </el-checkbox-group> 
             </el-form-item>
 
 
@@ -141,6 +129,7 @@ const formDrawerRef = ref(null)
 const formRef = ref(null)
 const subList = ref([])
 const subData = ref([])
+const classTree = ref(null)
 const handleCreate = ()=> {
     ResetFields(); ID.value = 0;formDrawerRef.value.open()
     RequestListDatas(store.state.user.id).then(res => {
@@ -181,26 +170,34 @@ const handleEdit = (row) => {
             formModel.id = res.data.id
             formModel.classname = res.data.classname
             formModel.classdesc = res.data.classdesc
+            console.log(classTree)
+            let classIds = []
             res.data.subjects.forEach(item => {
                 subList.value.push(item.id) 
+                // classIds.push(item.id)
             })
-            console.log(subList.value)
+            console.log(classIds)
+            // classTree.value.setCheckedKeys(classIds);
             
         }
     })
     
 }
+
 const handleDrawerSubmit = () => {
     console.log(subList.value)
+    console.log(formModel.cids)
+    // console.log(classTree.value.getCheckedKeys())
     formModel.cids = subList.value
+    // return false;
+    // formModel.cids =  classTree.value.getCheckedKeys()
     formRef.value.validate((valid) => {
         console.log(valid)
         if(valid){
-            
-            if(formModel.cids.length == 0){
-                toast("请选择科目",'error')
-                return;
-            }
+            // if(formModel.cids.length == 0){
+            //     toast("请选择科目",'error')
+            //     return;
+            // }
             formDrawerRef.value.showLoading()
             formModel.uid = store.state.user.id
             const fun = ID.value ? RequestUpdateData(formModel) : RequestSaveData(formModel)
@@ -233,5 +230,9 @@ const handleDelete =(id) =>{
     .pages{
         float: right;
         @apply mt-6 mb-6;
+    }
+
+    .el-tree{
+
     }
 </style>

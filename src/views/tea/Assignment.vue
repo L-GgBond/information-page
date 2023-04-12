@@ -17,6 +17,11 @@
             <el-table-column  prop="" label="完成率">
                     <el-progress :text-inside="true" :stroke-width="20" :percentage="50" status="exception"></el-progress>
             </el-table-column>
+            <el-table-column prop="createtime" label="发布时间">
+                <template #default="scope">
+                {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
+                </template>
+            </el-table-column>
 
             <el-table-column label="操作" width="160">
                 <template #default="scope">
@@ -100,7 +105,7 @@
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="班级" prop="bid">
-                            <el-radio-group v-for="(item,index) in classData" v-model="formModelAdd.bid">
+                            <el-radio-group v-for="(item,index) in classData" v-model="formModelAdd.bid" @change="changeRadioClass(item)">
                                 <el-radio style="margin-right:15px" :label="item.id" >{{item.classname}}</el-radio>
                             </el-radio-group>
                         </el-form-item>
@@ -149,9 +154,37 @@ import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestDeleteData,RequestInfoData,RequestSaveData,RequestCreateData } from '~/api/tea.js'
 import { RequestAssListData } from '~/api/as.js'
 import { RequestClassListData } from '~/api/student.js'
-import { RequestListData } from '~/api/class.js'
+import { RequestListData,RequestInfoDataClass } from '~/api/class.js'
 import { RequestListDatas } from '~/api/subject.js'
 import { createRouter, useRouter,useRoute } from 'vue-router'
+import Editor from "@tinymce/tinymce-vue"; // 引入组件
+import tinymce from "tinymce/tinymce";
+import "tinymce/themes/silver/theme";
+// 都是富文本插件
+import "tinymce/icons/default";
+import "tinymce/plugins/image";
+import "tinymce/plugins/link";
+import "tinymce/plugins/code";
+import "tinymce/plugins/table";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/wordcount";
+
+const changeRadioClass =(item) => {
+    RequestInfoDataClass(item.id).then(res => {
+        let arrSubData = [];
+        subData.value.forEach((rows ,index)=> {
+             if(res.data.subjects.filter(obj => obj.id == rows.id).length > 0){
+                console.log(rows)
+                rows.status = 0;
+                arrSubData.push(rows)
+             }else{
+                rows.status = 1;
+                arrSubData.push(rows)
+             }
+        })
+        subData.value = arrSubData
+    })
+}
 const router = useRouter()
 const route = useRoute()
 const bid = route.query.rid
@@ -159,8 +192,6 @@ const kid = route.query.id
 
 console.log("bid"+bid)
 console.log("kid"+kid)
-
-
 
 const ToBack = () => {
     router.push({name:'TeaKm',query:{id:bid}})
@@ -223,6 +254,7 @@ const handleDrawerSubmitAdd =() =>{
                 if(res.code == 200){
                     toast("发布作业成功")
                     getListTableData()
+                    formDrawerRefAddData.value = false
                 }
             })
         }
@@ -232,13 +264,13 @@ const handleDrawerSubmitAdd =() =>{
 
 const OpenView =(row) => {
     console.log(row)
-    router.addRoute('admin',{
-        path: "/tea/assignment",
-        name:"Assignment",
-        component: () => import("~/views/tea/Assignment.vue")
-    })
+    // router.addRoute('admin',{
+    //     path: "/tea/assignment",
+    //     name:"Assignment",
+    //     component: () => import("~/views/tea/Assignment.vue")
+    // })
     
-    router.push({name:'Assignment',query:{id:row.bid}})
+    router.push({name:'SubmitList',query:{id:kid,rid:bid,aid:row.id}})
     // router.go(-1)
 }
 
@@ -324,6 +356,7 @@ const InputBlur =(id,tid) =>{
         RequestSaveData(id,{grade:formModel.grade[id],tid:tid}).then(res => {
             if(res.code == 200){
                 toast("评分成功！")
+                formDrawerRefAddData.value = false
                 getListTableData()
             }
     })
@@ -334,17 +367,7 @@ const InputBlur =(id,tid) =>{
 
 
 
-import Editor from "@tinymce/tinymce-vue"; // 引入组件
-import tinymce from "tinymce/tinymce";
-import "tinymce/themes/silver/theme";
-// 都是富文本插件
-import "tinymce/icons/default";
-import "tinymce/plugins/image";
-import "tinymce/plugins/link";
-import "tinymce/plugins/code";
-import "tinymce/plugins/table";
-import "tinymce/plugins/lists";
-import "tinymce/plugins/wordcount";
+
 const tinymceHtml = ref("请输入内容");
 const init = {
   //初始化数据

@@ -6,6 +6,7 @@ const config = {
 };
 
 
+
 export function RequestTermListData(){
     return axios.get('/task/termlist')
 }

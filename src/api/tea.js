@@ -6,6 +6,7 @@ const config = {
 };
 
 
+
 export function RequestListData(current, size, types, nickname,approverid){
     return axios.get('/tea/list?current='+ current +"&size=" + size + "&types=" + types + "&nickname=" + nickname + "&approverid=" + approverid)
 }

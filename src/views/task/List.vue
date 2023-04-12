@@ -24,6 +24,11 @@
             </el-table-column>
             <el-table-column  prop="fraction" label="满分" />
             <el-table-column  prop="ask" label="要求" />
+            <el-table-column prop="createtime" label="发布时间">
+                <template #default="scope">
+                {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="160">
                 <template #default="scope">
                     <el-button type="danger" size="small" text @click="datasIfView(scope.row)">详情</el-button>
@@ -104,7 +109,7 @@
             <div>
                 <el-row>
                     <el-col :span="8">
-                        <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 35px;">
+                        <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 40px;">
                             <div>
                                 <el-text>标题：</el-text>
                                 <el-text>{{contentInfo.title}}</el-text>
@@ -115,7 +120,9 @@
                             </div>
                             <div>
                                 <el-text>要求：</el-text>
-                                <el-text>{{contentInfo.ask}}</el-text>
+                                <el-text v-html="contentInfo.ask"></el-text>
+                                <!-- <div v-html="contentInfo.ask"></div> -->
+
                             </div>
                             <div>
                                 <el-text>科目：</el-text>
@@ -139,30 +146,37 @@
                     <el-col :span="2">
                     </el-col>
                     <el-col :span="14">
-                        <span class="demonstration">文件列表</span>
-                        <div style=""> 
-                            <div class="demo-image" style="display:flex;flex-wrap:wrap">
-                                <div v-for="(item,index) in dataFile"  class="block">
-                                     <el-image v-if="filetype = 'image/jpeg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
+                        <div style="display:flex;">
+                            <span class="demonstration"  style="  width:70px">文件列表</span>
+                            <div style="margin-left: 20px;"> 
+                                <div class="demo-image" style="display:flex;flex-wrap:wrap">
+                                    <div v-for="(item,index) in dataFile"  class="block">
+                                        <el-image v-if="filetype = 'image/jpeg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
+                                        <!-- <el-image v-else style="width: 100px; height: 100px;margin-right:10px" src="/src/assets/x.png"  /> -->
+                                        
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div style="margin-top:15px">
-                            <span class="demonstration">内容</span>
-                            <div v-html="ascontent">
-                               
+                        <div style="display:flex;">
+                            <div style="margin-top:20px;display:flex;">
+                                <span class="demonstration" style="margin-top:15px;">内容</span>
+                                <div v-html="ascontent" style="margin-left: 45px;" >
+                                
+                                </div>
                             </div>
                         </div>
+                        
                         <div style="margin-top:20px;" v-if="status == 1">
-                            <el-text>得分：</el-text>
-                            <el-tag  type="danger" effect="dark">
+                            <el-text>得分</el-text>
+                            <el-tag  style="margin-left: 40px;"  type="danger" effect="dark">
                                 {{ score }}
                             </el-tag>
                         </div>
                         <div style="margin-top:20px;" v-else>
-                            <el-text>得分：</el-text>
-                            <el-tag  type="info" effect="dark">
+                            <el-text>得分</el-text>
+                            <el-tag  style="margin-left: 40px;"  type="info" effect="dark">
                                 待批改
                             </el-tag>
                          
@@ -189,7 +203,18 @@ import { toast } from '~/utils/common'
 import { RequestTasklistListData,RequestTaskSaveData,RequestTasklistListInfoData,RequestIfViewsInfoData } from '~/api/as.js'
 import { useRouter,useRoute } from 'vue-router'
 import { RequestUp } from '~/api/uploads.js'
-
+import Editor from "@tinymce/tinymce-vue"; // 引入组件
+import tinymce from "tinymce/tinymce";
+import "tinymce/themes/silver/theme";
+// 都是富文本插件
+import "tinymce/icons/default";
+import "tinymce/plugins/image";
+import "tinymce/plugins/link";
+import "tinymce/plugins/code";
+import "tinymce/plugins/table";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/wordcount";
+ 
 const dialogVisible = ref(false) 
 const dialogVisibleInfo = ref(false)
 const fileList = ref([])
@@ -244,6 +269,10 @@ const score = ref(0)
 const status = ref(0)
 const contentInfo = ref("")
 const handleInfo =(item) => {
+    fileList.value = []
+    fileLists.value = []
+    formModel.ascontent = ""
+    
     console.log(item)
     dialogVisibleInfo.value = true
     RequestTasklistListInfoData(item.id,store.state.user.id).then(res => {
@@ -297,7 +326,8 @@ getListTableData()
 //根据判断 来显示添加或者是详情
 const datasIfView =(rows) => {
     console.log("rows",rows.id)
-    RequestIfViewsInfoData(rows.id).then(res => {
+    formModel.ascontent =  ''
+    RequestIfViewsInfoData(rows.id,store.state.user.id).then(res => {
         console.log("res",res)
         if(res.data.result == 0){
             //暂未上传作业
@@ -309,17 +339,7 @@ const datasIfView =(rows) => {
     })
 }
 
-import Editor from "@tinymce/tinymce-vue"; // 引入组件
-import tinymce from "tinymce/tinymce";
-import "tinymce/themes/silver/theme";
-// 都是富文本插件
-import "tinymce/icons/default";
-import "tinymce/plugins/image";
-import "tinymce/plugins/link";
-import "tinymce/plugins/code";
-import "tinymce/plugins/table";
-import "tinymce/plugins/lists";
-import "tinymce/plugins/wordcount";
+
 const tinymceHtml = ref("请输入内容");
 const init = {
   //初始化数据
