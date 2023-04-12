@@ -76,7 +76,6 @@
     </el-form>
     </el-drawer>
 
-
     <!-- 添加作业 -->
     <form-drawer  v-model="formDrawerRefAddData" :title="t"  size="50%"  destroyOnClose @submit="handleDrawerSubmitAdd">
         <el-form ref="formRefAdd" :model="formModelAdd" :rules="formRulesAdd"  label-width="auto">

@@ -15,8 +15,8 @@
             <el-table-column label="操作" width="220" align="center">
                 <template #default="scope">
                     <!-- v-if="scope.row.id != 1"  -->
-                <el-button type="warning" size="small" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
-                <el-button type="primary" size="small" text @click="handleRoleEdit(scope.row)">修改</el-button>
+                <el-button type="warning" size="small"  v-if="scope.row.id != 1" text @click="handleRoleAccact(scope.row)">分配权限</el-button>
+                <el-button type="primary" size="small"  v-if="scope.row.id != 1" text @click="handleRoleEdit(scope.row)">修改</el-button>
                 <el-popconfirm title="是否要删除？" v-if="scope.row.id != 1" confirmButtonText="确认" cancelButtonText="取消"
                     @confirm="handleDelete(scope.row.id)">
                     <template #reference>
@@ -93,6 +93,7 @@ import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { getRoleListData,getRoleSaveData,getRoleUpdateData,getRoleDeleteData,getRoleUpdateDataInfo,getPermRoleData } from '~/api/role.js'
 import { getMenuListData } from "~/api/menu.js"
+
 //getRoleListData
 const current = ref(1)
 const size = ref(5)

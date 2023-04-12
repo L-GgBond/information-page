@@ -11,7 +11,6 @@
                     </el-tag>
                 </template>
             </el-table-column> -->
-
             <el-table-column   label="工作人员"  width="120px" v-if="store.state.user.id == 1">
                 <template #default="scope">
                     <el-tag v-for="(item,index) in scope.row.users"  style="margin:5px" effect="dark">

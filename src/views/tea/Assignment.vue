@@ -269,7 +269,6 @@ const OpenView =(row) => {
     //     name:"Assignment",
     //     component: () => import("~/views/tea/Assignment.vue")
     // })
-    
     router.push({name:'SubmitList',query:{id:kid,rid:bid,aid:row.id}})
     // router.go(-1)
 }

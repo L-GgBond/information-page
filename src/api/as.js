@@ -9,7 +9,6 @@ export function RequestAssListData(current, size,uid,rid,kid){
     return axios.get('/ass/list?current='+ current +"&size=" + size + "&uid=" + uid + "&bid=" + rid +  "&kid=" + kid)
 }
 
-
 export function RequestTasklistListData(current, size,uid,kid){
     return axios.get('/task/tasklist?current='+ current +"&size=" + size + "&uid=" + uid  +  "&kid=" + kid)
 }
@@ -40,3 +39,4 @@ export function RequestSubmitInfoData(aid,uid){
 export function RequestSubmitInfoSaveData(id,score){
     return axios.get('/ass/save?id='+ id +"&score=" + score ,{} )
 }
+

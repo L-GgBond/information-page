@@ -5,7 +5,6 @@
           <div style="width: 50%; height: 280px;border: px solid red;"></div>
         </div>
         <div ref="brokenline" style="width: 100%; height: 300px;border: px solid red;">
-
         </div>
     </el-card>
   <router-view></router-view>

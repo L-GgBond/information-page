@@ -34,7 +34,6 @@
                     </template>
                 </el-popconfirm>
 
-
                 </template>
             </el-table-column>
         </el-table>

@@ -80,7 +80,6 @@
                     
                 <!-- </template> -->
             </el-upload>
-
             
             </el-form-item>
             <el-form-item  v-if="t == 2" label="班级">

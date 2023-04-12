@@ -188,9 +188,7 @@
                             <el-tag  style="margin-left: 40px;"  type="info" effect="dark">
                                 待批改
                             </el-tag>
-                         
                         </div>
-
 
                     </el-col>
 

@@ -27,7 +27,6 @@ export function RequestInfoDataClass(id){
 }
 
 
-
 export function RequestUpdateData(data){
     return axios.post('/class/update', data,config)
 }
