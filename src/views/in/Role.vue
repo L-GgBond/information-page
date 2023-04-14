@@ -5,7 +5,22 @@
             <el-table-column prop="id" label="#" />
             <el-table-column prop="name" label="名称" />
             <el-table-column prop="code" label="唯一编码" />
-            <el-table-column prop="remark" label="描述" />
+            <!-- <el-table-column prop="remark" label="描述" /> -->
+            <el-table-column  prop="ask" label="要求">
+                <template #default="scope">
+                    <el-popover
+                    placement="right"
+                    title="描述"
+                    :width="360"
+                    trigger="hover"
+                    :content="scope.row.remark">
+                    <template #reference>
+                        <el-button type="info" plain size="small">查看</el-button>
+                    </template>
+                </el-popover>
+                </template>
+            </el-table-column>
+
             <el-table-column prop="statu" label="状态">
                 <template #default="scope">
                     <el-tag class="ml-2" v-if="scope.row.statu == 1" type="success">正常</el-tag>

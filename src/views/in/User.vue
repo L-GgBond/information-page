@@ -339,10 +339,10 @@ const handleRoleDrawerSubmit = () => {
                 formModel.statu = 0
             }
 
-            if(formModel.classid.length == 0){
-                toast("请选择班级",'error')
-                return;
-            }
+            // if(formModel.classid.length == 0){
+            //     toast("请选择班级",'error')
+            //     return;
+            // }
             formRoleDrawerRef.value.showLoading()
             const fun = ID.value ? getUserUpdateData(formModel) : getUserSaveData(formModel)
             fun.then(res=>{

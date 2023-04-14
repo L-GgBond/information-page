@@ -68,18 +68,26 @@
                         </div>
                     </template>
                 </el-upload> -->
-
-                <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
-            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
-                <el-icon :class="{icons:Isicons}" ><Plus /></el-icon>
+            <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
+            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange"
+            :before-remove="handeleAvatarDelete">
+            <el-icon :class="{icons:Isicons}" ><Plus /></el-icon>
                 <!-- <template> -->
                     <div>
-                        <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="formModel.avatar" alt="" />
-                        <!-- <img class="el-upload-list__item-thumbnail" :src="formModel.avatar" alt="" /> -->
+                        <!-- <img class="el-upload-list__item-thumbnail" :src="avatar" alt="" /> -->
+                        <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="avatar" alt="" />
                     </div>
-                    
                 <!-- </template> -->
             </el-upload>
+
+
+                <!-- <el-upload :action="RequestUploads" list-type="picture-card" multiple="false" name="f" :limit=1 
+            :on-success="handleAvatarSuccess" :on-error="handleAvatarError" :class="{hide:hideUpload}" :on-progress="uploadOnChange">
+                <el-icon :class="{icons:Isicons}" ><Plus /></el-icon>
+                    <div>
+                        <img :class="['el-upload-list__item-thumbnail',{uploadImg:uploadImgs}]" :src="formModel.avatar" alt="" />
+                    </div>
+            </el-upload> -->
             
             </el-form-item>
             <el-form-item  v-if="t == 2" label="班级">
@@ -141,12 +149,14 @@ import { updatePassword,logout,getUserInfo,updateuser } from '~/api/manager'
 import { toast } from '~/utils/common'
 import store  from '~/store/index.js'
 import { useRouter } from 'vue-router' 
+import { RequestUploads } from '~/api/uploads.js'
 
 const router = useRouter()
 const { isFullscreen, toggle } = useFullscreen()
 const logo = ref("https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png")
 const Isicons =ref(true)
 const uploadImgs = ref(true)
+const hideUpload = ref(false)
 const formDrawerRef = ref(null)
 const formDrawerRefTwo = ref(null)
 const form = reactive({
@@ -154,6 +164,8 @@ const form = reactive({
     password:"",
     checkPass:"",
 })
+
+
 const validatePass = (rule, value, callback) => {
     if (value === '') {
         callback(new Error('请再次输入密码'));
@@ -218,6 +230,7 @@ const {
 const showDrawer = ref(false)
 const dialogVisible = ref(false)
 const userData = ref();
+const  avatar = ref()
 const formModel = reactive({
     "id":"",
     "avatar":"",
@@ -230,6 +243,25 @@ const formModel = reactive({
     "city":"",
     "types":"",
 })
+const handleAvatarSuccess =(file) =>{
+ console.log(file)
+  if(file.code == 200){
+    toast("上传成功")
+    formModel.avatar = file.data
+    avatar.value = file.data
+  }
+}
+const handleAvataError =(file) =>{
+ console.log(file)
+    toast("上传失败","error")
+}
+const uploadOnChange =(file,fileList) =>{
+    hideUpload.value = true;
+}
+const handeleAvatarDelete=(file) =>{
+    console.log(file)
+    hideUpload.value = false;
+}
 const t = ref(0);
 const laoshi = ref([])
 const banji = ref("")
@@ -250,11 +282,14 @@ const handleCommand = (e)=>{
         case "individual":
             console.log("个人信息")
             getUserInfo().then(res=>{
+                avatar.value = ""
+               
                 console.log(res)
                 if(res.code == 200){
                     userData.value = res.data
                     formModel.id = res.data.id
                     formModel.avatar = res.data.avatar
+                    avatar.value = res.data.avatar
                     formModel.username = res.data.username
                     formModel.nickname = res.data.nickname
                     formModel.age = res.data.age

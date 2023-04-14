@@ -23,7 +23,23 @@
                 </template>
             </el-table-column>
             <el-table-column  prop="fraction" label="满分" />
-            <el-table-column  prop="ask" label="要求" />
+            <!-- <el-table-column  prop="ask" label="要求" /> -->
+            <el-table-column  prop="ask" label="要求">
+                <template #default="scope">
+                    <el-popover
+                    placement="bottom"
+                    :title="scope.row.title"
+                    :width="360"
+                    trigger="hover"
+                    :content="scope.row.ask">
+                    <template #reference>
+                        <el-button type="success" plain size="small">查看</el-button>
+                    </template>
+                </el-popover>
+                </template>
+            </el-table-column>
+
+            
             <el-table-column prop="createtime" label="发布时间">
                 <template #default="scope">
                 {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
@@ -124,7 +140,7 @@
                             </div>
                             <div>
                                 <el-text>要求：</el-text>
-                                <el-text v-html="contentInfo.ask"></el-text>
+                                <el-text v-html="contentInfo.ask" style="" class="yq"></el-text>
                                 <!-- <div v-html="contentInfo.ask"></div> -->
 
                             </div>
@@ -171,7 +187,7 @@
                         <div style="display:flex;">
                             <div style="margin-top:20px;display:flex;">
                                 <span class="demonstration" style="margin-top:15px;">内容</span>
-                                <div v-html="ascontent" style="margin-left: 45px;" >
+                                <div v-html="ascontent" style="margin-left: 45px;" class="ascontentnr">
                                 
                                 </div>
                             </div>
@@ -210,18 +226,13 @@ import { toast } from '~/utils/common'
 import { RequestTasklistListData,RequestTaskSaveData,RequestTasklistListInfoData,RequestIfViewsInfoData } from '~/api/as.js'
 import { useRouter,useRoute } from 'vue-router'
 import { RequestUp } from '~/api/uploads.js'
-import Editor from "@tinymce/tinymce-vue"; // 引入组件
+
+import { RequestUploads } from '~/api/uploads.js'
+import request from "~/utils/request.js";
+import Editor from "@tinymce/tinymce-vue";
 import tinymce from "tinymce/tinymce";
-import "tinymce/themes/silver/theme";
-// 都是富文本插件
-import "tinymce/icons/default";
-import "tinymce/plugins/image";
-import "tinymce/plugins/link";
-import "tinymce/plugins/code";
-import "tinymce/plugins/table";
-import "tinymce/plugins/lists";
-import "tinymce/plugins/wordcount";
- 
+import  "~/components/tinymce.js"  
+const formDrawerRefAddData = ref(false)
 
 
 const downLoadFile =(files) => {
@@ -301,6 +312,10 @@ const handleInfo =(item) => {
     })
 } 
 const answer =(item) => {
+    ascontent.value = ""
+    dataFile.value = ""
+    fileList.value = []
+    fileLists.value = []
     console.log(item)
     aid.value = item.id
     tinymce.init({}); 
@@ -357,36 +372,38 @@ const datasIfView =(rows) => {
 
 const tinymceHtml = ref("请输入内容");
 const init = {
-  //初始化数据
-  language_url: "/skins/langs/zh-Hans.js", // 引入语言包（该语言包在public下，注意文件名称）
-  language: "zh-Hans", // 这里名称根据 zh-Hans.js 里面写的名称而定
-  skin_url: "/skins/ui/oxide", // 这里引入的样式
-  height: 400, // 限制高度
-  plugins: "link lists image code table wordcount", // 富文本插件
-  toolbar:
-    "bold italic underline strikethrough | fontsizeselect | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist | outdent indent blockquote | undo redo | link unlink image code | removeformat",
-  branding: false, // //是否禁用“Powered by TinyMCE”
-  menubar: true, //顶部菜单栏显示
-  // paste_convert_word_fake_lists: false, // 插入word文档需要该属性
-  content_css: "/skins/content/default/content.css", //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
-  images_upload_handler: (blobInfo) =>
-        new Promise((resolve, reject) => {
-          // console.log(blobInfo.blob());
-          // 上传图片需要，FormData 格式的文件；
-          const formDataUp = new FormData();
-         // img  是接口需要的上传的属性名，一般属性名是 file
-          formDataUp.append("img", blobInfo.blob());
-          // // console.log(formDataUp);
-          axios.post("xxxx", formDataUp).then((res) => {
-              resolve("返回的上传图片后的地址");
-            });
-        }),
+//初始化数据
+language_url: "/skins/langs/zh-Hans.js", // 引入语言包（该语言包在public下，注意文件名称）
+language: "zh-Hans", // 这里名称根据 zh-Hans.js 里面写的名称而定
+skin_url: "/skins/ui/oxide", // 这里引入的样式
+height: 400, // 限制高度
+plugins: "advlist anchor autolink autosave code codesample   hr image imagetools insertdatetime link lists media nonbreaking noneditable pagebreak paste preview print save searchreplace spellchecker tabfocus table template textcolor textpattern visualblocks visualchars wordcount",
+toolbar: [
+          "searchreplace bold italic underline strikethrough fontselect fontsizeselectalignleft aligncenter alignright outdent indentblockquote undo redo removeformat subscript superscript code codesample",
+          "hr bullist numlist link image charmap preview anchor pagebreak insertdatetime media table emoticons forecolor backcolor fullscreen",
+        ],
+font_formats:
+"微软雅黑='微软雅黑';宋体='宋体';黑体='黑体';仿宋='仿宋';楷体='楷体';隶书='隶书';幼圆='幼圆';Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings",
+
+branding: false, // //是否禁用“Powered by TinyMCE”
+menubar: true, //顶部菜单栏显示
+// paste_convert_word_fake_lists: false, // 插入word文档需要该属性
+content_css: "/skins/content/default/content.css", //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
+images_upload_url: '/demo/upimg.php',
+images_upload_handler: async (blobInfo, success, failure) => {
+  const formData = new FormData();
+  formData.append("f", blobInfo.blob());
+  request.post("http://localhost:8086"+RequestUploads, formData).then((res) => {
+      console.log(res);
+      success(res.data); //将图片展示到编辑器中
+  });
+  // this.handleImgUpload(blobInfo, success, failure)
+  },
 };
 
 onMounted(() => {
-  tinymce.init({}); // 初始化富文本
+tinymce.init({}); // 初始化富文本
 });
-
 </script>
 <style>
 .pages{
@@ -414,4 +431,17 @@ onMounted(() => {
   height: 178px;
   display: block;
 } */
+.yq {
+    margin-left: 120px;
+}
+.yq img{
+    max-height: 80px;
+    max-width: 100px;
+}
+
+.ascontentnr img{
+    max-height: 80px;
+    max-width: 100px;
+
+}  
 </style>

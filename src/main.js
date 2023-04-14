@@ -19,14 +19,6 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 
-// import '../public/UE/ueditor.config.js'
-// import "../public/UE/ueditor.all.min.js"
-// import "../public/UE/lang/zh-cn/zh-cn.js"
-// import "../public/resource/UEditor/ueditor.parse.min.js"
-import VueUeditorWrap from 'vue-ueditor-wrap'
-app.component('vue-ueditor-wrap', VueUeditorWrap)
-// import * as echarts from "echarts"
-// app.config.globalProperties.$echarts = echarts
 import locale from 'element-plus/dist/locale/zh-cn.mjs'
 app.use(ElementPlus, {locale})
 app.use(store)

@@ -65,7 +65,8 @@ router.beforeEach(async (to,from,next)=>{
     }
     // console.log(to.fullPath)
     // 设置页面标题
-    let title = (to.meta.title ? to.meta.title : "") + "信息管理系统"
+    // let title = (to.meta.title ? to.meta.title : "") + "信息管理系统"
+    let title =  "信息管理系统"
     document.title = title
    
 })

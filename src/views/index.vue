@@ -14,69 +14,74 @@
  import * as echarts from "echarts";
  import store from '~/store'
  import { RequestGetNumberData } from '~/api/index.js'
- import { RequestListData } from '~/api/class.js'
+import { forEach } from "lodash";
 
+
+// const arrData = ref([])
+const mainData = ref([])
+const mainDataTotal = ref(0)
+const toDay1 = ref(0)
+const toDay2 = ref("")
+const toDay3 = ref(0)
+const toDay4 = ref(0)
+const toDay5 = ref(0)
+const toDay6 = ref(0)
+const toDay7 = ref(0)
+
+var day = 0;
+var arrData = []
+// const arrData = ref([])
  function indexInit(){
   RequestGetNumberData(store.state.user.id).then(res => {
-    console.log(res)
+    mainDataTotal.value = res.data.total
+    day = res.data.toDay1
+    toDay1.value = res.data.toDay1
+    toDay2.value = res.data.toDay2
+    toDay3.value = res.data.toDay3
+    toDay4.value = res.data.toDay4
+    toDay5.value = res.data.toDay5
+    toDay6.value = res.data.toDay6
+    toDay7.value = res.data.toDay7
+
+    res.data.records.forEach(item => {
+      mainData.value.push(item)
+      // arrData.value.push(item.name)
+      arrData.push(item.name)
+   })
   })
  }
+ console.log("mainData",mainData.value)
+ console.log("mainData",mainDataTotal.value)
+ console.log("arrData",arrData)
+
+
+
  indexInit()
 
- const mainData = ref([])
-//  function classInit(){
-//    RequestListData(1, 100,store.state.user.id).then(res =>{
-//         console.log(res)
-//         res.data.records.forEach(item => {
-//            mainData.value.push({name:item.classname,value:item.total})
-//         })
  
-//     })
-//  }
-
-
-
  const main = ref(); // 使用ref创建虚拟DOM引用，使用时用main.value
  onMounted(() => {
   console.log("1",store.state.user.id)
-   init();
-   brokenlineInit();
+  //  init();
+  //  brokenlineInit();
  });
 
-//  setTimeout(() => {
-//     init();
-//   }, 500);
+ setTimeout(() => {
+    init();
+    brokenlineInit();
+  }, 500);
  
  function init() {
-    console.log("init")
-    console.log( mainData.value)
-    console.log("inits")
-
    // 基于准备好的dom，初始化echarts实例
    const myChart = echarts.init(main.value);
-   const schoolData =// mainData.value
+   var schoolData;
+   if(mainDataTotal.value == 0){
+     schoolData = [{name:"班级",value:0}]
+   }else{
+     schoolData = mainData.value
+   }
+   
 
-   [
-     {
-       name:"五年级三班",
-       value:1
-     },
-     {
-       name:"五年级一班",
-       value:2
-     },
-     {
-       name:'三年级一班',
-       value:2
-     },
-     {
-       name:'二年级一班',
-       value:1
-     },
-     {
-       name:'一年级二班',
-       value:2
-     }]
    // 指定图表的配置项和数据
    const option = {
      title: {
@@ -107,9 +112,9 @@
      type: 'pie',
      radius: '60%',
      center: ['50%', '45%'],
-     // data: res.data.map((v) => {
-     //   return { name: v.name, value: v.value }
-     // })
+    //  data: res.data.map((v) => {
+    //    return { name: v.classname, value: v.total }
+    //  }),
      data: schoolData,
    }
  ]
@@ -125,20 +130,43 @@
    myChart.setOption(option);
  }
 
- 
+
+ function GetDateStr(AddDayCount) {
+    var dd = new Date();
+    dd.setDate(dd.getDate()+AddDayCount);//获取AddDayCount天后的日期
+    var y = dd.getFullYear();
+    var m = dd.getMonth()+1;//获取当前月份的日期
+    var d = dd.getDate();
+    return y+"-"+m+"-"+d;
+}
+
  const brokenline = ref(); // 使用ref创建虚拟DOM引用，使用时用main.value
  function brokenlineInit(){
+  // alert(day)
+  // alert(toDay2.value)
   const myCharts = echarts.init(brokenline.value);
     const options = {
       legend: {},
       tooltip: {},
       dataset: {
         source: [
-          ['product', '2015', '2016', '2017'],
-          ['Matcha Latte', 43.3, 85.8, 93.7],
-          ['Milk Tea', 83.1, 73.4, 55.1],
-          ['Cheese Cocoa', 86.4, 65.2, 82.5],
-          ['Walnut Brownie', 72.4, 53.9, 39.1]
+          ['product', '2023'],
+          // [GetDateStr(-6), toDay7.value ? toDay7.value + Math.ceil(Math.random()*10) : toDay7.value ],
+          // [GetDateStr(-5), toDay6.value ? toDay6.value + Math.ceil(Math.random()*10) : toDay6.value ],
+          // [GetDateStr(-4), toDay5.value ? toDay5.value + Math.ceil(Math.random()*10) : toDay5.value ],
+          // [GetDateStr(-3), toDay4.value ? toDay4.value + Math.ceil(Math.random()*10) : toDay4.value ],
+          // [GetDateStr(-2), toDay3.value ? toDay3.value + Math.ceil(Math.random()*10) : toDay3.value ],
+          // [GetDateStr(-1), toDay2.value ? toDay2.value + Math.ceil(Math.random()*10) : toDay2.value ],
+          // [GetDateStr(-0), toDay1.value ? toDay1.value + Math.ceil(Math.random()*10) : toDay1.value ],
+
+
+          [GetDateStr(-6), toDay7.value ],
+          [GetDateStr(-5), toDay6.value ],
+          [GetDateStr(-4), toDay5.value ],
+          [GetDateStr(-3), toDay4.value ],
+          [GetDateStr(-2), toDay3.value ],
+          [GetDateStr(-1), toDay2.value ],
+          [GetDateStr(-0), toDay1.value ],
         ]
       },
       xAxis: { type: 'category' },

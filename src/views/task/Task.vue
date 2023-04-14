@@ -23,9 +23,9 @@
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column  prop="" label="完成率">
+            <!-- <el-table-column  prop="" label="完成率">
                     <el-progress :text-inside="true" :stroke-width="20" :percentage="50" status="exception"></el-progress>
-            </el-table-column>
+            </el-table-column> -->
 
             <el-table-column label="操作" width="160">
                 <template #default="scope">

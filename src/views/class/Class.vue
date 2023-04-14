@@ -58,7 +58,7 @@
         </div>
     </el-card>
 
-    <form-drawer ref="formDrawerRef" :title="drawerTitle" size="45%" destroyOnClose @submit="handleDrawerSubmit" >
+    <form-drawer ref="formDrawerRef" :title="drawerTitles" size="45%" destroyOnClose @submit="handleDrawerSubmit" >
         <el-form ref="formRef" :model="formModel" :rules="formRules" label-width="120px" 
         class="demo-ruleForm"   :size="formSize" status-icon>
 
@@ -123,6 +123,7 @@ const getListTableData = ()=>{
 getListTableData()
 
 const ID = ref(0)
+const drawerTitles = ref("新增")
 const drawerTitle = computed(()=> ID.value ? "修改" : "新增")
 const formDrawerRef = ref(null)
 const formRef = ref(null)
@@ -130,7 +131,10 @@ const subList = ref([])
 const subData = ref([])
 const classTree = ref(null)
 const handleCreate = ()=> {
-    ResetFields(); ID.value = 0;formDrawerRef.value.open()
+    ResetFields(); 
+    ID.value = 0;
+    drawerTitles.value = "新增"
+    formDrawerRef.value.open()
     RequestListDatas(store.state.user.id).then(res => {
         console.log(res)
         subData.value = res.data.records
@@ -156,6 +160,8 @@ const ResetFields = () =>{
 
 //详情
 const handleEdit = (row) => {
+    drawerTitles.value = "修改"
+
     subList.value = []
     console.log(row.id)
     ID.value = row.id
