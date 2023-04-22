@@ -219,11 +219,10 @@
       },
     },
   };
-
 const myValues = ref(100)
 let sex=ref('男')
 let info=reactive({
-    like:'王者荣耀',
+    like:'1',
     age:18
 })
 defineExpose({sex, info})

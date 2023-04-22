@@ -409,8 +409,6 @@ const InputBlur =(id,tid) =>{
 }
 
 
-
-
 const tinymceHtml = ref("请输入内容");
 const init = {
   //初始化数据
@@ -448,19 +446,20 @@ onMounted(() => {
 .el-overlay{
     z-index:98 !important;
 }
-    .pages{
-        float: right;
-        @apply mt-6 mb-6;
-        padding-top:6px;
-    }
-    .el-upload--picture-card{
-        /* display: none !important; */
-    }
-    .hide .el-upload--picture-card{
-        display: none;
-    }
 
-    .demo-image__error .image-slot {
+.pages{
+    float: right;
+    @apply mt-6 mb-6;
+    padding-top:6px;
+}
+.el-upload--picture-card{
+    /* display: none !important; */
+}
+.hide .el-upload--picture-card{
+    display: none;
+}
+
+ .demo-image__error .image-slot {
   font-size: 30px;
 }
 .demo-image__error .image-slot .el-icon {

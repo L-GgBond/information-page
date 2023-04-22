@@ -5,7 +5,7 @@
             <el-table-column prop="id" label="#" />
             <el-table-column label="头像">
                 <template #default="scope">
-                    <el-avatar :size="50" :src="scope.row.avatar" />
+                    <el-avatar  style="cursor: pointer;" @click="getImageViews(scope.row.avatar)"  :size="50" :src="scope.row.avatar" />
                 </template>
             </el-table-column>
             <el-table-column prop="username" label="账号" />
@@ -139,6 +139,8 @@
                 :props="{ label: 'name', children: 'children' }" default-expand-all="true" />
         </el-form>
     </form-drawer>
+
+       <el-image-viewer  :zoom-rate="1.2" style="height:100px;width:100px"  @close="closeImgViewers" :url-list="srcLists" v-if="showImageViewers" />
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
@@ -152,6 +154,17 @@ import { getUserListData,getUserSaveData,getUserUpdateData,getUserDeleteData,get
 import { getRoleListData } from "~/api/role.js"
 import { RequestUploads } from '~/api/uploads.js'
 import { RequestRoleListData } from '~/api/student.js'
+
+const showImageViewers = ref(false)
+const srcLists = ref([])
+const getImageViews =(item) => {
+    console.log(item)
+    srcLists.value = [item];
+    showImageViewers.value = true;
+}
+const closeImgViewers =() => {
+    showImageViewers.value = false;
+}
 
 const classidList = ref([])
 const changeCheckbox =(item) => {
@@ -245,7 +258,6 @@ const handleRoleCreate = ()=> {
         }
      })
 }
-
 
 const formModel = reactive({
     "id":'',

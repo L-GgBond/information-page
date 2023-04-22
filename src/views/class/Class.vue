@@ -108,7 +108,6 @@ const getData = () =>{
     getListTableData()
 }
 
-
 const tableData = ref([])
 tableData.value = [];
 const getListTableData = ()=>{

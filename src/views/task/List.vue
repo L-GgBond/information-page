@@ -26,16 +26,16 @@
             <!-- <el-table-column  prop="ask" label="要求" /> -->
             <el-table-column  prop="ask" label="要求">
                 <template #default="scope">
-                    <el-popover
+                    <!-- <el-popover
                     placement="bottom"
                     :title="scope.row.title"
                     :width="360"
                     trigger="hover"
                     :content="scope.row.ask">
-                    <template #reference>
-                        <el-button type="success" plain size="small">查看</el-button>
-                    </template>
-                </el-popover>
+                    <template #reference> -->
+                        <el-button type="success" @click="getViewInfo(scope.row)" plain size="small">查看</el-button>
+                    <!-- </template>
+                </el-popover> -->
                 </template>
             </el-table-column>
 
@@ -140,7 +140,7 @@
                             </div>
                             <div>
                                 <el-text>要求：</el-text>
-                                <el-text v-html="contentInfo.ask" style="" class="yq"></el-text>
+                                <el-text v-html="contentInfo.ask" style="" @click="openImage" class="yq"></el-text>
                                 <!-- <div v-html="contentInfo.ask"></div> -->
 
                             </div>
@@ -176,7 +176,7 @@
                             <div style="margin-left: 20px;"> 
                                 <div class="demo-image" style="display:flex;flex-wrap:wrap">
                                     <div v-for="(item,index) in dataFile"  class="block">
-                                        <el-image v-if="item.filetype == 'image/jpeg' || item.filetype == 'image/gif' || item.filetype == 'image/png' ||  item.filetype == 'image/svg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
+                                        <el-image @click="getImageViews(item)" v-if="item.filetype == 'image/jpeg' || item.filetype == 'image/gif' || item.filetype == 'image/png' ||  item.filetype == 'image/svg'" style="width: 100px; height: 100px;margin-right:10px;cursor: pointer;" :src="item.filepath"  />
                                         <el-image v-else style="width: 100px; height: 100px;margin-right:10px;cursor: pointer;" @click="downLoadFile(item)" src="/src/assets/x.png"  />
                                         
                                     </div>
@@ -199,10 +199,23 @@
                                 {{ score }}
                             </el-tag>
                         </div>
-                        <div style="margin-top:20px;" v-else>
+                        <div style="margin-top:20px;" v-if="status == 0">
                             <el-text>得分</el-text>
-                            <el-tag  style="margin-left: 40px;"  type="info" effect="dark">
+                            <el-tag style="margin-left: 45px;"  type="info" effect="dark">
                                 待批改
+                            </el-tag>
+                        </div>
+                        
+                        <div style="margin-top:20px;" v-if="status == 2">
+                            <el-text>得分</el-text>
+                            <el-tag style="margin-left: 45px;"  type="danger" effect="dark">
+                                已驳回
+                            </el-tag>
+                        </div>
+                        <div style="margin-top:20px;" v-if="status == 3">
+                            <el-text>得分</el-text>
+                            <el-tag style="margin-left: 45px;"  type="warning" effect="dark">
+                                驳回修改已提交，等待批改
                             </el-tag>
                         </div>
 
@@ -212,33 +225,227 @@
             </div>
             <template #footer>
             <span class="dialog-footer">
+                <el-button type="danger" @click="rejectInfoData" v-if="status == 3">查看驳回信息</el-button>
                 <el-button @click="dialogVisibleInfo = false">取消</el-button>
             </span>
             </template>
         </el-dialog>
+
+
+        <el-dialog
+            v-model="dialogVisibleReject"
+            title="驳回修改"
+            width="90%">
+            <div>
+                <el-row>
+                    <el-col :span="8">
+                        <el-form :model="formModelInfo" label-width="120">
+                            <el-form-item label="附件">
+                                <el-upload
+                                    v-model:file-list="fileList"
+                                    class="upload-demo"
+                                    multiple="false" name="f" 
+                                    :action="RequestUp"
+                                    :data="{id:aid,uid:store.state.user.id}"
+                                    :on-success="handleAvatarSuccess"
+                                    :before-remove="beforeRemove">
+                                    <el-button type="primary">点击上传</el-button>
+                                    <template #tip>
+                                    <div class="el-upload__tip">
+                                       图片支持 jpg / png / jpeg /svg / gif .
+                                    </div>
+                                    <div class="el-upload__tip">
+                                       文件大小不可超过50MB .
+                                    </div>
+
+                                    </template>
+                                </el-upload>
+                            </el-form-item>
+                        </el-form>
+                    </el-col>
+                    <el-col :span="2">
+                    </el-col>
+                    <el-col :span="14">
+                        <div class="app-container">
+                            <editor id="tinymce" v-model="formModel.ascontent" :init="init"></editor>
+                        </div>
+                    </el-col>
+                </el-row>
+            </div>
+            <template #footer>
+            <span class="dialog-footer">
+                <el-button type="danger" @click="rejectInfoData">查看驳回信息</el-button>
+                <el-button type="primary" @click="handleSubmitFormDataReject">提交</el-button>
+                <el-button @click="dialogVisibleReject = false">取消</el-button>
+              
+            </span>
+            </template>
+        </el-dialog>
+
+
+        <el-dialog
+            v-model="dialogReject"
+            title="驳回信息"
+            width="90%">
+            <div>
+                <div class="app-container" style="margin-left:13px;height: 400px;overflow: auto;">
+                    <!-- <el-form  label-width="120"> -->
+                        <!-- <el-form-item label="内容"> -->
+                            <el-row>
+                                <el-col :span="10">
+                                     <el-text class="txt" truncated v-html="formModelReject.reject"/>
+                                </el-col>
+                            </el-row>
+                            <!-- <el-input v-model-html="formModelReject.reject" disabled type="textarea" /> -->
+                            <!-- </el-form-item> -->
+                        <!-- </el-form> -->
+                </div>
+            </div> 
+            <template #footer>
+            <span class="dialog-footer" >
+                <el-button @click="dialogReject = false">取消</el-button>
+            </span>
+            </template>
+         </el-dialog>
     </el-card>
+
+    <el-dialog
+            v-model="dialogs"
+            title="要求信息"
+            width="60%">
+                <div>
+                    <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 40px;">
+                                <div>
+                                    <el-text>标题：</el-text>
+                                    <el-text>{{Infos.title}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>分数：</el-text>
+                                    <el-text>{{Infos.fraction}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>要求：</el-text>
+                                    
+                                    <el-text v-html="Infos.ask" class="yq" @click="openImage"></el-text>
+                                    <!-- <div v-html="contentInfo.ask"></div> -->
+
+                                </div>
+                                <div>
+                                    <el-text>科目：</el-text>
+                                    <el-text>{{Infos.subject}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>班级：</el-text>
+                                    <el-text>{{Infos.classname}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>学期：</el-text>
+                                    <el-text>{{Infos.termname}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>审批人：</el-text>
+                                    <el-text>{{Infos.username}}</el-text>
+                                </div>
+                        
+                    </div> 
+                </div> 
+            <template #footer>
+            <span class="dialog-footer" >
+                <el-button @click="dialogs = false">取消</el-button>
+            </span>
+            </template>
+         </el-dialog>
+
+
+         <el-image-viewer  :zoom-rate="1.2" style="height:100px;width:100px" @close="closeImgViewer" :url-list="srcList" v-if="showImageViewer" />
+         <el-image-viewer  :zoom-rate="1.2" style="height:100px;width:100px"  @close="closeImgViewers" :url-list="srcLists" v-if="showImageViewers" />
 </template>
 <script setup>
 import { ref,reactive,onMounted } from 'vue'
 import UploadFile  from 'element-plus'
 import store from '~/store'
 import { toast } from '~/utils/common'
-import { RequestTasklistListData,RequestTaskSaveData,RequestTasklistListInfoData,RequestIfViewsInfoData } from '~/api/as.js'
+import {
+     RequestTasklistListData,RequestTaskSaveData,RequestTasklistListInfoData,RequestIfViewsInfoData,
+     rejectInfos,RequestTaskSaveDataReject,RequestViewsInfoData} from '~/api/as.js'
 import { useRouter,useRoute } from 'vue-router'
 import { RequestUp } from '~/api/uploads.js'
-
 import { RequestUploads } from '~/api/uploads.js'
 import request from "~/utils/request.js";
 import Editor from "@tinymce/tinymce-vue";
 import tinymce from "tinymce/tinymce";
 import  "~/components/tinymce.js"  
+
+
+
+const showImageViewer = ref(false)
+const showImageViewers = ref(false)
+const Infos = ref([])
+const dialogs = ref(false)
+const getViewInfo = (item) => {
+    console.log(item)
+    RequestViewsInfoData(item.id,store.state.user.id).then(res => {
+        console.log(res)
+        if(res.code == 200){
+            Infos.value = res.data.info
+        }else{
+            toast("数据获取失败","error")
+        }
+    })
+    dialogs.value = true
+}
+const srcList = ref([])
+const srcLists = ref([])
+const openImage =(e) => {
+    console.log(e)
+    if (e.target.tagName == 'IMG') {
+        console.log(e.target.src)
+        let src = event.target.currentSrc;
+        srcList.value = [src];
+        showImageViewer.value = true;
+    }
+}
+const closeImgViewer =() => {
+    showImageViewer.value = false;
+}
+
+const closeImgViewers =() => {
+    showImageViewers.value = false;
+}
+
+
+const getImageViews =(item) => {
+    console.log(item)
+    srcLists.value = [item.filepath];
+    showImageViewers.value = true;
+}
 const formDrawerRefAddData = ref(false)
-
-
+const rejectid = ref(0)
+const rejectuid = ref(0)
+const dialogReject = ref(false)
+const formRefReject = ref(null)
+const formModelReject = reactive({
+    "reject":"",
+})
 const downLoadFile =(files) => {
     console.log(files)
     window.location.href = files.filepath
 }
+
+const rejectInfoData =() => {
+    console.log(rejectid.value)
+    console.log(rejectuid.value)
+    rejectInfos(rejectid.value,store.state.user.id).then(res => {
+        console.log(res)
+        if(res.code == 200){
+            formModelReject.reject = res.data.info.reject
+           
+        }
+    })
+    dialogReject.value = true
+    dialogVisibleReject.value = false
+}
+const dialogVisibleReject = ref(false) 
 const dialogVisible = ref(false) 
 const dialogVisibleInfo = ref(false)
 const fileList = ref([])
@@ -274,7 +481,20 @@ const handleSubmitFormData =() => {
         }
     })
 }
-
+const handleSubmitFormDataReject =() => {
+    console.log(aid.value)
+    console.log(formModel.ascontent)
+    console.log(store.state.user.id)
+    console.log(fileLists.value)
+    console.log(formModelReject.reject)
+    RequestTaskSaveDataReject(aid.value,store.state.user.id,formModel.ascontent,fileLists.value,formModelReject.reject).then(res => {
+        console.log(res)
+        if(res.code == 200){
+            toast("提交成功");
+            dialogVisibleReject.value = false
+        }
+    })
+}
 
 const formModelInfo = reactive({
     "termid":"",//学期
@@ -297,8 +517,9 @@ const handleInfo =(item) => {
     fileList.value = []
     fileLists.value = []
     formModel.ascontent = ""
-    
     console.log(item)
+    rejectid.value = item.id
+    rejectuid.value = store.state.user.id
     dialogVisibleInfo.value = true
     RequestTasklistListInfoData(item.id,store.state.user.id).then(res => {
         console.log(res)
@@ -311,6 +532,31 @@ const handleInfo =(item) => {
         contentInfo.value = res.data.info
     })
 } 
+
+const rejectView =(item) => {
+    fileLists.value = []
+    fileList.value = []
+    aid.value = item.id
+    rejectid.value = item.id
+    rejectuid.value = item.tid
+    console.log(item)
+    rejectInfos(rejectid.value,store.state.user.id).then(res => {
+        console.log(res)
+        if(res.code == 200){
+            formModel.ascontent  = res.data.info.ascontent
+            formModelReject.reject  = res.data.info.reject
+            console.log(res.data.info.reject)
+            console.log(formModel.ascontent)
+            res.data.imgarr.forEach(item => {
+                console.log(item)
+                fileLists.value.push({name:item.filename,type:item.filetype,url:item.filepath})
+                fileList.value.push({name:item.filename,type:item.filetype,url:item.filepath})
+            })
+        }
+    })
+    dialogVisibleReject.value = true
+}
+
 const answer =(item) => {
     ascontent.value = ""
     dataFile.value = ""
@@ -353,18 +599,22 @@ const getListTableData = ()=>{
 getListTableData()
 
 
-//根据判断 来显示添加或者是详情
+//根据判断 来显示添加或者是详情或驳回页
 const datasIfView =(rows) => {
     console.log("rows",rows.id)
+    console.log("rows",rows)
     formModel.ascontent =  ''
     RequestIfViewsInfoData(rows.id,store.state.user.id).then(res => {
         console.log("res",res)
         if(res.data.result == 0){
             //暂未上传作业
             answer(rows)
-        }else{
+        }else if(res.data.result == 1 || res.data.result == 3){
             //已上传
             handleInfo(rows)
+        }else{
+            //驳回
+            rejectView(rows)
         }
     })
 }
@@ -408,7 +658,7 @@ tinymce.init({}); // 初始化富文本
 <style>
 .pages{
     float: right;
-    display:flex;padding-top:6px
+    display:flex;padding-top:6px;
     @apply mt-6 mb-6;
 }
 
@@ -443,5 +693,13 @@ tinymce.init({}); // 初始化富文本
     max-height: 80px;
     max-width: 100px;
 
+}
+.txt img{
+    max-height: 70%;
+    max-width: 70%;
 }  
+.el-image-viewer__canvas img{
+    max-height: 80% !important;
+    max-width: 80% !important;
+}
 </style>

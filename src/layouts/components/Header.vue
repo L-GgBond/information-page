@@ -3,7 +3,7 @@
     <div class="header">
         <span class="logo">
             <!-- <el-icon class="mr-1"><Compass /></el-icon> -->
-            考评管理系统
+            网上作业提交系统
         </span>
         <el-icon class="icon-btn" content="折叠" @click="$store.commit('handleAsideWidth')" style="margin-left:60px">
             <fold v-if="$store.state.asideWidth == '250px'"/>

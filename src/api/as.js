@@ -17,10 +17,19 @@ export function RequestTaskSaveData(aid,uid,ascontent,filelist){
     return axios.post('/task/tasksave',{aid:aid,uid:uid,ascontent:ascontent,filelist:filelist},config)
 }
 
+export function RequestTaskSaveDataReject(aid,uid,ascontent,filelist,reject){
+    return axios.post('/task/rejectsave',{aid:aid,uid:uid,ascontent:ascontent,filelist:filelist,reject:reject},config)
+}
+
 
 export function RequestTasklistListInfoData(aid,uid){
     return axios.get('/task/tasklistinfo?aid='+ aid +"&uid=" + uid ,{} )
 }
+
+export function RequestViewsInfoData(aid,uid){
+    return axios.get('/task/tasklistinfos?aid='+ aid +"&uid=" + uid ,{} )
+}
+
 
 
 export function RequestIfViewsInfoData(id,uid){
@@ -38,5 +47,15 @@ export function RequestSubmitInfoData(aid,uid){
 
 export function RequestSubmitInfoSaveData(id,score){
     return axios.get('/ass/save?id='+ id +"&score=" + score ,{} )
+}
+
+
+export function RequestReject(id,reject){
+    return axios.post('/ass/reject',{id:id,reject:reject})
+}
+
+
+export function rejectInfos(id,uid){
+    return axios.post('/ass/rejectinfo',{id:id,uid:uid})
 }
 

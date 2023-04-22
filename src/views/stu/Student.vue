@@ -15,7 +15,7 @@
             <el-table-column  prop="username" label="账号"  width="150px"/>
             <el-table-column label="头像"  width="120px">
                 <template #default="scope">
-                    <el-avatar :size="50" :src="scope.row.avatar" />
+                    <el-avatar  style="cursor: pointer;" @click="getImageViews(scope.row.avatar)"  :size="50" :src="scope.row.avatar" />
                     <!-- <el-image
                     style="width:50px;border-radius: 50%;"
                     :src="scope.row.avatar"
@@ -187,6 +187,9 @@
             </el-form-item>
         </el-form>
     </form-drawer>
+
+    <el-image-viewer  :zoom-rate="1.2" style="height:100px;width:100px"  @close="closeImgViewers" :url-list="srcLists" v-if="showImageViewers" />
+
 </template>
 <script setup>
 import { ref,reactive } from 'vue'
@@ -199,7 +202,17 @@ import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestListData, RequestSaveData, RequestInfoData, RequestUpdateData, RequestDeleteData, RequestClassListData, RequestRoleListData } from '~/api/student.js'
 import { RequestUploads } from '~/api/uploads.js'
 
- 
+const showImageViewers = ref(false)
+const srcLists = ref([])
+const getImageViews =(item) => {
+    console.log(item)
+    srcLists.value = [item];
+    showImageViewers.value = true;
+}
+const closeImgViewers =() => {
+    showImageViewers.value = false;
+}
+
 const Isicons =ref(true)
 const uploadImgs = ref(true)
 const hideUpload = ref(false)

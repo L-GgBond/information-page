@@ -5,7 +5,7 @@
             <el-table-column prop="id"  label="#" />
             <el-table-column label="头像"  width="120px">
                 <template #default="scope">
-                    <el-avatar :size="50" :src="scope.row.avatar" />
+                    <el-avatar style="cursor: pointer;" @click="getImageViewss(scope.row.avatar)" :size="50" :src="scope.row.avatar" />
                 </template>
             </el-table-column>
             
@@ -19,10 +19,17 @@
             <el-table-column prop="status" label="状态">
                 <template #default="scope">
                     <el-tag class="ml-2" v-if="scope.row.status == 1" type="success">已批改</el-tag>
-                    <el-tag class="ml-2" v-else type="danger">待批改</el-tag>
+                    <el-tag class="ml-2" v-if="scope.row.status == 0" type="danger">待批改</el-tag>
+                    <el-tag class="ml-2" v-if="scope.row.status == 2" type="danger">已驳回</el-tag>
+                    <el-tag class="ml-2" v-if="scope.row.status == 3" type="warning">驳回已更改</el-tag>
                 </template>
             </el-table-column>
-            <el-table-column prop="createtime"  label="时间" />
+            <el-table-column prop="createtime"  label="时间">
+                 <template #default="scope">
+                {{ scope.row.createtime.toLocaleString().replace(/T/g, ' ').replace(/\.[\d]{3}Z/, '')  }}    
+                </template>
+            </el-table-column>
+            
             <el-table-column label="操作" width="160">
                 <template #default="scope">
                     <el-button type="primary" size="small" text @click="detailedInformation(scope.row)">详情</el-button>
@@ -139,7 +146,7 @@
                             </div>
                             <div>
                                 <el-text>要求：</el-text>
-                                <el-text v-html="contentInfo.ask" class="yq"></el-text>
+                                <el-text v-html="contentInfo.ask" @click="openImage" class="yq"></el-text>
                                 <!-- <div v-html="contentInfo.ask"></div> -->
 
                             </div>
@@ -175,7 +182,7 @@
                                 <div class="demo-image" style="display:flex;flex-wrap:wrap">
                                     <div v-for="(item,index) in dataFile"  class="block">
                                         <!-- <el-image v-if="filetype = 'image/jpeg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  /> -->
-                                        <el-image v-if="item.filetype == 'image/jpeg' || item.filetype == 'image/gif' || item.filetype == 'image/png' ||  item.filetype == 'image/svg'" style="width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
+                                        <el-image  @click="getImageViews(item)" v-if="item.filetype == 'image/jpeg' || item.filetype == 'image/gif' || item.filetype == 'image/png' ||  item.filetype == 'image/svg'" style="cursor: pointer;width: 100px; height: 100px;margin-right:10px" :src="item.filepath"  />
                                         <el-image v-else style="width: 100px; height: 100px;margin-right:10px;cursor: pointer;" @click="downLoadFile(item)" src="/src/assets/x.png"  />
                                         
                                         <!-- <el-image v-else style="width: 100px; height: 100px;margin-right:10px" src="/src/assets/x.png"  /> -->
@@ -192,24 +199,35 @@
                         </div>
                         <div style="margin-top:20px;" v-if="statusIf == 1">
                             <el-text >得分</el-text>
-                            <el-tag  style="margin-left: 45px;" type="danger" effect="dark">
+                            <el-tag  style="margin-left: 45px;" type="success" effect="dark">
                                 {{ score }}
                             </el-tag>
                         </div>
-                        <div style="margin-top:20px;" v-else>
+                        <div style="margin-top:20px;" v-if="statusIf == 0">
                             <el-text>得分</el-text>
                             <el-tag style="margin-left: 45px;"  type="info" effect="dark">
                                 待批改
                             </el-tag>
                         </div>
                         
-                        <div style="margin-top:20px;margin-left: 20px;" v-if="statusIf == 0">
+                        <div style="margin-top:20px;" v-if="statusIf == 2">
+                            <el-text>得分</el-text>
+                            <el-tag style="margin-left: 45px;"  type="danger" effect="dark">
+                                已驳回,等待学生重新上传
+                            </el-tag>
+                        </div>
+                        <div style="margin-top:20px;" v-if="statusIf == 3">
+                            <el-text>得分</el-text>
+                            <el-tag style="margin-left: 45px;"  type="warning" effect="dark">
+                                驳回已修改
+                            </el-tag>
+                        </div>
+
+                        <div style="margin-top:20px;margin-left: 20px;" v-if="statusIf == 0 || statusIf == 3">
                             <el-form ref="formRefSubmit" :model="formModelSubmit" :rules="formRulesSubmit">
-                               
                                 <el-form-item label="打分" prop="score">
                                     <el-input type="number"   v-model="formModelSubmit.score"  />
                                 </el-form-item>
-                               
                             </el-form>
                         </div>
 
@@ -218,11 +236,62 @@
             </div>
             <template #footer>
             <span class="dialog-footer" >
-                 <el-button type="primary"  @click="grade()" v-if="statusIf == 0">提交</el-button>
+                 <el-button type="danger"  @click="reject()" v-if="statusIf != 1 && statusIf != 2">驳回</el-button>
+                 <el-button type="danger" @click="rejectInfoData" v-if="statusIf == 2">查看驳回信息</el-button>
+                 <el-button type="primary"  @click="grade()" v-if="statusIf == 0 || statusIf == 3">提交</el-button>
                 <el-button @click="dialogVisibleInfo = false">取消</el-button>
             </span>
             </template>
         </el-dialog>
+
+
+
+        <el-dialog
+            v-model="dialogReject"
+            title="驳回"
+            width="90%">
+            <div>
+                <div class="app-container" style="margin-left:13px;">
+                        <editor id="tinymce" v-model="formModelReject.reject" :init="init"></editor>
+                </div>
+            </div> 
+            <template #footer>
+            <span class="dialog-footer" >
+                 <el-button type="primary"  @click="rejectSubmit()">提交</el-button>
+                <el-button @click="dialogReject = false">取消</el-button>
+            </span>
+            </template>
+         </el-dialog>
+
+
+         <el-dialog
+            v-model="dialogRejectInfo"
+            title="驳回信息"
+            width="90%">
+            <div>
+                <div class="app-container" style="margin-left:13px;height: 400px;overflow: auto;">
+                    <!-- <el-form  label-width="120"> -->
+                        <!-- <el-form-item label="内容"> -->
+                            <el-row>
+                                <el-col :span="10">
+                                     <el-text class="txt" truncated v-html="formModelReject.reject"/>
+                                </el-col>
+                            </el-row>
+                            <!-- <el-input v-model-html="formModelReject.reject" disabled type="textarea" /> -->
+                            <!-- </el-form-item> -->
+                        <!-- </el-form> -->
+                </div>
+            </div> 
+            <template #footer>
+            <span class="dialog-footer" >
+                <el-button @click="dialogRejectInfo = false">取消</el-button>
+            </span>
+            </template>
+         </el-dialog>
+
+         <el-image-viewer  :zoom-rate="1.2" style="height:100px;width:100px" @close="closeImgViewer" :url-list="srcList" v-if="showImageViewer" />
+         <el-image-viewer  :zoom-rate="1.2" style="height:100px;width:100px"  @close="closeImgViewers" :url-list="srcLists" v-if="showImageViewers" />
+
 </template>
 <script setup>
 import { ref,reactive,onMounted } from 'vue'
@@ -233,7 +302,7 @@ import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestDeleteData,RequestInfoData,RequestSaveData,RequestCreateData } from '~/api/tea.js'
-import { RequestAssListData, RequestSubmitAssListData,RequestSubmitInfoData,RequestSubmitInfoSaveData } from '~/api/as.js'
+import { RequestAssListData, RequestSubmitAssListData,RequestSubmitInfoData,RequestSubmitInfoSaveData,RequestReject,rejectInfos } from '~/api/as.js'
 import { RequestClassListData } from '~/api/student.js'
 import { RequestListData,RequestInfoDataClass } from '~/api/class.js'
 import { RequestListDatas } from '~/api/subject.js'
@@ -243,6 +312,84 @@ import request from "~/utils/request.js";
 import Editor from "@tinymce/tinymce-vue";
 import tinymce from "tinymce/tinymce";
 import  "~/components/tinymce.js"  
+
+
+const showImageViewer = ref(false)
+const showImageViewers = ref(false)
+const srcList = ref([])
+const srcLists = ref([])
+const openImage =(e) => {
+    console.log(e)
+    if (e.target.tagName == 'IMG') {
+        console.log(e.target.src)
+        let src = event.target.currentSrc;
+        srcList.value = [src];
+        showImageViewer.value = true;
+    }
+}
+const closeImgViewer =() => {
+    showImageViewer.value = false;
+}
+const getImageViews =(item) => {
+    console.log(item)
+    srcLists.value = [item.filepath];
+    showImageViewers.value = true;
+}
+const getImageViewss =(item) => {
+    console.log(item)
+    srcLists.value = [item];
+    showImageViewers.value = true;
+}
+const closeImgViewers =() => {
+    showImageViewers.value = false;
+}
+
+const dialogReject = ref(false)
+const formRefReject = ref(null)
+const formModelReject = reactive({
+    "reject":""
+})
+const reject =() => {
+    dialogVisibleInfo.value = false
+    dialogReject.value = true    
+}
+const rejectSubmit =() => {
+    console.log(saveId.value)
+    console.log(formModelReject.reject)
+    console.log(formModelReject.reject.length)
+    if(formModelReject.reject.length < 1){
+        toast("驳回内容不可为空","error")
+        return false;
+    }
+    RequestReject(saveId.value,formModelReject.reject).then(res => {
+        console.log(res)
+        if(res.code == 200){
+            toast("驳回成功")
+            dialogReject.value = false    
+            getListTableData()
+        }
+    })
+
+}
+
+const dialogRejectInfo = ref(false)
+const rejectid = ref(0)
+const rejectuid = ref(0)
+const rejectInfoData =() => {
+    console.log(rejectid.value)
+    console.log(rejectuid.value)
+    rejectInfos(rejectid.value,rejectuid.value).then(res => {
+        console.log(res)
+        if(res.code == 200){
+            formModelReject.reject = res.data.info.reject
+           
+        }
+    })
+    dialogRejectInfo.value = true
+    dialogVisibleInfo.value = false
+}
+
+
 const formDrawerRefAddData = ref(false)
 const downLoadFile =(files) => {
     console.log(files)
@@ -311,6 +458,8 @@ const statusIf = ref("")
 const score = ref(0)
 const detailedInformation =(rows) =>{
     console.log(rows)
+    rejectid.value = rows.aid
+    rejectuid.value = rows.userid
     contentInfo.value = []
     RequestSubmitInfoData(rows.aid,rows.userid).then(res => {
         console.log(res)

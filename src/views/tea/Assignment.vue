@@ -16,23 +16,23 @@
             <!-- <el-table-column  prop="ask" label="要求" /> -->
             <el-table-column  prop="ask" label="要求">
                 <template #default="scope">
-                    <el-popover
+                    <!-- <el-popover
                     placement="bottom"
                     :title="scope.row.title"
                     :width="500"
                     trigger="hover"
                     :content="scope.row.ask">
-                    <template #reference>
-                        <el-button type="success" plain size="small">查看</el-button>
-                    </template>
-                </el-popover>
+                    <template #reference> -->
+                        <el-button type="success" @click="getViewInfo(scope.row)" plain size="small">查看</el-button>
+                    <!-- </template> -->
+                     <!-- </el-popover> -->
                 </template>
             </el-table-column>
            
 
             <el-table-column  prop="" label="完成率">
                 <template #default="scope">
-                    <el-progress :text-inside="true" :stroke-width="20" v-if="scope.row.total < 50" :percentage="scope.row.total" status="exception"></el-progress>
+                    <el-progress :text-inside="true" :stroke-width="20" v-if="scope.row.total == 50 || scope.row.total < 50" :percentage="scope.row.total" status="exception"></el-progress>
                     <el-progress :text-inside="true" :stroke-width="22" v-if="scope.row.total > 50 && scope.row.total < 100 " :percentage="80" status="warning"></el-progress>
                     <el-progress :text-inside="true" :stroke-width="24"  v-if="scope.row.total == 100" :percentage="100" status="success"></el-progress>
                 </template>
@@ -163,6 +163,57 @@
         </el-form>
     </form-drawer>
 
+
+    <el-dialog
+            v-model="dialogs"
+            title="要求信息"
+            width="60%">
+                <div>
+                    <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 40px;">
+                                <div>
+                                    <el-text>标题：</el-text>
+                                    <el-text>{{Infos.title}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>分数：</el-text>
+                                    <el-text>{{Infos.fraction}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>要求：</el-text>
+                                    
+                                    <el-text v-html="Infos.ask" class="yq" @click="openImage"></el-text>
+                                    <!-- <div v-html="contentInfo.ask"></div> -->
+
+                                </div>
+                                <div>
+                                    <el-text>科目：</el-text>
+                                    <el-text>{{Infos.subject}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>班级：</el-text>
+                                    <el-text>{{Infos.classname}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>学期：</el-text>
+                                    <el-text>{{Infos.termname}}</el-text>
+                                </div>
+                                <div>
+                                    <el-text>审批人：</el-text>
+                                    <el-text>{{Infos.username}}</el-text>
+                                </div>
+                        
+                    </div> 
+                </div> 
+            <template #footer>
+            <span class="dialog-footer" >
+                <el-button @click="dialogs = false">取消</el-button>
+            </span>
+            </template>
+         </el-dialog>
+
+
+         <el-image-viewer  :zoom-rate="1.2" @close="closeImgViewer" :url-list="srcList" v-if="showImageViewer" />
+     
 </template>
 <script setup>
 import { ref,reactive,onMounted,defineEmits,defineProps} from 'vue'
@@ -173,20 +224,45 @@ import { toast } from '~/utils/common'
 import ListHeader from "~/components/ListHeader.vue";
 import FormDrawer from '~/components/FormDrawer.vue'
 import { RequestDeleteData,RequestInfoData,RequestSaveData,RequestCreateData } from '~/api/tea.js'
-import { RequestAssListData } from '~/api/as.js'
+import { RequestAssListData,RequestViewsInfoData} from '~/api/as.js'
 import { RequestClassListData } from '~/api/student.js'
 import { RequestListData,RequestInfoDataClass } from '~/api/class.js'
 import { RequestListDatas } from '~/api/subject.js'
 import { createRouter, useRouter,useRoute } from 'vue-router'
 import { RequestUploads } from '~/api/uploads.js'
 import request from "~/utils/request.js";
-
 import Editor from "@tinymce/tinymce-vue";
 import tinymce from "tinymce/tinymce";
 import  "~/components/tinymce.js"  
 
-
-
+const showImageViewer = ref(false)
+const Infos = ref([])
+const dialogs = ref(false)
+const getViewInfo = (item) => {
+    console.log(item)
+    RequestViewsInfoData(item.id,store.state.user.id).then(res => {
+        console.log(res)
+        if(res.code == 200){
+            Infos.value = res.data.info
+        }else{
+            toast("数据获取失败","error")
+        }
+    })
+    dialogs.value = true
+}
+const srcList = ref([])
+const openImage =(e) => {
+    console.log(e)
+    if (e.target.tagName == 'IMG') {
+        console.log(e.target.src)
+        let src = event.target.currentSrc;
+        srcList.value = [src];
+        showImageViewer.value = true;
+    }
+}
+const closeImgViewer =() => {
+    showImageViewer.value = false;
+}
 const formDrawerRefAddData = ref(null)
 const changeRadioClass =(item) => {
     RequestInfoDataClass(item.id).then(res => {
