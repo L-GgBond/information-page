@@ -38,6 +38,7 @@
 
             <el-table-column  prop="" label="完成率">
                 <template #default="scope">
+                    <!-- <el-progress :text-inside="true" :stroke-width="20" :percentage="22.2" status="exception"></el-progress> -->
                     <el-progress :text-inside="true" :stroke-width="20" v-if="scope.row.total == 50 || scope.row.total < 50" :percentage="scope.row.total" status="exception"></el-progress>
                     <el-progress :text-inside="true" :stroke-width="22" v-if="scope.row.total > 50 && scope.row.total < 100 " :percentage="80" status="warning"></el-progress>
                     <el-progress :text-inside="true" :stroke-width="24"  v-if="scope.row.total == 100" :percentage="100" status="success"></el-progress>
