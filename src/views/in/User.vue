@@ -8,7 +8,15 @@
                     <el-avatar  style="cursor: pointer;" @click="getImageViews(scope.row.avatar)"  :size="50" :src="scope.row.avatar" />
                 </template>
             </el-table-column>
-            <el-table-column prop="username" label="账号" />
+            <!-- <el-table-column prop="username" label="账号" /> -->
+            <el-table-column prop="username" label="账号"  width="150px">
+                <template #default="scope">
+                    <el-tag :key="scope.row.id" type="default" effect="dark">
+                        {{ scope.row.username }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+            
             <el-table-column prop="nickname" label="姓名" />
             <el-table-column prop="email" label="联系方式" />
             <el-table-column label="角色名称">
@@ -117,7 +125,6 @@
                 check-strictly="true"
                 :props="{ label: 'classname', children: 'children' }" default-expand-all="true" /> -->
         </el-form-item>
-
 
         <el-form-item label="状态" prop="statu">
             <el-radio-group v-model="formModel.statu">
@@ -234,6 +241,10 @@ const ruleRoleFormRef = ref(null)
 const formRef = ref()
 const roleData = ref([])
 const handleRoleCreate = ()=> { 
+    console.log(uploadImgs.value)
+    console.log(avatar.value)
+   
+    
     getUserClass().then(res => {
         console.log(res)
         if(res.code == 200){
@@ -245,11 +256,15 @@ const handleRoleCreate = ()=> {
     if(avatar.value == "" || avatar.value == undefined){
         Isicons.value = false
         uploadImgs.value = true
+        hideUpload.value = false
     }else{
         Isicons.value = true
         uploadImgs.value = false
+        hideUpload.value = false
     }
-   
+
+
+
     ID.value = 0;formRoleDrawerRef.value.open() 
     RequestRoleListData().then(res=>{
         console.log(res)
@@ -325,9 +340,11 @@ const handleRoleEdit = (row) => {
             if(avatar.value == "" || avatar.value == undefined){
                 Isicons.value = false
                 uploadImgs.value = true
+                hideUpload.value = false
             }else{
                 Isicons.value = true
                 uploadImgs.value = false
+                hideUpload.value = false
         }
         }
     })
@@ -364,6 +381,8 @@ const handleRoleDrawerSubmit = () => {
                     toast("操作成功")
                     ResetFields()
                     getUserListTableData()
+                
+
                 }else{
                     // loading.value = false
                     formRoleDrawerRef.value.hideLoading()
@@ -414,6 +433,10 @@ const handleRoleAccact =(id) => {
     getRoleListData(1,20).then(res =>{
         if(res.code == 200){
             res.data.records.forEach(item=>{
+                // console.log(item)
+                if(item.statu == 0){
+                    item.disabled = true
+                }
                 if(item.name == "学生"){
                     item.disabled = true
                 }

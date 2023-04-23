@@ -2,9 +2,9 @@
     <el-card shadow="never" class="border-0" style="position: relative;">
         <ListHeader @create="handleCreate" @refresh="getData"/>
         <el-table :data="tableData"  style="width: 1100px;top: 20px;" v-loading="loading" >
-            <el-table-column prop="id"  label="#" />
+            <el-table-column prop="id"  label="#" width="80px" />
             <!-- <el-table-column  prop="title" label="作业" /> -->
-            <el-table-column prop="title" label="作业"  width="120px">
+            <el-table-column prop="title" label="作业"  width="150px">
                 <template #default="scope">
                     <el-tag :key="scope.row.id" type="info" effect="dark">
                         {{ scope.row.title }}
@@ -12,9 +12,15 @@
                 </template>
             </el-table-column>
 
-            <el-table-column  prop="fraction" label="满分" />
+            <el-table-column  prop="fraction" label="满分" >
+                <template #default="scope">
+                    <el-tag :key="scope.row.id" type="danger" effect="plain">
+                        {{ scope.row.fraction }}
+                    </el-tag>
+                </template>
+           </el-table-column>
             <!-- <el-table-column  prop="ask" label="要求" /> -->
-            <el-table-column  prop="ask" label="要求">
+            <el-table-column  prop="ask" label="要求"  width="120px">
                 <template #default="scope">
                     <!-- <el-popover
                     placement="bottom"
@@ -172,11 +178,19 @@
                     <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 40px;">
                                 <div>
                                     <el-text>标题：</el-text>
-                                    <el-text>{{Infos.title}}</el-text>
+                                    <el-text>
+                                        <el-tag :key="Infos.title" type="info" effect="dark">
+                                            {{Infos.title}}
+                                        </el-tag>
+                                    </el-text>
                                 </div>
                                 <div>
                                     <el-text>分数：</el-text>
-                                    <el-text>{{Infos.fraction}}</el-text>
+                                    <el-text class="mx-1" type="danger">
+                                        <el-tag :key="Infos.fraction" type="danger" effect="plain">
+                                            {{Infos.fraction}}
+                                        </el-tag>
+                                    </el-text>
                                 </div>
                                 <div>
                                     <el-text>要求：</el-text>
@@ -542,5 +556,11 @@ tinymce.init({}); // 初始化富文本
     }
     .uploadImg{
         display: none;
+    }
+    .yq{
+        text-align: center;
+    }
+    .yq img{
+        display: inline-block;
     }
 </style>

@@ -219,7 +219,6 @@ formRef.value.validate((valid)=>{
         }).finally(()=>{
             loading.value = false
         })
-       
 
     })
 }
@@ -306,9 +305,11 @@ const handleCommand = (e)=>{
                 if( res.data.avatar == "" ||  res.data.avatar == undefined ||  res.data.avatar == ' '){
                     Isicons.value = false
                     uploadImgs.value = true
+                    hideUpload.value = false
                 }else{
                     Isicons.value = true
                     uploadImgs.value = false
+                    hideUpload.value = false
                 }
             })
            

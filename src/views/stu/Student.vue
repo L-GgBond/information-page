@@ -12,7 +12,16 @@
 
         <el-table :data="tableData"  style="width: 1100px;top: 20px;" v-loading="loading" >
             <el-table-column prop="id"  label="#" />
-            <el-table-column  prop="username" label="账号"  width="150px"/>
+            <!-- <el-table-column  prop="username" label="账号"  width="150px"/> -->
+            <el-table-column prop="username" label="账号"  width="150px">
+                <template #default="scope">
+                    <el-tag :key="scope.row.id" type="default" effect="dark">
+                        {{ scope.row.username }}
+                    </el-tag>
+                </template>
+            </el-table-column>
+
+
             <el-table-column label="头像"  width="120px">
                 <template #default="scope">
                     <el-avatar  style="cursor: pointer;" @click="getImageViews(scope.row.avatar)"  :size="50" :src="scope.row.avatar" />
@@ -290,9 +299,11 @@ const handleCreate = ()=> {
      if(avatar.value == "" || avatar.value == undefined){
         Isicons.value = false
         uploadImgs.value = true
+        hideUpload.value = false
     }else{
         Isicons.value = true
         uploadImgs.value = false
+        hideUpload.value = false
     }
      ID.value = 0;
      formDrawerRef.value.open() 
@@ -434,9 +445,11 @@ const handleEdit = (row) => {
         if(avatar.value == "" || avatar.value == undefined){
                 Isicons.value = false
                 uploadImgs.value = true
+                hideUpload.value = false
             }else{
                 Isicons.value = true
                 uploadImgs.value = false
+                hideUpload.value = false
         }
     })
     

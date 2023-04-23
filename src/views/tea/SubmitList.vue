@@ -138,11 +138,19 @@
                         <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 40px;">
                             <div>
                                 <el-text>标题：</el-text>
-                                <el-text>{{contentInfo.title}}</el-text>
+                                <el-text class="mx-1" type="danger">  
+                                    <el-tag :key="contentInfo.title" type="info" effect="dark">
+                                        {{contentInfo.title}}
+                                    </el-tag>
+                                </el-text>
                             </div>
                             <div>
                                 <el-text>分数：</el-text>
-                                <el-text>{{contentInfo.fraction}}</el-text>
+                                <el-text class="mx-1" type="danger">
+                                    <el-tag :key="contentInfo.fraction" type="danger" effect="plain">
+                                            {{contentInfo.fraction}}
+                                        </el-tag>
+                                </el-text>
                             </div>
                             <div>
                                 <el-text>要求：</el-text>
@@ -262,7 +270,6 @@
             </span>
             </template>
          </el-dialog>
-
 
          <el-dialog
             v-model="dialogRejectInfo"

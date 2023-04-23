@@ -15,16 +15,24 @@
 
         <el-table :data="tableData"  style="width: 1100px;top: 20px;" v-loading="loading" >
             <el-table-column prop="id"  label="#" />
-            <el-table-column prop="title" label="作业"  width="120px">
+            <el-table-column prop="title" label="作业"  width="180px">
                 <template #default="scope">
                     <el-tag :key="scope.row.id" type="info" effect="dark">
                         {{ scope.row.title }}
                     </el-tag>
                 </template>
             </el-table-column>
-            <el-table-column  prop="fraction" label="满分" />
+            <!-- <el-table-column  prop="fraction" label="满分" /> -->
+            <el-table-column  prop="fraction" label="满分" >
+                <template #default="scope">
+                    <el-tag :key="scope.row.id" type="danger" effect="plain">
+                        {{ scope.row.fraction }}
+                    </el-tag>
+                </template>
+           </el-table-column>
+
             <!-- <el-table-column  prop="ask" label="要求" /> -->
-            <el-table-column  prop="ask" label="要求">
+            <el-table-column  prop="ask" label="要求"  width="120px">
                 <template #default="scope">
                     <!-- <el-popover
                     placement="bottom"
@@ -120,7 +128,6 @@
             </span>
             </template>
         </el-dialog>
-        
 
         <el-dialog
             v-model="dialogVisibleInfo"
@@ -132,11 +139,19 @@
                         <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 40px;">
                             <div>
                                 <el-text>标题：</el-text>
-                                <el-text>{{contentInfo.title}}</el-text>
+                                <el-text class="mx-1" type="danger">  
+                                    <el-tag :key="contentInfo.title" type="info" effect="dark">
+                                        {{contentInfo.title}}
+                                    </el-tag>
+                                </el-text>
                             </div>
                             <div>
                                 <el-text>分数：</el-text>
-                                <el-text>{{contentInfo.fraction}}</el-text>
+                                <el-text class="mx-1" type="danger">
+                                    <el-tag :key="contentInfo.fraction" type="danger" effect="plain">
+                                            {{contentInfo.fraction}}
+                                        </el-tag>
+                                </el-text>
                             </div>
                             <div>
                                 <el-text>要求：</el-text>
@@ -231,7 +246,6 @@
             </template>
         </el-dialog>
 
-
         <el-dialog
             v-model="dialogVisibleReject"
             title="驳回修改"
@@ -282,7 +296,6 @@
             </template>
         </el-dialog>
 
-
         <el-dialog
             v-model="dialogReject"
             title="驳回信息"
@@ -315,13 +328,21 @@
             width="60%">
                 <div>
                     <div style="padding-left:35px;padding-top:6px;font-size: 14px;line-height: 40px;">
-                                <div>
+                        <div>
                                     <el-text>标题：</el-text>
-                                    <el-text>{{Infos.title}}</el-text>
+                                    <el-text>
+                                        <el-tag :key="Infos.title" type="info" effect="dark">
+                                            {{Infos.title}}
+                                        </el-tag>
+                                    </el-text>
                                 </div>
                                 <div>
                                     <el-text>分数：</el-text>
-                                    <el-text>{{Infos.fraction}}</el-text>
+                                    <el-text class="mx-1" type="danger">
+                                        <el-tag :key="Infos.fraction" type="danger" effect="plain">
+                                            {{Infos.fraction}}
+                                        </el-tag>
+                                    </el-text>
                                 </div>
                                 <div>
                                     <el-text>要求：</el-text>
