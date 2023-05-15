@@ -39,8 +39,8 @@ import { useStore } from 'vuex'
 const store = useStore()
 const router = useRouter()
 const form = reactive({
-  username:"admin",
-  password:"123456"
+  username:"",
+  password:""
 })
 const rules = {
     username:[

@@ -40,7 +40,7 @@
   import "tinymce/plugins/preview"; // 预览
   import "tinymce/plugins/hr"; // 水平线
   import "tinymce/plugins/anchor";
-  import "tinymce/plugins/pagebreak";
+  // import "tinymce/plugins/pagebreak";
   import "tinymce/plugins/spellchecker";
   import "tinymce/plugins/searchreplace";
   import "tinymce/plugins/visualblocks";
